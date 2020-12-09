@@ -82,7 +82,7 @@ Database_Entry game_list[] = {
   {"e80f24e953563e6b61556737d67d3836",4,false,1,1,1,0, 22}, // title=Fight Night
   {"cf76b00244105b8e03cdc37677ec1073",0,false,1,1,0,0, 22}, // title=Food Fight
   {"de0d4f5a9bf1c1bddee3ed2f7ec51209",0,false,1,1,1,0, 22}, // title=Food Fight
-  {"6053233cb59c0b4ca633623fd76c4576",0,false,1,1,1,0, 24}, // title=Froggie
+  {"6053233cb59c0b4ca633623fd76c4576",0,true, 1,1,1,0, 24}, // title=Froggie
   {"fb8d803b328b2e442548f7799cfa9a4a",0,false,1,1,0,0, 22}, // title=Galaga
   {"f5dc7dc8e38072d3d65bd90a660148ce",0,false,1,1,1,0, 22}, // title=Galaga
   {"06204dadc975be5e5e37e7cc66f984cf",0,false,1,1,0,0, 22}, // title=Gato                  
@@ -184,7 +184,7 @@ bool database_Load(byte *digest)
       if (!strcmp(game_list[i].digest,(char *) digest))
       {
         cartridge_type = game_list[i].cardtype;
-        cartridge_pokey = false; // no support for this... game_list[i].pokey;
+        cartridge_pokey = game_list[i].pokey;
         cartridge_controller[0] = game_list[i].cardctrl1;
         cartridge_controller[1] = game_list[i].cardctrl2;
         cartridge_region = game_list[i].cardregion;

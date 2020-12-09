@@ -126,7 +126,7 @@ static void cartridge_ReadHeader(const byte* header) {
     }
   }
   
-  cartridge_pokey = false;                  // Force off... no support on DS
+  cartridge_pokey = (header[54] & 1)? true: false;
   cartridge_controller[0] = header[55];
   cartridge_controller[1] = header[56];
   cartridge_region = header[57];
@@ -341,6 +341,38 @@ void cartridge_Write(word address, byte data) {
         cartridge_StoreBank(address & 7);
       }
       break;
+  }
+    
+  if(cartridge_pokey && address >= 0x4000 && address < 0x4009) {
+    switch(address) {
+      case POKEY_AUDF1:
+        pokey_SetRegister(POKEY_AUDF1, data);
+        break;
+      case POKEY_AUDC1:
+        pokey_SetRegister(POKEY_AUDC1, data);
+        break;
+      case POKEY_AUDF2:
+        pokey_SetRegister(POKEY_AUDF2, data);
+        break;
+      case POKEY_AUDC2:
+        pokey_SetRegister(POKEY_AUDC2, data);
+        break;
+      case POKEY_AUDF3:
+        pokey_SetRegister(POKEY_AUDF3, data);
+        break;
+      case POKEY_AUDC3:
+        pokey_SetRegister(POKEY_AUDC3, data);
+        break;
+      case POKEY_AUDF4:
+        pokey_SetRegister(POKEY_AUDF4, data);
+        break;
+      case POKEY_AUDC4:
+        pokey_SetRegister(POKEY_AUDC4, data);
+        break;
+      case POKEY_AUDCTL:
+        pokey_SetRegister(POKEY_AUDCTL, data);
+        break;
+    }
   }
 }
 

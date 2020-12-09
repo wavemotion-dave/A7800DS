@@ -318,7 +318,10 @@ static word targetIndex = 0;
 void VsoundHandler(void) 
 {
   static u16 sound_idx=0;
-  sound_buffer[sound_idx] = tia_buffer[targetIndex]+128;
+  if (cartridge_pokey)
+    sound_buffer[sound_idx] = (tia_buffer[targetIndex]+pokey_buffer[targetIndex])/2+128;
+  else
+    sound_buffer[sound_idx] = tia_buffer[targetIndex]+128;
   sound_idx = (sound_idx + 1) & 0x0FFF;
   targetIndex=(targetIndex + 1) % 524;  
 }

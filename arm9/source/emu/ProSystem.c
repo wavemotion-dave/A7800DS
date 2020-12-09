@@ -143,6 +143,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
  
     sally_Execute(456);
     tia_Process(2);
+    if(cartridge_pokey) pokey_Process(2);      
   }
   
 }

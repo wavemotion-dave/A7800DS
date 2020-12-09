@@ -67,7 +67,7 @@ static inline void _maria_ClearCells(void)
 {
     if (memory_ram[CTRL] & 4)
     {
-      *((unsigned short *)&maria_lineRAM[maria_horizontal]) = 0;
+      *((u16 *)&maria_lineRAM[maria_horizontal]) = 0;
     }
     maria_horizontal += 2;
 }
@@ -76,7 +76,7 @@ static inline void _maria_ClearCells4(void)
 {
     if (memory_ram[CTRL] & 4)
     {
-      *((unsigned long *)&maria_lineRAM[maria_horizontal]) = 0;
+      *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
     }
     maria_horizontal += 4;
 }
@@ -101,7 +101,40 @@ static inline void _maria_StoreCells4(byte data)
   maria_horizontal += 4;
 }
 
+static inline void maria_StoreCellWide(byte data) 
+{
+  if(maria_horizontal < MARIA_LINERAM_SIZE) 
+  {
+      maria_lineRAM[maria_horizontal++] = (maria_palette & 16) | data;
+  }
+  else
+  {
+    maria_horizontal++;maria_horizontal++;        
+  }
+}
 
+// ----------------------------------------------------------------------------
+// StoreCell
+// ----------------------------------------------------------------------------
+static inline void maria_ClearCellWide(void) 
+{
+  if(maria_horizontal < MARIA_LINERAM_SIZE) 
+  {
+      if(memory_ram[CTRL] & 4) 
+      {
+        maria_lineRAM[maria_horizontal++] = 0;
+        maria_lineRAM[maria_horizontal++] = 0;
+      }
+      else
+      {
+        maria_horizontal++;maria_horizontal++;        
+      }
+  }  
+  else
+  {
+    maria_horizontal++;maria_horizontal++;        
+  }
+}
 
 // ----------------------------------------------------------------------------
 // StoreCell
@@ -160,14 +193,14 @@ static inline void maria_StoreGraphic( )
   byte data = memory_ram[maria_pp.w];
   if(maria_wmode) 
   {
-    if(maria_IsHolyDMA() || !data) 
+    if(maria_IsHolyDMA() || !data)
     {
-      _maria_ClearCells();
+      maria_ClearCellWide();
     }
     else
     {
-      maria_StoreCell((data & 0x0C), (data & 0xC0) >> 6);
-      maria_StoreCell((data & 0x30) >> 4, (data & 0x03) << 2);
+      maria_StoreCellWide((data & 0x0C) | ((data & 0xC0) >> 6));
+      maria_StoreCellWide(((data & 0x30) >> 4) | ((data & 0x03) << 2));
     }
   }
   else 
