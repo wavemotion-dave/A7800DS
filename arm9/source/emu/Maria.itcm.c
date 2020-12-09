@@ -94,15 +94,27 @@ static inline void _maria_StoreCells4(byte data)
 {
   if(maria_horizontal < MARIA_LINERAM_SIZE) 
   {
-    byte kmode = memory_ram[CTRL] & 4;
     byte *ptr = &(maria_lineRAM[maria_horizontal+3]);
-    if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else if (kmode) *ptr-- = 0; else ptr--;
-    data = data >> 2;
-    if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else if (kmode) *ptr-- = 0; else ptr--;
-    data = data >> 2;
-    if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else if (kmode) *ptr-- = 0; else ptr--;
-    data = data >> 2;
-    if (data) *ptr = maria_palette | (data); else if (kmode) *ptr = 0;
+    if (memory_ram[CTRL] & 4)
+    {
+        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else *ptr-- = 0;
+        data = data >> 2;
+        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else *ptr-- = 0;
+        data = data >> 2;
+        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else *ptr-- = 0;
+        data = data >> 2;
+        if (data) *ptr = maria_palette | (data); else *ptr = 0;
+    }
+    else
+    {
+        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else ptr--;
+        data = data >> 2;
+        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else ptr--;
+        data = data >> 2;
+        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else ptr--;
+        data = data >> 2;
+        if (data) *ptr = maria_palette | (data);
+    }
   }
   maria_horizontal += 4;
 }
@@ -113,6 +125,9 @@ static inline void maria_StoreCellWide(byte data)
   if(maria_horizontal < MARIA_LINERAM_SIZE) 
   {
     maria_lineRAM[maria_horizontal++] = mp | (data >> 4);
+  }
+  if(maria_horizontal < MARIA_LINERAM_SIZE) 
+  {
     maria_lineRAM[maria_horizontal++] = mp | (data & 0x0F);
   }
 }
@@ -122,45 +137,13 @@ static inline void maria_StoreCellWide(byte data)
 // ----------------------------------------------------------------------------
 static inline void maria_ClearCellWide(void) 
 {
-  if(maria_horizontal < MARIA_LINERAM_SIZE) 
+  if(memory_ram[CTRL] & 4) 
   {
-      if(memory_ram[CTRL] & 4) 
-      {
-        maria_lineRAM[maria_horizontal++] = 0;
-        maria_lineRAM[maria_horizontal++] = 0;
-      }
-      else
-      {
-        maria_horizontal++;maria_horizontal++;        
-      }
+      byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
+      if(maria_horizontal < MARIA_LINERAM_SIZE) *ptr++ = 0;
+      if(maria_horizontal < MARIA_LINERAM_SIZE) *ptr   = 0;
   }  
-  else
-  {
-    maria_horizontal++;maria_horizontal++;        
-  }
-}
-
-// ----------------------------------------------------------------------------
-// StoreCell
-// ----------------------------------------------------------------------------
-static inline void maria_StoreCell(byte high, byte low) 
-{
-  if(maria_horizontal < MARIA_LINERAM_SIZE) 
-  {
-    byte data = high | low;
-    if(data) 
-    {
-      maria_lineRAM[maria_horizontal] = (maria_palette & 16) | data;
-    }
-    else 
-    { 
-      if(memory_ram[CTRL] & 4) 
-      {
-        maria_lineRAM[maria_horizontal] = 0;
-      }
-    }
-  }
-  maria_horizontal++;
+  maria_horizontal += 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -241,6 +224,47 @@ static inline void maria_StoreGraphic( )
   maria_pp.w++;
 }
 
+static u8 wide_lookup_mode2A[] =
+{
+    0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
+    0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13, 
+    0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
+    0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13, 
+    0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
+    0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13, 
+    0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
+    0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13, 
+    0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
+    0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13, 
+    0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
+    0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13, 
+    0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
+    0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13, 
+    0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
+    0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13
+};
+
+
+static u8 wide_lookup_mode2B[] =
+{
+    0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
+    0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 
+    0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
+    0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 
+    0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
+    0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 
+    0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
+    0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 
+    0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
+    0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 
+    0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
+    0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 
+    0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
+    0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 
+    0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
+    0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13
+};
+
 // ----------------------------------------------------------------------------
 // WriteLineRAM
 // ----------------------------------------------------------------------------
@@ -293,15 +317,15 @@ static inline void maria_WriteLineRAM(word* buffer)
       }
       else
       {
-          *pix++ = maria_GetColor((colors.by.color0  & 16) | ((colors.by.color0  & 8) >> 3) | ((colors.by.color0  & 2))) |
-                  (maria_GetColor((colors.by.color0  & 16) | ((colors.by.color0  & 4) >> 2) | ((colors.by.color0  & 1) << 1))<<8) |
-                  (maria_GetColor((colors.by.color1 & 16) | ((colors.by.color1 & 8) >> 3) | ((colors.by.color1 & 2)))<<16) |
-                  (maria_GetColor((colors.by.color1 & 16) | ((colors.by.color1 & 4) >> 2) | ((colors.by.color1 & 1) << 1))<<24);
-
-          *pix++ = maria_GetColor((colors.by.color2 & 16) | ((colors.by.color2 & 8) >> 3) | ((colors.by.color2 & 2))) |
-                  (maria_GetColor((colors.by.color2 & 16) | ((colors.by.color2 & 4) >> 2) | ((colors.by.color2 & 1) << 1))<<8) |
-                  (maria_GetColor((colors.by.color3 & 16) | ((colors.by.color3 & 8) >> 3) | ((colors.by.color3 & 2)))<<16) |
-                  (maria_GetColor((colors.by.color3 & 16) | ((colors.by.color3 & 4) >> 2) | ((colors.by.color3 & 1) << 1))<<24);
+          *pix++ = maria_GetColor(wide_lookup_mode2A[colors.by.color0])       |
+                   maria_GetColor(wide_lookup_mode2B[colors.by.color0]) << 8  |
+                   maria_GetColor(wide_lookup_mode2A[colors.by.color1]) << 16 |
+                   maria_GetColor(wide_lookup_mode2B[colors.by.color1]) << 24;
+              
+          *pix++ = maria_GetColor(wide_lookup_mode2A[colors.by.color2])       |
+                   maria_GetColor(wide_lookup_mode2B[colors.by.color2]) << 8  |
+                   maria_GetColor(wide_lookup_mode2A[colors.by.color3]) << 16 |
+                   maria_GetColor(wide_lookup_mode2B[colors.by.color3]) << 24;
       }
     }
   }
@@ -337,7 +361,18 @@ static inline void maria_WriteLineRAM(word* buffer)
 static inline void maria_StoreLineRAM( ) 
 {
   uint index;
-  memset(maria_lineRAM, 0, MARIA_LINERAM_SIZE);
+  u32 *ptr=(u32*)maria_lineRAM;
+  //memset(maria_lineRAM, 0, MARIA_LINERAM_SIZE);
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr   = 0;
   
   byte mode = memory_ram[maria_dp.w + 1];
   while(mode & 0x5f) 
@@ -357,8 +392,8 @@ static inline void maria_StoreLineRAM( )
       width = ((~width) & 31) + 1;
       maria_dp.w += 4;
     }
-    else {
-        
+    else 
+    {
       maria_cycles += 12; // Maria cycles (Header 5 byte)
       maria_palette = (memory_ram[maria_dp.w + 3] & 224) >> 3;
       maria_horizontal = memory_ram[maria_dp.w + 4];
@@ -369,22 +404,24 @@ static inline void maria_StoreLineRAM( )
       maria_dp.w += 5;
     }
 
-    if(!indirect) {
+    if(!indirect) 
+    {
       maria_pp.b.h += maria_offset;
-      for(index = 0; index < width; index++) {
+      for(index = 0; index < width; index++) 
+      {
         maria_cycles += 3; // Maria cycles (Direct graphic read)
-        maria_StoreGraphic( );
+        maria_StoreGraphic();
       }
     }
     else {
       byte cwidth = memory_ram[CTRL] & 16;
       pair basePP = maria_pp;
       for(index = 0; index < width; index++) {
-        maria_cycles += 3; // Maria cycles (Indirect)
+        //maria_cycles += 3; // Maria cycles (Indirect)
         maria_pp.b.l = memory_ram[basePP.w++];
         maria_pp.b.h = memory_ram[CHARBASE] + maria_offset;
         
-        maria_cycles += 3; // Maria cycles (Indirect, 1 byte)
+        maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
         maria_StoreGraphic( );
         if(cwidth) {
           maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
@@ -450,7 +487,7 @@ ITCM_CODE uint maria_RenderScanline( )
     else
     {
       // This is where we render the video memory... 
-        if (gTotalAtariFrames & 1)
+        if (gTotalAtariFrames & 1)  // Skip every other frame...
         {
             maria_WriteLineRAM(framePtr);
             framePtr += 256;
