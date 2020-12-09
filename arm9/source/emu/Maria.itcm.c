@@ -368,6 +368,7 @@ void maria_Reset( ) {
 word *framePtr = (word *)0;
 ITCM_CODE uint maria_RenderScanline( ) 
 {
+  extern int gTotalAtariFrames;
   maria_cycles = 0;
 
   if(((memory_ram[CTRL] & 0x60) == 0x40))
@@ -392,8 +393,11 @@ ITCM_CODE uint maria_RenderScanline( )
     else
     {
       // This is where we render the video memory... 
-        maria_WriteLineRAM(framePtr);
-        framePtr += 256;
+        if (gTotalAtariFrames & 1)
+        {
+            maria_WriteLineRAM(framePtr);
+            framePtr += 256;
+        }
     }
     
     if(maria_scanline != maria_displayArea.bottom) 
