@@ -1,1 +1,0 @@
-bgFileSel.o: bgFileSel.s

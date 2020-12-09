@@ -1,4 +1,5 @@
 VERSION=1.1
+TARGNAME=A7800DS
 
 #---------------------------------------------------------------------------------
 .SUFFIXES:
@@ -9,7 +10,7 @@ endif
 
 include $(DEVKITARM)/ds_rules
 
-export TARGET		:=	$(shell basename $(CURDIR))
+export TARGET		:=	$(shell basename $(TARGNAME))
 export TOPDIR		:=	$(CURDIR)
 
 ICON 		:= -b $(CURDIR)/logo.bmp "A7800DS $(VERSION);AlekMaul;http://www.portabledev.com"

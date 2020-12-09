@@ -1,1 +1,0 @@
-bgBottom.o: bgBottom.s
