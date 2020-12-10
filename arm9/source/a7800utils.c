@@ -378,9 +378,9 @@ void dsLoadGame(char *filename)
 
     psound_buffer=sound_buffer;
     TIMER2_DATA = TIMER_FREQ(22050);                        
-	  TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
-	  irqSet(IRQ_TIMER2, VsoundHandler);                           
-	  irqEnable(IRQ_TIMER2);  
+    TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
+    irqSet(IRQ_TIMER2, VsoundHandler);                           
+    irqEnable(IRQ_TIMER2);  
   }
 }
 

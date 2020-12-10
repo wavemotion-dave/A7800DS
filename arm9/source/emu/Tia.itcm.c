@@ -185,7 +185,9 @@ void tia_SetRegister(word address, byte data) {
 // --------------------------------------------------------------------------------------
 // Process
 // --------------------------------------------------------------------------------------
-void tia_Process(uint length) {
+void tia_Process(uint length) 
+{
+  static int sound_sample_150pct=0;
   uint index;
   for(index = 0; index < length; index++) {
     if(tia_counter[0] > 1) {
@@ -202,9 +204,13 @@ void tia_Process(uint length) {
       tia_counter[1] = tia_counterMax[1];
       tia_ProcessChannel(1);
     }
-    tia_buffer[tia_soundCntr++] = tia_volume[0] + tia_volume[1];
-    if(tia_soundCntr >= tia_size) {
-      tia_soundCntr = 0;
-    }
+    // We sample 50% more than we output... helps with sound quality...
+    if (sound_sample_150pct == 1 || sound_sample_150pct == 2)
+    {  
+      tia_buffer[tia_soundCntr] = ((tia_volume[0] + tia_volume[1])/2) + 128;
+      tia_soundCntr = (tia_soundCntr+1) % tia_size;
+    } else index--;
+    sound_sample_150pct = (sound_sample_150pct+1) % 3;
+    
   }
 }
