@@ -20,7 +20,7 @@ http://www.portabledev.com
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V1.2 : 09-Dec-2020 by wavemotion-dave
+V1.2 : 10-Dec-2020 by wavemotion-dave
   * More speed improvements. Fixed some 320 pixel games. Improved sound.
 
 V1.1 : 09-Dec-2020 by wavemotion-dave
