@@ -71,8 +71,8 @@ static inline void _maria_ClearCells(void)
     {
       *((u16 *)&maria_lineRAM[maria_horizontal]) = 0;
     }
-    maria_horizontal += 2;
   }
+  maria_horizontal += 2;
 }
 
 static inline void _maria_ClearCells4(void)
@@ -83,8 +83,8 @@ static inline void _maria_ClearCells4(void)
     {
       *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
     }
-    maria_horizontal += 4;
   }
+  maria_horizontal += 4;
 }
 
 // ----------------------------------------------------------------------------
@@ -121,15 +121,12 @@ static inline void _maria_StoreCells4(byte data)
 
 static inline void maria_StoreCellWide(byte data) 
 {
-  byte mp = (maria_palette & 16);
   if(maria_horizontal < MARIA_LINERAM_SIZE) 
   {
-    maria_lineRAM[maria_horizontal++] = mp | (data >> 4);
-  }
-  if(maria_horizontal < MARIA_LINERAM_SIZE) 
-  {
-    maria_lineRAM[maria_horizontal++] = mp | (data & 0x0F);
-  }
+      byte mp = (maria_palette & 16);
+      maria_lineRAM[maria_horizontal++] = mp | (data >> 4);
+      maria_lineRAM[maria_horizontal++] = mp | (data & 0x0F);
+  } else maria_horizontal += 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -141,9 +138,11 @@ static inline void maria_ClearCellWide(void)
   {
       byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
       if(maria_horizontal < MARIA_LINERAM_SIZE) *ptr++ = 0;
+      maria_horizontal++;
       if(maria_horizontal < MARIA_LINERAM_SIZE) *ptr   = 0;
+      maria_horizontal++;
   }  
-  maria_horizontal += 2;
+  else maria_horizontal += 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -205,9 +204,7 @@ static inline void maria_StoreGraphic( )
     }
     else
     {
-        maria_StoreCellWide(wide_lookup[data]);
-      //maria_StoreCellWide((data & 0x0C) | ((data & 0xC0) >> 6));
-      //maria_StoreCellWide(((data & 0x30) >> 4) | ((data & 0x03) << 2));
+      maria_StoreCellWide(wide_lookup[data]);
     }
   }
   else 
