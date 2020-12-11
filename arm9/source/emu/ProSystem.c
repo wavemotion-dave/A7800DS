@@ -39,11 +39,6 @@ uint prosystem_cycles = 0;
 // into consideration)
 extern bool half_cycle;
 
-#ifdef FST6502
-#include "Fst6502/Fst6502_interface.h"
-extern CONTEXTM6502 M6502Emul;
-#endif
-
 // ----------------------------------------------------------------------------
 // Reset
 // ----------------------------------------------------------------------------
@@ -51,11 +46,7 @@ void prosystem_Reset( ) {
   if(cartridge_IsLoaded( )) {
     prosystem_paused = false;
 
-  sally_Reset( ); // WII
-
-#ifdef FST6502
-  M6502Emul.membase = memory_rom;
-#endif
+    sally_Reset( ); // WII
 
     region_Reset( );
     tia_Clear( );
@@ -72,12 +63,6 @@ void prosystem_Reset( ) {
     else {
       cartridge_Store( );
     }
-
-#ifdef FST6502
-  Fst6502_set_context(&M6502Emul);
-  Fst6502_Reset();
-  Fst6502_get_context(&M6502Emul);
-#endif
 
     prosystem_cycles = sally_ExecuteRES( );
     prosystem_active = true;
@@ -122,6 +107,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       if (memory_ram[BACKGRND] != last_background)
       {
           bg32 =  memory_ram[BACKGRND] | (memory_ram[BACKGRND] << 8) | (memory_ram[BACKGRND]<<16) | (memory_ram[BACKGRND]<<24);
+          last_background = memory_ram[BACKGRND];
       }
       cycles = maria_RenderScanline( );
     }
