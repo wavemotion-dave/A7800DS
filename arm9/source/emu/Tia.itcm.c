@@ -64,32 +64,30 @@ static uint tia_soundCntr = 0;
 // ----------------------------------------------------------------------------
 // ProcessChannel
 // ----------------------------------------------------------------------------
-static void tia_ProcessChannel(byte channel) {
-  tia_poly5Cntr[channel]++;
-  if(tia_poly5Cntr[channel] == TIA_POLY5_SIZE) {
-    tia_poly5Cntr[channel] = 0;
-  }
-  if(((tia_audc[channel] & 2) == 0) || (((tia_audc[channel] & 1) == 0) && TIA_DIV31[tia_poly5Cntr[channel]]) || (((tia_audc[channel] & 1) == 1) && TIA_POLY5[tia_poly5Cntr[channel]])) {
-    if(tia_audc[channel] & 4) {
+static void tia_ProcessChannel(byte channel) 
+{
+  tia_poly5Cntr[channel] = (tia_poly5Cntr[channel] + 1) % TIA_POLY5_SIZE;
+  if(((tia_audc[channel] & 2) == 0) || (((tia_audc[channel] & 1) == 0) && TIA_DIV31[tia_poly5Cntr[channel]]) || (((tia_audc[channel] & 1) == 1) && TIA_POLY5[tia_poly5Cntr[channel]])) 
+  {
+    if(tia_audc[channel] & 4) 
+    {
       tia_volume[channel] = (!tia_volume[channel])? tia_audv[channel]: 0;
     }
-    else if(tia_audc[channel] & 8) {
-      if(tia_audc[channel] == 8) {
-        tia_poly9Cntr[channel]++;
-        if(tia_poly9Cntr[channel] == TIA_POLY9_SIZE) {
-          tia_poly9Cntr[channel] = 0;
-        }
+    else if(tia_audc[channel] & 8) 
+    {
+      if(tia_audc[channel] == 8) 
+      {
+        tia_poly9Cntr[channel] = (tia_poly9Cntr[channel]+1) % TIA_POLY9_SIZE; 
         tia_volume[channel] = (TIA_POLY9[tia_poly9Cntr[channel]])? tia_audv[channel]: 0;
       }
-      else {
+      else 
+      {
         tia_volume[channel] = (TIA_POLY5[tia_poly5Cntr[channel]])? tia_audv[channel]: 0;
       }
     }
-    else {
-      tia_poly4Cntr[channel]++;
-      if(tia_poly4Cntr[channel] == TIA_POLY4_SIZE) {
-        tia_poly4Cntr[channel] = 0;
-      }
+    else 
+    {
+      tia_poly4Cntr[channel] = (tia_poly4Cntr[channel] + 1) % TIA_POLY4_SIZE;
       tia_volume[channel] = (TIA_POLY4[tia_poly4Cntr[channel]])? tia_audv[channel]: 0;
     }
   }
@@ -130,14 +128,14 @@ void tia_Clear( ) {
 // ----------------------------------------------------------------------------
 // SetRegister
 // ----------------------------------------------------------------------------
-void tia_SetRegister(word address, byte data) {
-  byte channel;
+void tia_SetRegister(word address, byte data) 
+{
+  byte channel=0;
   byte frequency;
     
   switch(address) {
     case AUDC0:
       tia_audc[0] = data & 15;
-      channel = 0;
       break;
     case AUDC1:
       tia_audc[1] = data & 15;
@@ -145,7 +143,6 @@ void tia_SetRegister(word address, byte data) {
       break;
     case AUDF0:
       tia_audf[0] = data & 31;
-      channel = 0;
       break;
     case AUDF1:
       tia_audf[1] = data & 31;
@@ -153,7 +150,6 @@ void tia_SetRegister(word address, byte data) {
       break;
     case AUDV0:
       tia_audv[0] = (data & 15) << 2;
-      channel = 0;
       break;
     case AUDV1:
       tia_audv[1] = (data & 15) << 2;
@@ -163,20 +159,25 @@ void tia_SetRegister(word address, byte data) {
       return;
   }
 
-  if(tia_audc[channel] == 0) {
+  if(tia_audc[channel] == 0) 
+  {
     frequency = 0;
     tia_volume[channel] = tia_audv[channel];
   }
-  else {
+  else 
+  {
     frequency = tia_audf[channel] + 1;
-    if(tia_audc[channel] > 11) {
+    if(tia_audc[channel] > 11) 
+    {
       frequency *= 3;
     }
   }
 
-  if(frequency != tia_counterMax[channel]) {
+  if(frequency != tia_counterMax[channel]) 
+  {
     tia_counterMax[channel] = frequency;
-    if(tia_counter[channel] == 0 || frequency == 0) {
+    if(tia_counter[channel] == 0 || frequency == 0)
+    {
       tia_counter[channel] = frequency;
     }
   }
@@ -189,28 +190,32 @@ void tia_Process(uint length)
 {
   static int sound_sample_150pct=0;
   uint index;
-  for(index = 0; index < length; index++) {
-    if(tia_counter[0] > 1) {
+  for(index = 0; index < length; index++) 
+  {
+    if(tia_counter[0] > 1) 
+    {
       tia_counter[0]--;
     }
-    else if(tia_counter[0] == 1) {
+    else if(tia_counter[0] == 1) 
+    {
       tia_counter[0] = tia_counterMax[0];
       tia_ProcessChannel(0);
     }
-    if(tia_counter[1] > 1) {
+    if(tia_counter[1] > 1) 
+    {
       tia_counter[1]--;
     }
-    else if(tia_counter[1] == 1) {
+    else if(tia_counter[1] == 1) 
+    {
       tia_counter[1] = tia_counterMax[1];
       tia_ProcessChannel(1);
     }
-    // We sample 50% more than we output... helps with sound quality...
-    if (sound_sample_150pct == 1 || sound_sample_150pct == 2)
+    // We sample 50% more than we output... helps _slightly_ with sound quality...
+    if (sound_sample_150pct == 0 || sound_sample_150pct == 1)
     {  
       tia_buffer[tia_soundCntr] = ((tia_volume[0] + tia_volume[1])/2) + 128;
       tia_soundCntr = (tia_soundCntr+1) % tia_size;
     } else index--;
-    sound_sample_150pct = (sound_sample_150pct+1) % 3;
-    
+    sound_sample_150pct = (sound_sample_150pct+1) % 3;    
   }
 }

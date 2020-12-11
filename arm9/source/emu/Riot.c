@@ -31,9 +31,10 @@ byte riot_intervals;
 byte riot_dra = 0;
 byte riot_drb = 0;
 
-static bool riot_elapsed;
-static int riot_currentTime;
-static word riot_clocks;
+bool riot_elapsed;
+int riot_currentTime;
+word riot_clocks;
+word riot_shift=0;
 
 void riot_Reset(void) {
     riot_SetDRA(0);
@@ -43,6 +44,7 @@ void riot_Reset(void) {
     riot_timer = TIM64T; 
     riot_intervals = 0;
     riot_clocks = 0;
+    riot_shift = 0;
 
     riot_elapsed = false;
     riot_currentTime = 0;
@@ -264,24 +266,29 @@ void riot_SetDRB(byte data) {
 // ----------------------------------------------------------------------------
 // SetTimer
 // ----------------------------------------------------------------------------
-void riot_SetTimer(word timer, byte intervals) {
+void riot_SetTimer(word timer, byte intervals) 
+{
   riot_timer = timer;
   riot_intervals = intervals;
   switch(timer) {
     case T1024T:
       riot_clocks = 1024;
+      riot_shift = 10;
       riot_timing = true;
       break;
     case TIM1T:
       riot_clocks = 1;
+      riot_shift = 0;
       riot_timing = true;
       break;
     case TIM8T:
       riot_clocks = 8;
+      riot_shift = 3;
       riot_timing = true;
       break;
     case TIM64T:
       riot_clocks = 64;
+      riot_shift = 6;
       riot_timing = true;
       break;
   }
@@ -294,28 +301,31 @@ void riot_SetTimer(word timer, byte intervals) {
 // ----------------------------------------------------------------------------
 // UpdateTimer
 // ----------------------------------------------------------------------------
-void riot_UpdateTimer(byte cycles) {
+void inline riot_UpdateTimer(byte cycles) 
+{
   riot_currentTime -= cycles;
-  if(!riot_elapsed && riot_currentTime > 0) {
-    memory_Write(INTIM, riot_currentTime / riot_clocks);
-    //ALEK memory_Write(riot_currentTime / riot_clocks,INTIM);
+  if(!riot_elapsed && riot_currentTime > 0) 
+  {
+      memory_ram[INTIM] = riot_currentTime >> riot_shift;
   }
-  else {
-    if(riot_elapsed) {
-      if(riot_currentTime >= -255) {
-        memory_Write(INTIM, riot_currentTime);
-        //ALEK memory_Write(riot_currentTime,INTIM);
+  else 
+  {
+    if(riot_elapsed) 
+    {
+      if(riot_currentTime >= -255) 
+      {
+          memory_ram[INTIM] = riot_currentTime;
       }
-      else {
-        memory_Write(INTIM, 0);
-        //ALEK memory_Write(0,INTIM);
+      else 
+      {
+        memory_ram[INTIM] = 0;
         riot_timing = false;
       }
     }
-    else {
+    else 
+    {
       riot_currentTime = riot_clocks;
-      memory_Write(INTIM, 0);
-      //ALEK memory_Write(0,INTIM);
+      memory_ram[INTIM] = 0;
       memory_ram[INTFLG] |= 0x80;
       riot_elapsed = true;
     }

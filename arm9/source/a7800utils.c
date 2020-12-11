@@ -335,11 +335,18 @@ void dsLoadGame(char *filename)
 	if (filebuffer != 0)
 		free(filebuffer);
   
+  // Clear out debug info...
+  for (int i=0; i<MAX_DEBUG; i++)
+  {
+      debug[i] = 0;
+  }
+    
   // load card game if ok
   if (cartridge_Load(filename) != 0) 
   {	
 #ifdef DEBUG_DUMP
     dsPrintValue(0,22,0,cartridge_digest); //zzz
+    debug[7]=cartridge_flags;
     debug[8]=cartridge_type;
     debug[9]=cartridge_bank;
 #endif    
@@ -735,6 +742,7 @@ void dsInstallSoundEmuFIFO(void)
 
 void dsMainLoop(void) 
 {
+  static int last_keys_pressed = 999;
   char fpsbuf[32];
   unsigned int keys_pressed,keys_touch=0, romSel;
   int iTx,iTy;
@@ -826,15 +834,18 @@ void dsMainLoop(void)
               }
             } else keys_touch=0;
           }
-          if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
-          if ( (keys_pressed & KEY_SELECT) ) { tchepres(11); } // BUTTON SELECT
-          if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
-          if ( (keys_pressed & KEY_Y) )  { full_speed = 1-full_speed; }  
-          if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
-          if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
-          debug[0] = cartridge_xOffset;
-          debug[1] = cartridge_yOffset;
-          dampen = 10;
+          
+          if (keys_pressed != last_keys_pressed)
+          {
+              last_keys_pressed = keys_pressed;
+              if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
+              if ( (keys_pressed & KEY_SELECT) ) { tchepres(11); } // BUTTON SELECT
+              if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
+              if ( (keys_pressed & KEY_Y) )  { full_speed = 1-full_speed; }  
+              if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
+              if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
+          }
+          dampen = 7;
         } else dampen--;
         
         // else manage a7800 pad 

@@ -150,7 +150,7 @@ static inline void maria_ClearCellWide(void)
 // ----------------------------------------------------------------------------
 static inline bool maria_IsHolyDMA( ) 
 {
-  if(maria_pp.w > 32767) 
+  if(maria_pp.w & 0x8000) 
   {
     if(maria_h16 && (maria_pp.w & 4096)) {
       return true;

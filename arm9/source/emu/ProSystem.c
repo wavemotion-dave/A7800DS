@@ -96,12 +96,6 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 
   gTotalAtariFrames++;
 
-  // Is WSYNC enabled for the current frame?
-  //bool wsync =  !( cartridge_flags & CARTRIDGE_WSYNC_MASK );
-
-  // Is Maria cycle stealing enabled for the current frame?
-  //bool cycle_stealing = !( cartridge_flags & CARTRIDGE_CYCLE_STEALING_MASK );
-
   riot_SetInput(input);
   
   for(maria_scanline = 1; maria_scanline <= prosystem_scanlines; maria_scanline++) 
@@ -118,34 +112,30 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       bRenderScanline = false;
     }
     
-    // Was a WSYNC performed withing the current scanline?
-    //bool wsync_scanline = false;
-
     uint cycles=0;
     prosystem_cycles %= 456;
     sally_Execute(28);
     
-    // If our background has changed... set our global 32-bit version of that now... speeds up scanline renders
-    if (memory_ram[BACKGRND] != last_background)
-    {
-        bg32 =  memory_ram[BACKGRND] | (memory_ram[BACKGRND] << 8) | (memory_ram[BACKGRND]<<16) | (memory_ram[BACKGRND]<<24);
-    }
-    
     if (bRenderScanline)
     {
+      // If our background has changed... set our global 32-bit version of that now... speeds up scanline renders
+      if (memory_ram[BACKGRND] != last_background)
+      {
+          bg32 =  memory_ram[BACKGRND] | (memory_ram[BACKGRND] << 8) | (memory_ram[BACKGRND]<<16) | (memory_ram[BACKGRND]<<24);
+      }
       cycles = maria_RenderScanline( );
     }
     
     if(cartridge_cycle_stealing) 
     {
       prosystem_cycles += cycles;
+      if(riot_timing) riot_UpdateTimer( cycles >> 2 );
     }
  
     sally_Execute(456);
     tia_Process(2);
     if(cartridge_pokey) pokey_Process(2);      
-  }
-  
+  }  
 }
 
 byte *loc_buffer = 0;
