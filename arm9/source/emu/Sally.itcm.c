@@ -1927,7 +1927,6 @@ next_inst:
     {
       riot_UpdateTimer(sally_cycles);
     }
-    else // As far as I know, there are no games that do both... so shave off a few DS CPU cycles...  
     if(memory_ram[WSYNC] && cartridge_wsync) 
     {
       prosystem_cycles = 456;

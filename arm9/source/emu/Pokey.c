@@ -284,21 +284,15 @@ void pokey_SetRegister(word address, byte value) {
   } 
 }
 
-//LUDO:
-static uint 
-loc_get_int(byte *p)
+static inline uint loc_get_int(byte *p)
 {
-  uint res = (((uint)(p[3])) << 24)| (((uint)(p[2])) << 16)| (((uint)(p[1])) <<  8)| ((uint)(p[0]));
-  return res;
+  return *((u32*)p);
 }
 
-static void
-loc_set_byte(byte *p, uint v)
+static inline void loc_set_byte(byte *p, uint v)
 {
-  p[0] =  v        & 0xff;
-  p[1] = (v >>  8) & 0xff;
-  p[2] = (v >> 16) & 0xff;
-  p[3] = (v >> 24) & 0xff;
+  u32 *zz = (u32 *)p;
+  *zz = v;
 }
 
 // ----------------------------------------------------------------------------
@@ -310,8 +304,8 @@ void pokey_Process(uint length)
   byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
   uint size = length;
 
-  while(length) {
-
+  while(length) 
+  {
     byte currentValue;
     byte nextEvent = POKEY_SAMPLE;
     uint eventMin = loc_get_int(sampleCntrPtrB);
@@ -333,7 +327,8 @@ void pokey_Process(uint length)
 
     pokey_polyAdjust += eventMin;
 
-    if(nextEvent != POKEY_SAMPLE) {
+    if(nextEvent != POKEY_SAMPLE) 
+    {
       pokey_poly04Cntr = (pokey_poly04Cntr + pokey_polyAdjust) % POKEY_POLY4_SIZE;
       pokey_poly05Cntr = (pokey_poly05Cntr + pokey_polyAdjust) % POKEY_POLY5_SIZE;
       pokey_poly17Cntr = (pokey_poly17Cntr + pokey_polyAdjust) % pokey_poly17Size;
@@ -359,11 +354,13 @@ void pokey_Process(uint length)
         pokey_outVol[nextEvent] = 0;
       }
     }
-    else {
+    else 
+    {
       *pokey_sampleCount += pokey_sampleMax;
       currentValue = 0;
 
-      for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) {
+      for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) 
+      {
         currentValue += pokey_outVol[channel];
       }
 
@@ -374,7 +371,8 @@ void pokey_Process(uint length)
   }  
   
   pokey_soundCntr += size;
-  if(pokey_soundCntr >= pokey_size) {
+  if(pokey_soundCntr >= pokey_size) 
+  {
     pokey_soundCntr = 0;
   }
 }
