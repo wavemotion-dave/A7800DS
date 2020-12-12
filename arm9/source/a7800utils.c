@@ -842,8 +842,8 @@ void dsMainLoop(void)
               last_keys_pressed = keys_pressed;
               if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
               if ( (keys_pressed & KEY_SELECT) ) { tchepres(11); } // BUTTON SELECT
-              if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
-              if ( (keys_pressed & KEY_Y) )  { full_speed = 1-full_speed; }  
+              if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
+              if ( (keys_pressed & KEY_Y) )  { full_speed = 1-full_speed; if (full_speed) dsPrintValue(28,0,0,"FS"); else dsPrintValue(28,0,0,"  ");}  
               if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
               if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
           }
