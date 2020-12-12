@@ -48,6 +48,7 @@ Database_Entry game_list[] = {
   {"a65f79ad4a0bbdecd59d5f7eb3623fd7",0,false,1,1,0,0, 22}, // title=Asteroids Deluxe
   {"3d38281ed8a8d8c7cd457a18c92c8604",0,false,1,1,0,0, 21}, // title=Astro Blaster
   {"a51e5df28a0fe8c52e9d28fb5f8e44a6",0,false,1,1,0,0, 21}, // title=Astro Fighter
+  {"7cdfbe37634e7dcd4dc67db7edbcd3ba",0,false,1,1,0,0, 22}, // title=Baby Pac Man
   {"8fc3a695eaea3984912d98ed4a543376",0,true ,1,1,0,0, 22}, // title=Ballblazer
   {"b558814d54904ce0582e2f6a801d03af",0,true ,1,1,1,0, 22}, // title=Ballblazer
   {"42682415906c21c6af80e4198403ffda",1,true ,2,1,0,0, 22}, // title=Barnyard Blaster
