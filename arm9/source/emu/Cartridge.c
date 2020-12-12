@@ -144,7 +144,7 @@ static void cartridge_ReadHeader(const byte* header) {
   cartridge_region = header[57];
   cartridge_flags = 0;
 
-  cartridge_wsync=cartridge_cycle_stealing=false;
+  cartridge_wsync=cartridge_cycle_stealing=true; //TBD trying...
 }
 
 // ----------------------------------------------------------------------------
