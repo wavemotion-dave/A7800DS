@@ -20,6 +20,13 @@ http://www.portabledev.com
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.3 : 12-Dec-2020 by wavemotion-dave
+  * Backported some fixes and emulation timing improvments from Prosystem 1.3g
+    plus the Wii version.  Renders a few more games playable.
+  * Fixed region for Froggie and Beef Drop - they now look right and play 
+    at full speed.
+  * Minor other improvements as time permitted. 
+
 V1.2 : 10-Dec-2020 by wavemotion-dave
   * More speed improvements. Fixed some 320 pixel games. Improved sound.
 
