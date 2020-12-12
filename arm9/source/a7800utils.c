@@ -358,7 +358,7 @@ void dsLoadGame(char *filename)
 #ifdef CART_INFO
     char cart_info_buf[32];
     dsPrintValue(0,22,0,cartridge_digest); //zzz
-    sprintf(cart_info_buf, "CT=%d CB=%d CF=%d PK=%d YO=%d  ", cartridge_type, cartridge_bank, cartridge_flags, cartridge_pokey, cartridge_yOffset);
+    sprintf(cart_info_buf, "CT=%d PK=%d CO=%d%d RE=%d FL=%d  ", cartridge_type, cartridge_pokey, cartridge_controller[0], cartridge_controller[1], cartridge_region, cartridge_flags);
     dsPrintValue(0,21,0,cart_info_buf); //zzz
 #endif    
       
