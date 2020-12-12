@@ -29,6 +29,8 @@
 #define PRO_SYSTEM_SOURCE "ProSystem.cpp"
 #define PRO_SYSTEM_STATE_HEADER "PRO-SYSTEM STATE"
 
+#define CYCLES_PER_SCANLINE 454
+
 bool prosystem_active = false;
 bool prosystem_paused = false;
 word prosystem_frequency = 60;
@@ -98,8 +100,8 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     }
     
     uint cycles=0;
-    prosystem_cycles %= 456;
-    sally_Execute(28);
+    prosystem_cycles %= CYCLES_PER_SCANLINE;
+    sally_Execute(34);
     
     if (bRenderScanline)
     {
@@ -118,7 +120,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       if(riot_timing) riot_UpdateTimer( cycles >> 2 );
     }
  
-    sally_Execute(456);
+    sally_Execute(CYCLES_PER_SCANLINE);
     tia_Process(2);
     if(cartridge_pokey) pokey_Process(2);      
   }  

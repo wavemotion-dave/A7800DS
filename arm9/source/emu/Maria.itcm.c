@@ -92,7 +92,7 @@ static inline void _maria_ClearCells4(void)
 // ----------------------------------------------------------------------------
 static inline void _maria_StoreCells4(byte data) 
 {
-  if(maria_horizontal < MARIA_LINERAM_SIZE) 
+  if((maria_horizontal+3) < MARIA_LINERAM_SIZE) 
   {
     byte *ptr = &(maria_lineRAM[maria_horizontal+3]);
     if (memory_ram[CTRL] & 4)
@@ -121,7 +121,7 @@ static inline void _maria_StoreCells4(byte data)
 
 static inline void maria_StoreCellWide(byte data) 
 {
-  if(maria_horizontal < MARIA_LINERAM_SIZE) 
+  if((maria_horizontal+1) < MARIA_LINERAM_SIZE) 
   {
       byte mp = (maria_palette & 16);
       maria_lineRAM[maria_horizontal++] = mp | (data >> 4);
@@ -461,7 +461,7 @@ ITCM_CODE uint maria_RenderScanline( )
 {
   extern int gTotalAtariFrames;
   maria_cycles = 0;
-
+    
   if(((memory_ram[CTRL] & 0x60) == 0x40))
   {
     maria_cycles += 5; // Maria cycles (DMA Startup)

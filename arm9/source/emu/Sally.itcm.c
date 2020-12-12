@@ -1922,7 +1922,8 @@ l_0x02:
 
 next_inst:
     prosystem_cycles += (sally_cycles << 2);
-
+    if( half_cycle ) prosystem_cycles += 2;
+      
     if(riot_timing) 
     {
       riot_UpdateTimer(sally_cycles);

@@ -50,9 +50,6 @@ void memory_Reset( ) {
 ITCM_CODE byte memory_Read(word address) {
   byte tmp_byte;
 
-//#define INTIM       644 0x284
-//#define INTFLG      645 0x285
-
   switch ( address ) {
   case INTIM:
   case INTIM | 0x2:
@@ -77,9 +74,8 @@ ITCM_CODE byte memory_Read(word address) {
 ITCM_CODE void memory_Write(word address, byte data) {
 //ALEK void memory_Write(byte data,word address) {
 
-//ALEK  if(!memory_rom[address]) {
+  if(!memory_rom[address]) {
     switch(address) {
-//#define INPTCTRL    1
       case INPTCTRL:
         if(data == 22 && cartridge_IsLoaded( )) { 
           cartridge_Store( ); 
@@ -88,12 +84,6 @@ ITCM_CODE void memory_Write(word address, byte data) {
           bios_Store( );
         }
         break;
-//#define INPT0       8
-//#define INPT1       9
-//#define INPT2       10
-//#define INPT3       11
-//#define INPT4       12
-//#define INPT5       13
       case INPT0:
         break;
       case INPT1:
@@ -106,12 +96,6 @@ ITCM_CODE void memory_Write(word address, byte data) {
         break;
       case INPT5:
         break;
-//#define AUDC0       21
-//#define AUDC1       22
-//#define AUDF0       23
-//#define AUDF1       24
-//#define AUDV0       25
-//#define AUDV1       26
       case AUDC0:
         tia_SetRegister(AUDC0, data);
         break;
@@ -185,10 +169,10 @@ ITCM_CODE void memory_Write(word address, byte data) {
       cartridge_Write(address, data);
         break;
     }
-//ALEK  }
-//ALEK  else {
-//ALEK    cartridge_Write(address, data);
-//ALEK  }
+  }
+  else {
+    cartridge_Write(address, data);
+  }
 }
 
 // ----------------------------------------------------------------------------

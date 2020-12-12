@@ -213,7 +213,7 @@ void tia_Process(uint length)
     // We sample 50% more than we output... helps _slightly_ with sound quality...
     if (sound_sample_150pct == 0 || sound_sample_150pct == 1)
     {  
-      tia_buffer[tia_soundCntr] = ((tia_volume[0] + tia_volume[1])/2) + 128;
+      tia_buffer[tia_soundCntr] = ((tia_volume[0] + tia_volume[1])) + 128;
       tia_soundCntr = (tia_soundCntr+1) % tia_size;
     } else index--;
     sound_sample_150pct = (sound_sample_150pct+1) % 3;    

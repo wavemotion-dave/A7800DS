@@ -34,6 +34,7 @@ char cartridge_filename[128];
 byte cartridge_type;
 byte cartridge_region;
 bool cartridge_pokey;
+bool cartridge_pokey450;
 byte cartridge_controller[2];
 byte cartridge_bank;
 uint cartridge_flags;
@@ -62,11 +63,20 @@ static bool cartridge_HasHeader(const byte* header) {
   return true;
 }
 
+static uint cartridge_GetBank(byte bank) {
+  if ((cartridge_type == CARTRIDGE_TYPE_SUPERCART || cartridge_type == CARTRIDGE_TYPE_SUPERCART_ROM || cartridge_type == CARTRIDGE_TYPE_SUPERCART_RAM) && cartridge_size <= 65536) {
+    // for some of these carts, there are only 4 banks. in this case we ignore bit 3
+    // previously, games of this type had to be doubled. The first 4 banks needed to be duplicated at the end of the ROM
+      return (bank & 3);
+  }
+  return bank;
+}
+
 // ----------------------------------------------------------------------------
 // GetBankOffset
 // ----------------------------------------------------------------------------
 static uint cartridge_GetBankOffset(byte bank) {
-  return bank * 16384;
+  return cartridge_GetBank(bank) * 16384;
 }
 
 // ----------------------------------------------------------------------------
@@ -91,7 +101,6 @@ static void cartridge_ReadHeader(const byte* header) {
   }
   strcpy(cartridge_title,temp);
   
-  //cartridge_size  = header[49] << 32; // why 32?
   cartridge_size  = header[49] << 24;
   cartridge_size |= header[50] << 16;
   cartridge_size |= header[51] << 8;
@@ -115,10 +124,10 @@ static void cartridge_ReadHeader(const byte* header) {
     }
   }
   else {
-    if(header[53] == 1) {
+    if(header[53] == 2) {
       cartridge_type = CARTRIDGE_TYPE_ABSOLUTE;
     }
-    else if(header[53] == 2) {
+    else if(header[53] == 1) {
       cartridge_type = CARTRIDGE_TYPE_ACTIVISION;
     }
     else {
@@ -127,6 +136,9 @@ static void cartridge_ReadHeader(const byte* header) {
   }
   
   cartridge_pokey = (header[54] & 1)? true: false;
+  cartridge_pokey450 = (header[54]&0x40)? true : false;
+  if (cartridge_pokey450) {cartridge_pokey = true;}
+  
   cartridge_controller[0] = header[55];
   cartridge_controller[1] = header[56];
   cartridge_region = header[57];
@@ -275,29 +287,33 @@ void cartridge_Store( ) {
     case CARTRIDGE_TYPE_NORMAL:
       memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
       break;
-    case CARTRIDGE_TYPE_SUPERCART:
-      if(cartridge_GetBankOffset(7) < cartridge_size) {
-        memory_WriteROM(49152, 16384, cartridge_buffer + cartridge_GetBankOffset(7));
+    case CARTRIDGE_TYPE_SUPERCART: {
+      uint offset = cartridge_size - 16384;
+      if(offset < cartridge_size) {
+        memory_WriteROM(49152, 16384, cartridge_buffer + offset);
       }
-      break;
-    case CARTRIDGE_TYPE_SUPERCART_LARGE:
-      if(cartridge_GetBankOffset(8) < cartridge_size) {
-        memory_WriteROM(49152, 16384, cartridge_buffer + cartridge_GetBankOffset(8));
+    } break;
+    case CARTRIDGE_TYPE_SUPERCART_LARGE: {
+      uint offset = cartridge_size - 16384;
+      if(offset < cartridge_size) {
+        memory_WriteROM(49152, 16384, cartridge_buffer + offset);
         memory_WriteROM(16384, 16384, cartridge_buffer + cartridge_GetBankOffset(0));
       }
-      break;
-    case CARTRIDGE_TYPE_SUPERCART_RAM:
-      if(cartridge_GetBankOffset(7) < cartridge_size) {
-        memory_WriteROM(49152, 16384, cartridge_buffer + cartridge_GetBankOffset(7));
+    } break;
+    case CARTRIDGE_TYPE_SUPERCART_RAM: {
+      uint offset = cartridge_size - 16384;
+      if(offset < cartridge_size) {
+        memory_WriteROM(49152, 16384, cartridge_buffer + offset);
         memory_ClearROM(16384, 16384);
       }
-      break;
-    case CARTRIDGE_TYPE_SUPERCART_ROM:
-      if(cartridge_GetBankOffset(7) < cartridge_size && cartridge_GetBankOffset(6) < cartridge_size) {
-        memory_WriteROM(49152, 16384, cartridge_buffer + cartridge_GetBankOffset(7));
+    } break;
+    case CARTRIDGE_TYPE_SUPERCART_ROM: {
+      uint offset = cartridge_size - 16384;
+      if(offset < cartridge_size && cartridge_GetBankOffset(6) < cartridge_size) {
+        memory_WriteROM(49152, 16384, cartridge_buffer + offset);        
         memory_WriteROM(16384, 16384, cartridge_buffer + cartridge_GetBankOffset(6));
       }
-      break;
+    } break;
     case CARTRIDGE_TYPE_ABSOLUTE:
       memory_WriteROM(16384, 16384, cartridge_buffer);
       memory_WriteROM(32768, 32768, cartridge_buffer + cartridge_GetBankOffset(2));
@@ -322,13 +338,19 @@ void cartridge_Write(word address, byte data) {
     case CARTRIDGE_TYPE_SUPERCART:
     case CARTRIDGE_TYPE_SUPERCART_RAM:
     case CARTRIDGE_TYPE_SUPERCART_ROM:
-      if(address >= 32768 && address < 49152 && data < 9) {
+      {
+      uint maxbank = cartridge_size / 16384;
+      if(address >= 32768 && address < 49152 && cartridge_GetBank(data) < maxbank /*9*/) {
         cartridge_StoreBank(data);
+      }
       }
       break;
     case CARTRIDGE_TYPE_SUPERCART_LARGE:
-      if(address >= 32768 && address < 49152 && data < 9) {
+      {
+      uint maxbank = cartridge_size / 16384;
+      if(address >= 32768 && address < 49152 && cartridge_GetBank(data) < maxbank /*9*/) {
         cartridge_StoreBank(data + 1);
+      }
       }
       break;
     case CARTRIDGE_TYPE_ABSOLUTE:
@@ -424,6 +446,7 @@ void cartridge_Release( ) {
     cartridge_type = 0;
     cartridge_region = 0;
     cartridge_pokey = 0;
+    cartridge_pokey450 = 0;
     memset( cartridge_controller, 0, sizeof( cartridge_controller ) );
     cartridge_bank = 0;
     cartridge_flags = 0;

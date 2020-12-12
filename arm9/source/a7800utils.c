@@ -35,8 +35,7 @@ int fpsDisplay=0;
 #define MAX_DEBUG 10 
 int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
-
-#define CART_INFO
+//#define CART_INFO
 
 bool bRefreshXY = false;
 
@@ -211,7 +210,6 @@ void vblankIntr()
     REG_BG3Y = cyBG; 
     bRefreshXY = false;
   }
-  
   if (xx++ & 1)
   {
     REG_BG2X = cxBG+jitter[0]; 
@@ -254,7 +252,7 @@ void dsShowScreenEmu(void)
   if (cartridge_yOffset == 99)
   {
     cartridge_yOffset = 15;
-    cartridge_xOffset = -20;
+    cartridge_xOffset = -10;
     cxBG = (cartridge_xOffset << 8); 
     cyBG = (cartridge_yOffset << 8);
     xdxBG = (1<<8); // No scaling...

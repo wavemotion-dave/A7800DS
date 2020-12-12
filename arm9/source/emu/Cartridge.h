@@ -64,6 +64,7 @@ extern char cartridge_filename[128];
 extern byte cartridge_type;
 extern byte cartridge_region;
 extern bool cartridge_pokey;
+extern bool cartridge_pokey450;
 extern byte cartridge_controller[2];
 extern byte cartridge_bank;
 extern uint cartridge_flags;
