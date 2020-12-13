@@ -123,10 +123,35 @@ static inline void maria_StoreCellWide(byte data)
 {
   if((maria_horizontal+1) < MARIA_LINERAM_SIZE) 
   {
+      byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
+      byte high=(data >> 4);
+      byte low=(data & 0x0F);
       byte mp = (maria_palette & 16);
-      maria_lineRAM[maria_horizontal++] = mp | (data >> 4);
-      maria_lineRAM[maria_horizontal++] = mp | (data & 0x0F);
-  } else maria_horizontal += 2;
+      if (high)
+      {
+        *ptr = mp | high;
+      }
+      else
+      {
+          if(memory_ram[CTRL] & 4) 
+          {
+            *ptr = 0;
+          } 
+      }
+      ptr++;
+      if (low)
+      {
+        *ptr = mp | low;
+      }
+      else
+      {
+          if(memory_ram[CTRL] & 4) 
+          {
+            *ptr = 0;
+          }  
+      }
+  } 
+  maria_horizontal += 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -189,6 +214,30 @@ static u8 wide_lookup[256] =
     0x32, 0x36, 0x3A, 0x3E, 0x72, 0x76, 0x7A, 0x7E, 0xB2, 0xB6, 0xBA, 0xBE, 0xF2, 0xF6, 0xFA, 0xFE, 
     0x33, 0x37, 0x3B, 0x3F, 0x73, 0x77, 0x7B, 0x7F, 0xB3, 0xB7, 0xBB, 0xBF, 0xF3, 0xF7, 0xFB, 0xFF
 };
+
+// ----------------------------------------------------------------------------
+// StoreCell
+// ----------------------------------------------------------------------------
+static inline void maria_StoreCell(byte high, byte low) 
+{
+  if(maria_horizontal < MARIA_LINERAM_SIZE) 
+  {
+    if(low || high) 
+    {
+      maria_lineRAM[maria_horizontal] = (maria_palette & 16) | high | low;
+    }
+    else 
+    { 
+      byte kmode = memory_ram[CTRL] & 4;
+      if(kmode) 
+      {
+        maria_lineRAM[maria_horizontal] = 0;
+      }
+    }
+  }
+  maria_horizontal++;
+}
+
 
 // ----------------------------------------------------------------------------
 // StoreGraphic

@@ -9,14 +9,6 @@ Features :
 ----------
  Most things you should expect from an emulator.
 
-Missing :
----------
- All that is not yet emulated ;)
- Need to improve speed
-
-Check updates on my web site : 
-http://www.portabledev.com
-
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
@@ -63,7 +55,9 @@ Controls :
  * B      : Fire button 2
  * SELECT : SELECT Button
  * START  : START Button
- * R      : RESET Button (yes R like Reset :P) 
+ * X      : FPS Display
+ * Y      : Full-Speed 
+ * L/R    : Shift screen up/down by 1 pixel
  
  Use stylus on buttons for other actions on bottom screen.
 --------------------------------------------------------------------------------
@@ -82,3 +76,94 @@ Alekmaul
 alekmaul@portabledev.com
 http://www.portabledev.com
 --------------------------------------------------------------------------------
+
+Compatibility Table
+
+GAME                    MD5SUM                              HSC   FPS NOTES
+========================================================================================================================
+Ace Of Aces             0be996d25144966d5541c9eb4919b289    NO    60  Minor graphical glitches. Very playable.
+Alien Brigade           877dcc97a775ed55081864b2dbf5f1e2    NO    45  Glitchy graphics. Can't really play.
+Asteroids               07342c78619ba6ffcc61c10e907e3b50    YES   60  Near perfect
+Asteroids Deluxe        a65f79ad4a0bbdecd59d5f7eb3623fd7    YES   60  Near perfect
+Astro Blaster           3d38281ed8a8d8c7cd457a18c92c8604    YES   60  Near perfect
+Astro Fighter           a51e5df28a0fe8c52e9d28fb5f8e44a6    YES   60  Near perfect
+Baby Pac Man            7cdfbe37634e7dcd4dc67db7edbcd3ba    NO    60  High quality play but cuts off score visually (not enough DS resolution)
+Ballblazer              8fc3a695eaea3984912d98ed4a543376    NO    60  Near perfect
+Barnyard Blaster        42682415906c21c6af80e4198403ffda    NO    60  Needs Lightgun Support (not implemented)
+Basketbrawl             f5f6b69c5eb4b55fc163158d1a6b423e    NO    46  Minor glitches. Too slow.
+Beef Drop (Final)       78b1061d651ef806becac1dd3fda29a0    YES   60  Near perfect. Sound could be better.
+BonQ (pre-final)        4e325918a8b3bbcf2f9405040abcfc6d    YES   60  Prefer this one. Although not final, it has far less graphical glitches when rendering.
+BonQ (Final)            9fa7743a016c9b7015ee1d386326f88e    YES   60  Graphical glitches detract from gameplay. Prefer the demo pre-final above found on Agtariage forums.
+Centipede               5a09946e57dbe30408a8f253a28d07db    YES   60  Near perfect
+Choplifter              93e4387864b014c155d7c17877990d1e    NO    60  Near perfect
+Commando                2e8e28f6ad8b9b9267d518d880c73ebb    NO    35  Too slow to be playable.
+Crack'ed                db691469128d9a4217ec7e315930b646    NO    60  Would be better with lightgun support.
+Crossbow                a94e4560b6ad053a1c24e096f1262ebf    NO    60  Would be better with lightgun support.
+Dark Chambers           179b76ff729d4849b8f66a502398acae    NO    60  Near perfect
+Defender                77f4eea33705389a38c846081c7355fc    NO    --  Won't load.
+Desert Falcon           95ac811c7d27af0032ba090f28c107bd    NO    60  Near perfect
+Dig Dug                 731879ea82fc0ca245e39e036fe293e6    YES   60  Near perfect
+Donkey Kong             19f1ee292a23636bd57d408b62de79c7    NO    60  Near perfect
+Donkey Kong Jr          5e332fbfc1e0fc74223d2e73271ce650    NO    60  Near perfect
+Double Dragon           543484c00ba233736bcaba2da20eeea9    NO    15  Glitch city. Unplayable.
+Dungeon Stalker         b3143adbbb7d7d189e918e5b29d55a72    YES   60  Near perfect
+                        2251a6a0f3aec84cc0aff66fc9fa91e8    NO    F-18 Hornet
+                        6287727ab36391a62f728bbdee88675c    YES   Failsafe (homebrew)
+                        d25d5d19188e9f149977c49eb0367cd1    NO    Fatal Run
+                        07dbbfe612a0a28e283c01545e59f25e    NO    Fight Night
+                        cf76b00244105b8e03cdc37677ec1073    YES   Food Fight
+                        e7d89669a7f92ec2cc99d9663a28671c    YES   Frenzy (with Berzerk) (homebrew)
+                        6053233cb59c0b4ca633623fd76c4576    YES   Froggie (homebrew)
+                        fb8d803b328b2e442548f7799cfa9a4a    YES   Galaga
+                        06204dadc975be5e5e37e7cc66f984cf    NO    Gato                  
+                        fd9e78e201b6baafddfd3e1fbfe6ba31    NO    Hat Trick                       
+                        c3672482ca93f70eafd9134b936c3feb    NO    Ikari Warriors
+                        baebc9246c087e893dfa489632157180    NO    Impossible Mission
+                        1745feadabb24e7cefc375904c73fa4c    NO    Impossible Mission
+                        045fd12050b7f2b842d5970f2414e912    NO    Jinks
+                        f18b3b897a25ab3885b43b4bd141b396    YES    Joust                           
+                        c3a5a8692a423d43d9d28dd5b7d109d9    NO    Karateka                        
+                        17b3b764d33eae9b5260f01df7bb9d2f    NO    Klax       
+                        f57d0af323d4e173fb49ed447f0563d7    NO    Kung Fu Master
+                        431ca060201ee1f9eb49d44962874049    NO    Mario Bros.
+                        37b5692e33a98115e574185fa8398c22    NO    Mat Mania Challenge
+                        f2f5e5841e4dda89a2faf8933dc33ea6    NO    Mean 18 Ultimate Golf
+                        bedc30ec43587e0c98fc38c39c1ef9d0    NO    Meltdown
+                        c3f6201d6a9388e860328c963a3301cc    YES    Meteor Shower
+                        bc1e905db1008493a9632aa83ab4682b    NO    Midnight Mutants
+                        017066f522908081ec3ee624f5e4a8aa    NO    Missing in Action
+                        3bc8f554cf86f8132a623cc2201a564b    NO    Motor Psycho
+                        fc0ea52a9fac557251b65ee680d951e5    YES    Ms. Pac-Man                     
+                        220121f771fc4b98cef97dc040e8d378    NO    Ninja Golf
+                        74569571a208f8b0b1ccfb22d7c914e1    NO    One On One
+                        5013b69cb05b21a1194ce48517df7bfc    YES    Pac-Man Collection (homebrew)
+                        044657294450c869c45e7ef61f4870de    YES    Pac-Man Collection 40th Anniversary Edition (homebrew)
+                        1a5207870dec6fae9111cb747e20d8e3    NO    Pete Rose Baseball
+                        ec206c8db4316eb1ebce9fc960da7d8f    NO    Pit Fighter                     
+                        33aea1e2b6634a1dec8c7006d9afda22    NO    Planet Smashers
+                        584582bb09ee8122e7fc09dc7d1ed813    NO    Pole Position II                
+                        1745feadabb24e7cefc375904c73fa4c    NO    Possible Mission
+                        ac03806cef2558fc795a7d5d8dba7bc0    NO    Rampage
+                        bfad016d6e77eaccec74c0340aded8b9    NO    Realsports Baseball
+                        8f7eb10ad0bd75474abf0c6c36c08486    NO    Rescue On Fractalus
+                        66ecaafe1b82ae68ffc96267aaf7a4d7    YES    Robotron     
+                        a3a85e507d6f718972b1464ce1aaf8a4    YES    Scramble (homebrew)
+                        980c35ae9625773a450aa7ef51751c04    NO    Scrapyard Dog
+                        b697d9c2d1b9f6cb21041286d1bbfa7f    NO    Sentinel
+                        771cb4609347657f63e6f0eb26036e35    YES    Space Duel (homebrew)
+                        6adf79558a3d7f5beca1bb8d34337417    YES    Space Invaders (Homebrew) Special 99=340 pixel mode...
+                        cbb0746192540a13b4c7775c7ce2021f    NO    Summer Games
+                        81cee326b99d6831de10a566e338bd25    YES    Super Circus Atariage (Pokey 4000)    
+                        cc18e3b37a507c4217eb6cb1de8c8538    NO    Super Huey UH-IX
+                        59b5793bece1c80f77b55d60fb39cb94    NO    Super Skatebordin'
+                        44f862bca77d68b56b32534eda5c198d    NO    Tank Command
+                        1af475ff6429a160752b592f0f92b287    NO    Title Match Pro Wrestling
+                        c3903ab01a51222a52197dbfe6538ecf    NO    Tomcat F-14 Simulator
+                        208ef955fa90a29815eb097bce89bace    NO    Touchdown Football
+                        d12e665347f354048b9d13092f7868c9    NO    Tower Toppler
+                        32a37244a9c6cc928dcdf02b45365aa8    NO    Tower Toppler
+                        acf63758ecf3f3dd03e9d654ae6b69b7    NO    Water Ski
+                        3799d72f78dda2ee87b0ef8bf7b91186    NO    Winter Games
+                        05fb699db9eef564e2fe45c568746dbc    NO    Xenophobe
+                        d7dc17379aa25e5ae3c14b9e780c6f6d    YES    Xevious fadfdsa sdaffdafd safds adf ssdf a fds fdsafsd a sdfasdf 
+  

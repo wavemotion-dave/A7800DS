@@ -753,6 +753,7 @@ void dsInstallSoundEmuFIFO(void)
 
 void dsMainLoop(void) 
 {
+  static int special_hsc_entry=0;    
   static int check_hsc_save=0;
   static int last_keys_pressed = 999;
   char fpsbuf[32];
@@ -800,7 +801,9 @@ void dsMainLoop(void)
         prosystem_ExecuteFrame(keyboard_data);
 
         // Read keys
-        memset(keyboard_data,0,sizeof(keyboard_data));
+        if (special_hsc_entry == 0) memset(keyboard_data,0,sizeof(keyboard_data)); 
+        else {special_hsc_entry--; tchepres(10);tchepres(11);continue;}
+            
         scanKeys();
         keys_pressed = keysCurrent();
 
@@ -835,6 +838,9 @@ void dsMainLoop(void)
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
                 tchepres(11);
               }
+              else if ((iTx>79) && (iTx<180) && (iTy>90) && (iTy<140))  { // Logo - special HSC entry hidden button...
+                special_hsc_entry=60;                
+              }
               else if ((iTx>79) && (iTx<180) && (iTy>31) && (iTy<62)) {     // 80,32 -> 179,61 cartridge slot
                 irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
                 // Find files in current directory and show it 
@@ -857,7 +863,7 @@ void dsMainLoop(void)
               if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
               if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
           }
-          dampen = 7;
+          dampen = 6;
         } else dampen--;
         
         // else manage a7800 pad 
