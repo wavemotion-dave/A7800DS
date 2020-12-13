@@ -754,7 +754,6 @@ void dsInstallSoundEmuFIFO(void)
 void dsMainLoop(void) 
 {
   static int special_hsc_entry=0;    
-  static int check_hsc_save=0;
   static int last_keys_pressed = 999;
   char fpsbuf[32];
   unsigned int keys_pressed,keys_touch=0, romSel;
@@ -801,9 +800,18 @@ void dsMainLoop(void)
         prosystem_ExecuteFrame(keyboard_data);
 
         // Read keys
-        if (special_hsc_entry == 0) memset(keyboard_data,0,sizeof(keyboard_data)); 
-        else {special_hsc_entry--; tchepres(10);tchepres(11);continue;}
+        if (special_hsc_entry > 0)
+        {
+            special_hsc_entry--; 
+            tchepres(10);
+            if (special_hsc_entry < 10)
+            {
+                tchepres(11);
+            }
+            continue;
+        }
             
+        memset(keyboard_data,0,sizeof(keyboard_data)); 
         scanKeys();
         keys_pressed = keysCurrent();
 
@@ -819,6 +827,7 @@ void dsMainLoop(void)
               touchRead(&touch);
               iTx = touch.px;
               iTy = touch.py;
+              debug[0] = iTx; debug[1]=iTy;
               if ((iTx>31) && (iTx<65) && (iTy>159) && (iTy<169))  { // 32,160  -> 64,168   quit
                 irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
@@ -838,8 +847,14 @@ void dsMainLoop(void)
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
                 tchepres(11);
               }
-              else if ((iTx>79) && (iTx<180) && (iTy>90) && (iTy<140))  { // Logo - special HSC entry hidden button...
-                special_hsc_entry=60;                
+              else if ((iTx>90) && (iTx<110) && (iTy>90) && (iTy<110))  { // Atari Logo - Activate HSC Maintenence Mode (only on High Score screen)
+                special_hsc_entry=70; 
+              }
+              else if ((iTx>115) && (iTx<138) && (iTy>159) && (iTy<169))  { // Snap HSC Sram
+                dsPrintValue(13,0,0, "SAVING");
+                soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+                cartridge_SaveHighScoreSram();
+                dsPrintValue(13,0,0, "      ");
               }
               else if ((iTx>79) && (iTx<180) && (iTy>31) && (iTy<62)) {     // 80,32 -> 179,61 cartridge slot
                 irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
@@ -896,12 +911,6 @@ void dsMainLoop(void)
                 dsPrintValue(0,0,0, fpsbuf);
             }
             DumpDebugData();
-            
-            // Every 3 seconds check the HSC to see if SRAM needs snap-shot
-            if (++check_hsc_save % 3 == 0)
-            {
-                cartridge_SaveHighScoreSram();
-            }
         }
         break;
     }

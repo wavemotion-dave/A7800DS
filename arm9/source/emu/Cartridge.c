@@ -44,6 +44,7 @@ int  cartridge_xOffset=0;
 
 bool cartridge_wsync;
 bool cartridge_cycle_stealing;
+bool high_score_set = false;
   
 extern int debug[];  
 static byte* cartridge_buffer = NULL;
@@ -152,16 +153,14 @@ static void cartridge_ReadHeader(const byte* header) {
 // ----------------------------------------------------------------------------
 // Load
 // ----------------------------------------------------------------------------
-static bool _cartridge_Load(const byte* data, uint size) {
+static bool _cartridge_Load(const byte* data, uint size) 
+{
   uint index;
   if(size <= 128) {
-#if 0
-    logger_LogError("Cartridge data is invalid.", CARTRIDGE_SOURCE);
-#endif
     return false;
   }
 
-  cartridge_Release( );
+  cartridge_Release();
   
   byte header[128] = {0};
   for(index = 0; index < 128; index++) 
@@ -435,8 +434,6 @@ void cartridge_StoreBank(byte bank) {
 
 byte high_score_cart_loaded = false;
 
-u32 last_known_chksum = 0;
-
 /*
  * Saves the high score cartridge SRAM
  *
@@ -444,40 +441,25 @@ u32 last_known_chksum = 0;
  */
 bool cartridge_SaveHighScoreSram() 
 {    
-    if( !high_score_cart_loaded)
+    if(!high_score_cart_loaded)
     {
         // If we didn't load the high score cartridge, don't save.
         return false;
     }
   
-    // ------------------------------------------------------------
-    // Fast checksum to see if the SRAM for HSC has changed... 
-    // don't write anything if it hasn't changed!
-    // ------------------------------------------------------------
-    u32 chksum = 0xDEADBEEF;
-    for (int i=0; i<HS_SRAM_SIZE; i++)
+    FILE* file = fopen("A7800DS.sram", "wb");
+    if( file == NULL ) 
     {
-      chksum += memory_ram[i];
+      return false;
     }
-    if (chksum != last_known_chksum)
+    if( fwrite( &(memory_ram[HS_SRAM_START]), 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
     {
-      last_known_chksum = chksum;
-      FILE* file = fopen("A7800DS.sram", "wb");
-      if( file == NULL ) 
-      {
-          return false;
-      }
-
-      if( fwrite( &(memory_ram[HS_SRAM_START]), 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
-      {
-          fclose( file );
-          return false;
-      }
-
-      fflush(file);
-      fclose(file);
+      fclose( file );
+      return false;
     }
 
+    fflush(file);
+    fclose(file);
     return true;
 }
 
@@ -501,11 +483,9 @@ static bool cartridge_LoadHighScoreSram()
         return false;
     }
 
-    last_known_chksum = 0xDEADBEEF;
     for( uint i = 0; i < HS_SRAM_SIZE; i++ ) 
     {
         memory_Write( HS_SRAM_START + i, sram[i] );
-        last_known_chksum += sram[i];
     }
 
     fclose(file);
@@ -559,8 +539,13 @@ bool cartridge_IsLoaded( ) {
 // ----------------------------------------------------------------------------
 // Release
 // ----------------------------------------------------------------------------
-void cartridge_Release( ) {
-  if(cartridge_buffer != NULL) {
+void cartridge_Release( ) 
+{
+  if(cartridge_buffer != NULL) 
+  {
+    // Snap out the High Score SRAM (if used)
+    cartridge_SaveHighScoreSram();
+
     free(cartridge_buffer);
     cartridge_size = 0;
     cartridge_buffer = NULL;
@@ -573,6 +558,7 @@ void cartridge_Release( ) {
     cartridge_pokey = 0;
     cartridge_pokey450 = 0;
     cartridge_hsc_enabled = false;
+    high_score_set = false;
    
     memset( cartridge_controller, 0, sizeof( cartridge_controller ) );
     cartridge_bank = 0;

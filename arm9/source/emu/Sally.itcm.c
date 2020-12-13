@@ -36,6 +36,8 @@ static byte sally_opcode;
 static pair sally_address;
 static uint sally_cycles;
 
+extern bool high_score_set;
+
 // Whether the last operation resulted in a half cycle. (needs to be taken 
 // into consideration by ProSystem when cycle counting). This can occur when
 // a TIA or RIOT are accessed (drops to 1.19Mhz when the TIA or RIOT chips 
@@ -115,6 +117,22 @@ static inline void sally_Flags(byte data) {
 #define _fN 0x80
 
   sally_p = (sally_p & ~(_fN | _fZ)) |  ((data) & _fN) | (((data) == 0) ? _fZ : 0);
+}
+
+
+/*
+ * Checks to see if the High Score ROM has been accessed via known entry 
+ * points. This is necessary due to the fact that some ROMs (Xenophobe, etc.)
+ * overwrite SRAM of the high score cart. In such cases, they don't ever 
+ * access the high score cartridge. By setting a flag, we know when to persist
+ * changes to SRAM
+ */
+static inline void sally_checkHighScoreSet()
+{
+  if( sally_pc.w == 0x3fcf || sally_pc.w == 0x3ffd )
+  {  
+     high_score_set = true;
+  }
 }
 
 // ----------------------------------------------------------------------------
@@ -579,6 +597,8 @@ static inline void sally_INY( ) {
 // ----------------------------------------------------------------------------
 static inline void sally_JMP( ) {
   sally_pc = sally_address;
+  // Check for known entry point of high score ROM
+  sally_checkHighScoreSet();
 }
 
 // ----------------------------------------------------------------------------
@@ -590,6 +610,8 @@ static inline void sally_JSR( ) {
   sally_Push(sally_pc.b.l);
     
   sally_pc = sally_address;
+  // Check for known entry point of high score ROM
+  sally_checkHighScoreSet();
 }
 
 // ----------------------------------------------------------------------------
