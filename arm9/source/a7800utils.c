@@ -28,7 +28,7 @@ int bg3;             // BG pointers
 int bg0s, bg1s, bg2s, bg3s;         // sub BG pointers 
 
 int full_speed = 0;
-unsigned int etatEmu;
+int etatEmu;
 int gTotalAtariFrames=0;
 int fpsDisplay=0;
 
@@ -36,6 +36,8 @@ int fpsDisplay=0;
 int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
 //#define CART_INFO
+
+#define SOUND_FREQ 22050
 
 bool bRefreshXY = false;
 
@@ -114,7 +116,6 @@ word atari_pal16[256] = {0};
 unsigned char keyboard_data[19];
 
 unsigned char *filebuffer;
-unsigned char *psound_buffer;
 
 #define tchepres(a) \
    keyboard_data[GameConf.DS_Pad[a]] = 1;
@@ -224,16 +225,16 @@ void vblankIntr()
 
 void dsInitScreenMain(void) 
 {
-//  Init vbl and hbl func
-	//SetYtrigger(192); //trigger 2 lines before vsync
-	irqSet(IRQ_VBLANK, vblankIntr);
-  irqEnable(IRQ_VBLANK);
+    //  Init vbl and hbl func
+    //SetYtrigger(192); //trigger 2 lines before vsync
+    irqSet(IRQ_VBLANK, vblankIntr);
+    irqEnable(IRQ_VBLANK);
 }
 
 void dsInitTimer(void) 
 {
-  TIMER0_DATA=0;
-	TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024; 
+    TIMER0_DATA=0;
+    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024; 
 }
 
 void dsShowScreenEmu(void) 
@@ -318,13 +319,19 @@ static word targetIndex = 0;
 void VsoundHandler(void) 
 {
   static u16 sound_idx=0;
-  if (cartridge_pokey)
-    sound_buffer[sound_idx] = (tia_buffer[targetIndex]+pokey_buffer[targetIndex])/2+128;
-  else
-    sound_buffer[sound_idx] = tia_buffer[targetIndex]+128;
+  sound_buffer[sound_idx] = tia_buffer[targetIndex]+128;
   sound_idx = (sound_idx + 1) & 0x0FFF;
   targetIndex=(targetIndex + 1) % 524;  
 }
+
+void VsoundHandler_Pokey(void)
+ {
+  static u16 sound_idx=0;
+  sound_buffer[sound_idx] = ((tia_buffer[targetIndex]+pokey_buffer[targetIndex])/2)+128;
+  sound_idx = (sound_idx + 1) & 0x0FFF;
+  targetIndex=(targetIndex + 1) % 524;  
+}
+
 
 void dsLoadGame(char *filename) 
 {
@@ -385,10 +392,12 @@ void dsLoadGame(char *filename)
     GameConf.DS_Pad[ 8] = 15; GameConf.DS_Pad[ 9] = 16;
     GameConf.DS_Pad[10] = 14;  GameConf.DS_Pad[11] = 13;
 
-    psound_buffer=sound_buffer;
-    TIMER2_DATA = TIMER_FREQ(22050);                        
+    TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);                        
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
-    irqSet(IRQ_TIMER2, VsoundHandler);                           
+    if (cartridge_pokey)
+        irqSet(IRQ_TIMER2, VsoundHandler_Pokey);  
+    else
+        irqSet(IRQ_TIMER2, VsoundHandler);
     irqEnable(IRQ_TIMER2);  
   }
 }
@@ -729,17 +738,17 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 //---------------------------------------------------------------------------------
 void dsInstallSoundEmuFIFO(void) 
 {
-	FifoMessage msg;
-  msg.SoundPlay.data = &sound_buffer;
-  msg.SoundPlay.freq = 22050;
-	msg.SoundPlay.volume = 127;
-	msg.SoundPlay.pan = 64;
-	msg.SoundPlay.loop = 1;
-	msg.SoundPlay.format = ((1)<<4) | SoundFormat_8Bit;
-  msg.SoundPlay.loopPoint = 0;
-  msg.SoundPlay.dataSize = SNDLENGTH >> 2;
-  msg.type = EMUARM7_PLAY_SND;
-  fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
+    FifoMessage msg;
+    msg.SoundPlay.data = &sound_buffer;
+    msg.SoundPlay.freq = SOUND_FREQ;
+    msg.SoundPlay.volume = 127;
+    msg.SoundPlay.pan = 64;
+    msg.SoundPlay.loop = 1;
+    msg.SoundPlay.format = ((1)<<4) | SoundFormat_8Bit;
+    msg.SoundPlay.loopPoint = 0;
+    msg.SoundPlay.dataSize = SNDLENGTH >> 2;
+    msg.type = EMUARM7_PLAY_SND;
+    fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
 }
 
 void dsMainLoop(void) 
