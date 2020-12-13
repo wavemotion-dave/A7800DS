@@ -20,6 +20,12 @@ http://www.portabledev.com
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.4 : 13-Dec-2020 by wavemotion-dave
+  * Implemented Hiscore Saving per the HSC cart. Put the 4k highscore.rom (don't ask)
+    where your ROMs live. If found, it will enable saving of high scores
+    on all 9 original games (Asteroids, Joust, Centipede, Xevious, Dig Dug, Galaga,
+    Food Fight, Ms Pac-Man and Robotron) as well as most of the newer homebrews.
+
 V1.3 : 12-Dec-2020 by wavemotion-dave
   * Backported some fixes and emulation timing improvments from Prosystem 1.3g
     plus the Wii version.  Renders a few more games playable.

@@ -35,6 +35,7 @@ byte cartridge_type;
 byte cartridge_region;
 bool cartridge_pokey;
 bool cartridge_pokey450;
+bool cartridge_hsc_enabled;
 byte cartridge_controller[2];
 byte cartridge_bank;
 uint cartridge_flags;
@@ -44,7 +45,7 @@ int  cartridge_xOffset=0;
 bool cartridge_wsync;
 bool cartridge_cycle_stealing;
   
-  
+extern int debug[];  
 static byte* cartridge_buffer = NULL;
 static uint cartridge_size = 0;
 
@@ -143,7 +144,8 @@ static void cartridge_ReadHeader(const byte* header) {
   cartridge_controller[1] = header[56];
   cartridge_region = header[57];
   cartridge_flags = 0;
-
+  cartridge_hsc_enabled = (header[0x3A]&1 ? true:false);
+  cartridge_hsc_enabled=true;
   cartridge_wsync=cartridge_cycle_stealing=true; // Guess as best we can...
 }
 
@@ -424,6 +426,129 @@ void cartridge_StoreBank(byte bank) {
   }  
 }
 
+
+
+// The memory location of the high score cartridge SRAM
+#define HS_SRAM_START 0x1000
+// The size of the high score cartridge SRAM
+#define HS_SRAM_SIZE 2048
+
+byte high_score_cart_loaded = false;
+
+u32 last_known_chksum = 0;
+
+/*
+ * Saves the high score cartridge SRAM
+ *
+ * return   Whether the save was successful
+ */
+bool cartridge_SaveHighScoreSram() 
+{    
+    if( !high_score_cart_loaded)
+    {
+        // If we didn't load the high score cartridge, don't save.
+        return false;
+    }
+  
+    // ------------------------------------------------------------
+    // Fast checksum to see if the SRAM for HSC has changed... 
+    // don't write anything if it hasn't changed!
+    // ------------------------------------------------------------
+    u32 chksum = 0xDEADBEEF;
+    for (int i=0; i<HS_SRAM_SIZE; i++)
+    {
+      chksum += memory_ram[i];
+    }
+    if (chksum != last_known_chksum)
+    {
+      last_known_chksum = chksum;
+      FILE* file = fopen("A7800DS.sram", "wb");
+      if( file == NULL ) 
+      {
+          return false;
+      }
+
+      if( fwrite( &(memory_ram[HS_SRAM_START]), 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
+      {
+          fclose( file );
+          return false;
+      }
+
+      fflush(file);
+      fclose(file);
+    }
+
+    return true;
+}
+
+/*
+ * Loads the high score cartridge SRAM
+ *
+ * return   Whether the load was successful
+ */
+static bool cartridge_LoadHighScoreSram() 
+{    
+    byte sram[HS_SRAM_SIZE];
+    FILE* file = fopen("A7800DS.sram", "rb" );
+    if( file == NULL ) 
+    {
+        return false;
+    }
+
+    if( fread( sram, 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
+    {
+        fclose( file );
+        return false;
+    }
+
+    last_known_chksum = 0xDEADBEEF;
+    for( uint i = 0; i < HS_SRAM_SIZE; i++ ) 
+    {
+        memory_Write( HS_SRAM_START + i, sram[i] );
+        last_known_chksum += sram[i];
+    }
+
+    fclose(file);
+
+    return true;
+}
+
+/*
+ * Loads the high score cartridge
+ *
+ * return   Whether the load was successful
+ */
+#define HSC_CART_ROM_SIZE 4096
+byte high_score_buffer[HSC_CART_ROM_SIZE];
+bool cartridge_LoadHighScoreCart() 
+{
+    if( !cartridge_hsc_enabled || cartridge_region != 0 ) 
+    {
+        // Only load the cart if it is enabled and the region is NTSC
+        return false;
+    }
+
+    FILE* file = fopen("highscore.rom", "rb" );
+
+    if( file != NULL )
+    {
+      fread(high_score_buffer, 1, HSC_CART_ROM_SIZE, file );
+      cartridge_LoadHighScoreSram();
+      for( uint i = 0; i < HSC_CART_ROM_SIZE; i++ )
+      {
+          memory_Write( 0x3000 + i, high_score_buffer[i] );
+      }
+      high_score_cart_loaded = true;
+    }
+    else 
+    {
+      high_score_cart_loaded = false;
+    }
+
+    return high_score_cart_loaded;
+}
+
+
 // ----------------------------------------------------------------------------
 // IsLoaded
 // ----------------------------------------------------------------------------
@@ -447,6 +572,8 @@ void cartridge_Release( ) {
     cartridge_region = 0;
     cartridge_pokey = 0;
     cartridge_pokey450 = 0;
+    cartridge_hsc_enabled = false;
+   
     memset( cartridge_controller, 0, sizeof( cartridge_controller ) );
     cartridge_bank = 0;
     cartridge_flags = 0;

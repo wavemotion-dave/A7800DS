@@ -66,6 +66,7 @@ void prosystem_Reset( ) {
       cartridge_Store( );
     }
 
+    cartridge_LoadHighScoreCart();
     prosystem_cycles = sally_ExecuteRES( );
     prosystem_active = true;
   }

@@ -45,6 +45,7 @@
 
 byte tia_buffer[TIA_BUFFER_SIZE] = {0};
 uint tia_size = 524;
+extern int debug[];
 
 static const byte TIA_POLY4[ ] = {1,1,0,1,1,1,0,0,0,0,1,0,1,0,0};
 static const byte TIA_POLY5[ ] = {0,0,1,0,1,1,0,0,1,1,1,1,1,0,0,0,1,1,0,1,1,1,0,1,0,1,0,0,0,0,1};
@@ -53,9 +54,9 @@ static const byte TIA_DIV31[ ] = {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
 static byte tia_volume[2] = {0};
 static byte tia_counterMax[2] = {0};
 static byte tia_counter[2] = {0};
-static byte tia_audc[2] = {0};
-static byte tia_audf[2] = {0};
-static byte tia_audv[2] = {0};
+byte tia_audc[2] = {0};
+byte tia_audf[2] = {0};
+byte tia_audv[2] = {0};
 static uint tia_poly4Cntr[2] = {0};
 static uint tia_poly5Cntr[2] = {0};
 static uint tia_poly9Cntr[2] = {0};
@@ -132,7 +133,7 @@ void tia_SetRegister(word address, byte data)
 {
   byte channel=0;
   byte frequency;
-    
+      
   switch(address) {
     case AUDC0:
       tia_audc[0] = data & 15;
@@ -162,6 +163,32 @@ void tia_SetRegister(word address, byte data)
   if(tia_audc[channel] == 0) 
   {
     frequency = 0;
+    tia_volume[channel] = tia_audv[channel];
+  }
+  else 
+  {
+    frequency = tia_audf[channel] + 1;
+    if(tia_audc[channel] > 11) 
+    {
+      frequency *= 3;
+    }
+  }
+
+  if(frequency != tia_counterMax[channel]) 
+  {
+    tia_counterMax[channel] = frequency;
+    if(tia_counter[channel] == 0 || frequency == 0)
+    {
+      tia_counter[channel] = frequency;
+    }
+  }
+}
+
+void tia_MemoryChannel(byte channel) 
+{
+  byte frequency = 0;
+  if(tia_audc[channel] == 0) 
+  {
     tia_volume[channel] = tia_audv[channel];
   }
   else 

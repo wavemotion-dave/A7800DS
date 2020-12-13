@@ -97,22 +97,28 @@ ITCM_CODE void memory_Write(word address, byte data) {
       case INPT5:
         break;
       case AUDC0:
-        tia_SetRegister(AUDC0, data);
+        tia_audc[0] = data & 15;
+        tia_MemoryChannel(0);
         break;
       case AUDC1:
-        tia_SetRegister(AUDC1, data);
+        tia_audc[1] = data & 15;
+        tia_MemoryChannel(1);
         break;
       case AUDF0:
-        tia_SetRegister(AUDF0, data);
+        tia_audf[0] = data & 31;
+        tia_MemoryChannel(0);
         break;
       case AUDF1:
-        tia_SetRegister(AUDF1, data);
+        tia_audf[1] = data & 31;
+        tia_MemoryChannel(1);
         break;
       case AUDV0:
-        tia_SetRegister(AUDV0, data);
+        tia_audv[0] = (data & 15) << 2;
+        tia_MemoryChannel(0);
         break;
       case AUDV1:
-        tia_SetRegister(AUDV1, data);
+        tia_audv[1] = (data & 15) << 2;
+        tia_MemoryChannel(1);
         break;
 //#define WSYNC       36 -> 0x24      
       case WSYNC:

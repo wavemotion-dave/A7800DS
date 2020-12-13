@@ -365,7 +365,7 @@ void dsLoadGame(char *filename)
 #ifdef CART_INFO
     char cart_info_buf[32];
     dsPrintValue(0,22,0,cartridge_digest); //zzz
-    sprintf(cart_info_buf, "CT=%d PK=%d CO=%d%d RE=%d FL=%d  ", cartridge_type, cartridge_pokey, cartridge_controller[0], cartridge_controller[1], cartridge_region, cartridge_flags);
+    sprintf(cart_info_buf, "CT=%d PK=%d CO=%d%d RE=%d FL=%d HS=%d ", cartridge_type, cartridge_pokey, cartridge_controller[0], cartridge_controller[1], cartridge_region, cartridge_flags, cartridge_hsc_enabled);
     dsPrintValue(0,21,0,cart_info_buf); //zzz
 #endif    
       
@@ -753,6 +753,7 @@ void dsInstallSoundEmuFIFO(void)
 
 void dsMainLoop(void) 
 {
+  static int check_hsc_save=0;
   static int last_keys_pressed = 999;
   char fpsbuf[32];
   unsigned int keys_pressed,keys_touch=0, romSel;
@@ -889,6 +890,12 @@ void dsMainLoop(void)
                 dsPrintValue(0,0,0, fpsbuf);
             }
             DumpDebugData();
+            
+            // Every 3 seconds check the HSC to see if SRAM needs snap-shot
+            if (++check_hsc_save % 3 == 0)
+            {
+                cartridge_SaveHighScoreSram();
+            }
         }
         break;
     }
