@@ -54,12 +54,19 @@ Controls :
  * A      : Fire button 1
  * B      : Fire button 2
  * SELECT : SELECT Button
- * START  : START Button
+ * START  : PAUSE Button
  * X      : FPS Display
  * Y      : Full-Speed 
  * L/R    : Shift screen up/down by 1 pixel
  
- Use stylus on buttons for other actions on bottom screen.
+ Use stylus on buttons for other actions on bottom screen.  
+ 
+ High Score Saving works if you have highscore.rom (exact name and case) in your
+ roms directory where you load your games... also, you MUST press the HSC button
+ if you want to snap the Saved Scores out to the flash card. It's not something 
+ I want to do as the game runs... so you must do it... the high scores will also
+ auto-save if you quit the emulator or select a new game.
+ 
 --------------------------------------------------------------------------------
 Credits:
 --------------------------------------------------------------------------------
