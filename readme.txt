@@ -146,16 +146,8 @@ Space Duel              771cb4609347657f63e6f0eb26036e35    YES   60  Near perfe
 Space Invaders          6adf79558a3d7f5beca1bb8d34337417    YES   60  Plays perfect. Uses high resolution mode which causes some graphical compression artifacts.
 Summer Games            cbb0746192540a13b4c7775c7ce2021f    NO    60  Plays fine - font hard to read on small screen.
 Super Circus Atariage   81cee326b99d6831de10a566e338bd25    YES   60  Near perfect 
-                        cc18e3b37a507c4217eb6cb1de8c8538    NO    Super Huey UH-IX
-                        59b5793bece1c80f77b55d60fb39cb94    NO    Super Skatebordin'
-                        44f862bca77d68b56b32534eda5c198d    NO    Tank Command
-                        1af475ff6429a160752b592f0f92b287    NO    Title Match Pro Wrestling
-                        c3903ab01a51222a52197dbfe6538ecf    NO    Tomcat F-14 Simulator
-                        208ef955fa90a29815eb097bce89bace    NO    Touchdown Football
-                        d12e665347f354048b9d13092f7868c9    NO    Tower Toppler
-                        32a37244a9c6cc928dcdf02b45365aa8    NO    Tower Toppler
-                        acf63758ecf3f3dd03e9d654ae6b69b7    NO    Water Ski
-                        3799d72f78dda2ee87b0ef8bf7b91186    NO    Winter Games
-                        05fb699db9eef564e2fe45c568746dbc    NO    Xenophobe
-                        d7dc17379aa25e5ae3c14b9e780c6f6d    YES    Xevious fadfdsa sdaffdafd safds adf ssdf a fds fdsafsd a sdfasdf 
+Winter Games            3799d72f78dda2ee87b0ef8bf7b91186    NO    60  Plays fine - font hard to read on small screen.
+Xenophobe               05fb699db9eef564e2fe45c568746dbc    NO    36  Too slow to be playable.
+Xevious                 d7dc17379aa25e5ae3c14b9e780c6f6d    YES   60  Near perfect
   
+ 
