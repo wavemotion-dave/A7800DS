@@ -441,26 +441,41 @@ byte high_score_cart_loaded = false;
  */
 bool cartridge_SaveHighScoreSram() 
 {    
+    bool status = false;
+    byte sram[HS_SRAM_SIZE];
+    word retries = 3;
     if(!high_score_cart_loaded)
     {
         // If we didn't load the high score cartridge, don't save.
         return false;
     }
   
-    FILE* file = fopen("A7800DS.sram", "wb");
-    if( file == NULL ) 
+    while (status == false)
     {
-      return false;
-    }
-    if( fwrite( &(memory_ram[HS_SRAM_START]), 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
-    {
-      fclose( file );
-      return false;
+      u32 chksum = 0;
+      for( uint i = 0; i < HS_SRAM_SIZE; i++ ) 
+      {
+          sram[i] = memory_ram[HS_SRAM_START+i];
+          chksum += sram[i];
+      }
+
+      if (chksum != 0)
+      {
+          FILE* file = fopen("A7800DS.sram", "wb+");
+          if( file != NULL ) 
+          {
+            if( fwrite( sram, 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
+            {
+              status = false;              
+            }
+            fflush(file);
+            fclose(file);
+          }
+      }
+      if (--retries == 0) break;
     }
 
-    fflush(file);
-    fclose(file);
-    return true;
+    return status;
 }
 
 /*
@@ -470,27 +485,35 @@ bool cartridge_SaveHighScoreSram()
  */
 static bool cartridge_LoadHighScoreSram() 
 {    
+    bool status = false;
     byte sram[HS_SRAM_SIZE];
-    FILE* file = fopen("A7800DS.sram", "rb" );
-    if( file == NULL ) 
+    word retries=3;
+    
+    while (status == false)
     {
-        return false;
+        FILE* file = fopen("A7800DS.sram", "rb" );
+        if( file == NULL ) 
+        {
+            status = false;
+        }
+
+        if( fread( sram, 1, HS_SRAM_SIZE, file ) == HS_SRAM_SIZE ) 
+        {
+            fclose( file );
+            for( uint i = 0; i < HS_SRAM_SIZE; i++ ) 
+            {
+                memory_Write( HS_SRAM_START + i, sram[i] );
+            }
+            status = true;
+        }
+        fclose(file);
+        
+        if (--retries == 0) break;
     }
-
-    if( fread( sram, 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
-    {
-        fclose( file );
-        return false;
-    }
-
-    for( uint i = 0; i < HS_SRAM_SIZE; i++ ) 
-    {
-        memory_Write( HS_SRAM_START + i, sram[i] );
-    }
-
-    fclose(file);
-
-    return true;
+    
+    if (status == false) dsPrintValue(13,0,0, "NOSRAM");
+    
+    return status;
 }
 
 /*

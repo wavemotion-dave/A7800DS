@@ -44,12 +44,12 @@ extern bool half_cycle;
 // ----------------------------------------------------------------------------
 // Reset
 // ----------------------------------------------------------------------------
-void prosystem_Reset( ) {
-  if(cartridge_IsLoaded( )) {
+void prosystem_Reset( ) 
+{
+  if(cartridge_IsLoaded( )) 
+  {
     prosystem_paused = false;
-
-    sally_Reset( ); // WII
-
+    sally_Reset( );
     region_Reset( );
     tia_Clear( );
     tia_Reset( );
@@ -58,15 +58,17 @@ void prosystem_Reset( ) {
     memory_Reset( );
     maria_Clear( );
     maria_Reset( );
-	  riot_Reset ( );
-    if(bios_enabled) {
+	riot_Reset ( );
+    cartridge_LoadHighScoreCart();
+    if(bios_enabled) 
+    {
       bios_Store( );
     }
-    else {
+    else 
+    {
       cartridge_Store( );
     }
 
-    cartridge_LoadHighScoreCart();
     prosystem_cycles = sally_ExecuteRES( );
     prosystem_active = true;
   }
