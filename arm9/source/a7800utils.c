@@ -35,7 +35,7 @@ int fpsDisplay=0;
 #define MAX_DEBUG 10 
 int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
-//#define CART_INFO
+#define CART_INFO
 
 #define SOUND_FREQ 22050
 
@@ -855,6 +855,8 @@ void dsMainLoop(void)
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
                 cartridge_SaveHighScoreSram();
                 dsPrintValue(13,0,0, "      ");
+                dampen=60;
+                continue;
               }
               else if ((iTx>79) && (iTx<180) && (iTy>31) && (iTy<62)) {     // 80,32 -> 179,61 cartridge slot
                 irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
