@@ -125,6 +125,7 @@ Ikari Warriors          c3672482ca93f70eafd9134b936c3feb    NO    40  Too slow t
 Impossible Mission      baebc9246c087e893dfa489632157180    NO    60  Near perfect
 Jinks                   045fd12050b7f2b842d5970f2414e912    NO    52  A bit of slowdown but playable
 Joust                   f18b3b897a25ab3885b43b4bd141b396    YES   60  Near perfect                           
+Jr. Pac-Man             e54edc299e72d22d0ba05d16f3393e8c    YES   60  Near perfect
 Karateka                c3a5a8692a423d43d9d28dd5b7d109d9    NO    55  Minor glitches. What's the point of this game?!
 Kung Fu Master          f57d0af323d4e173fb49ed447f0563d7    NO    60  Near perfect
 Mario Bros.             431ca060201ee1f9eb49d44962874049    NO    60  Near perfect

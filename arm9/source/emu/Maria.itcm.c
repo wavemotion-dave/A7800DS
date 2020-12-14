@@ -508,8 +508,21 @@ void maria_Reset( ) {
 word *framePtr = (word *)0;
 ITCM_CODE uint maria_RenderScanline( ) 
 {
+  extern u32 bg32;
   extern int gTotalAtariFrames;
   maria_cycles = 0;
+    
+  //
+  // Displays the background color when Maria is disabled (if applicable)
+  //
+  if( ( ( memory_ram[CTRL] & 96 ) != 64 ) && maria_scanline >= maria_visibleArea.top &&  maria_scanline <= maria_visibleArea.bottom)
+  {
+      u32 *bgstart = (u32*)framePtr;
+      for(uint index = 0; index < MARIA_LINERAM_SIZE/4; index++ ) 
+      {
+        *bgstart++ = bg32;
+      }
+  }
     
   if(((memory_ram[CTRL] & 0x60) == 0x40))
   {

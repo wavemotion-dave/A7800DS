@@ -444,9 +444,9 @@ bool cartridge_SaveHighScoreSram()
     bool status = false;
     byte sram[HS_SRAM_SIZE];
     word retries = 3;
-    if(!high_score_cart_loaded || !high_score_set)
+    if(!high_score_cart_loaded || !high_score_set || !cartridge_hsc_enabled)
     {
-        // If we didn't load the high score cartridge, or didn't access the HSC ROM, don't save.
+        // If we didn't load the high score cartridge, or didn't access the HSC ROM, or don't have an HSC enabled cart: don't save.
         return false;
     }
   
