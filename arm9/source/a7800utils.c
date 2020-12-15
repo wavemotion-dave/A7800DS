@@ -249,23 +249,13 @@ void dsShowScreenEmu(void)
   REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG2 | BLEND_DST_BG3;
   REG_BLDALPHA = (8 << 8) | 8; // 50% / 50% 
 
+  // Setup video scaling...
   bufVideo = BG_GFX;   
-  if (cartridge_yOffset == 99)
-  {
-    cartridge_yOffset = 15;
-    cartridge_xOffset = -10;
-    cxBG = (cartridge_xOffset << 8); 
-    cyBG = (cartridge_yOffset << 8);
-    xdxBG = (1<<8); // No scaling...
-    ydyBG = (1<<8); // No scaling...
-  }
-  else
-  {
-    cxBG = (cartridge_xOffset << 8); 
-    cyBG = (cartridge_yOffset << 8);
-    xdxBG = ((320 / 256) << 8) | (320 % 256) ;
-    ydyBG = ((video_height / 220) << 8) | (video_height % 220);
-  }
+  cxBG = (cartridge_xOffset << 8); 
+  cyBG = (cartridge_yOffset << 8);
+  xdxBG = ((320 / cartridge_xScale) << 8) | (320 % cartridge_xScale) ;
+  ydyBG = ((video_height / cartridge_yScale) << 8) | (video_height % cartridge_yScale);
+  
 
   REG_BG2PB = 0;
   REG_BG2PC = 0;

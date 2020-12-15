@@ -71,8 +71,10 @@ extern bool cartridge_hsc_enabled;
 extern byte cartridge_controller[2];
 extern byte cartridge_bank;
 extern uint cartridge_flags;
-extern int  cartridge_yOffset;
 extern int  cartridge_xOffset;
+extern int  cartridge_yOffset;
+extern int  cartridge_xScale;
+extern int  cartridge_yScale;
 
 extern bool cartridge_wsync;
 extern bool cartridge_cycle_stealing;

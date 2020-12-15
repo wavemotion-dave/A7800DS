@@ -12,6 +12,11 @@ Features :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.5 : 15-Dec-2020 by wavemotion-dave
+  * Overhaul of scaling and X/Y offsets so that more games look pixel perfect.
+  * More homebrews run... compatibility table added to the back end of this doc.
+  * More robust handling of High Score Cart and saving of files.
+
 V1.4 : 13-Dec-2020 by wavemotion-dave
   * Implemented Hiscore Saving per the HSC cart. Put the 4k highscore.rom (don't ask)
     where your ROMs live. If found, it will enable saving of high scores

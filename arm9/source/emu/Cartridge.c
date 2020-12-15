@@ -39,8 +39,10 @@ bool cartridge_hsc_enabled;
 byte cartridge_controller[2];
 byte cartridge_bank;
 uint cartridge_flags;
-int  cartridge_yOffset=20;
-int  cartridge_xOffset=0;
+int  cartridge_xOffset = 0;
+int  cartridge_yOffset = 22;
+int  cartridge_xScale  = 256;
+int  cartridge_yScale  = 220;
 
 bool cartridge_wsync;
 bool cartridge_cycle_stealing;
@@ -510,8 +512,6 @@ static bool cartridge_LoadHighScoreSram()
         
         if (--retries == 0) break;
     }
-    
-    if (status == false) dsPrintValue(13,0,0, "NOSRAM");
     
     return status;
 }
