@@ -50,7 +50,7 @@ How tu use a7800DS :
 Place .NDS on your SDCARD and launch with Twilight Menu++ or Unlaunch.
 If you want to run on a flash cart, it might work... recommend HBMENU to launch.
 
-When the emulator starts, click on the cartridge slot to choose a file. you are use Up/Down 
+When the emulator starts, click on the cartridge slot to choose a file. Use Up/Down 
 to select a file, then use A to load it.
 
 Controls :
@@ -140,14 +140,14 @@ Midnight Mutants        bc1e905db1008493a9632aa83ab4682b    NO    38  Too slow t
 Ms. Pac-Man             fc0ea52a9fac557251b65ee680d951e5    YES   60  Near perfect
 Ninja Golf              220121f771fc4b98cef97dc040e8d378    NO    40  Too slow. Minor glitches.
 One On One              74569571a208f8b0b1ccfb22d7c914e1    NO    60  Near perfect
- Pac-Man Collection     5013b69cb05b21a1194ce48517df7bfc    YES   60  Near perfect
+Pac-Man Collection      5013b69cb05b21a1194ce48517df7bfc    YES   60  Near perfect
 Pac-Man Collection 40th 044657294450c869c45e7ef61f4870de    YES   60  Near perfect
 Planet Smashers         33aea1e2b6634a1dec8c7006d9afda22    NO    51  A bit of slowdown but playable
 Pole Position II        584582bb09ee8122e7fc09dc7d1ed813    NO    60  Font hard to read due to screen resolution but playable
 Rampage                 ac03806cef2558fc795a7d5d8dba7bc0    NO    60  Near perfect
 Realsports Baseball     bfad016d6e77eaccec74c0340aded8b9    NO    10  Way too slow.
 Robotron                66ecaafe1b82ae68ffc96267aaf7a4d7    YES   60  Near perfect
-Scramble                a3a85e507d6f718972b1464ce1aaf8a4    YES   57  Solid play - minor slowdown that doesn't detract from gameplay.
+Scramble                a3a85e507d6f718972b1464ce1aaf8a4    YES   60  Near perfect
 Scrapyard Dog           980c35ae9625773a450aa7ef51751c04    NO    34  Too slow to be playable 
 Space Duel              771cb4609347657f63e6f0eb26036e35    YES   60  Near perfect
 Space Invaders          6adf79558a3d7f5beca1bb8d34337417    YES   60  Plays perfect. Uses high resolution mode which causes some graphical compression artifacts.
