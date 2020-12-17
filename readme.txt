@@ -150,7 +150,7 @@ Robotron                66ecaafe1b82ae68ffc96267aaf7a4d7    YES   60  Near perfe
 Scramble                a3a85e507d6f718972b1464ce1aaf8a4    YES   60  Near perfect
 Scrapyard Dog           980c35ae9625773a450aa7ef51751c04    NO    34  Too slow to be playable 
 Space Duel              771cb4609347657f63e6f0eb26036e35    YES   60  Near perfect
-Space Invaders          6adf79558a3d7f5beca1bb8d34337417    YES   60  Plays perfect. Uses high resolution mode which causes some graphical compression artifacts.
+Space Invaders          6adf79558a3d7f5beca1bb8d34337417    YES   60  Plays perfect. Minor graphical compression artifacts.
 Summer Games            cbb0746192540a13b4c7775c7ce2021f    NO    60  Plays fine - font hard to read on small screen.
 Super Circus Atariage   81cee326b99d6831de10a566e338bd25    YES   60  Near perfect 
 Winter Games            3799d72f78dda2ee87b0ef8bf7b91186    NO    60  Plays fine - font hard to read on small screen.
