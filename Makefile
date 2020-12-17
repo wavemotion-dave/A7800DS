@@ -1,4 +1,4 @@
-VERSION=1.5
+VERSION=1.6
 TARGNAME=A7800DS
 
 #---------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ include $(DEVKITARM)/ds_rules
 export TARGET		:=	$(shell basename $(TARGNAME))
 export TOPDIR		:=	$(CURDIR)
 
-ICON 		:= -b $(CURDIR)/logo.bmp "A7800DS $(VERSION);AlekMaul;http://www.portabledev.com"
+ICON 		:= -b $(CURDIR)/logo.bmp "A7800DS $(VERSION);wavemotion-dave;https://github.com/wavemotion-dave/StellaDS"
 
 .PHONY: arm7/$(TARGET).elf arm9/$(TARGET).elf
 

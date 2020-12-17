@@ -7,11 +7,14 @@ help you.
 
 Features :
 ----------
- Most things you should expect from an emulator.
+ Most things you should expect from an emulator. Speed is good. Sound less so.
 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.6 : 17-Dec-2020 by wavemotion-dave
+  * Minor cleanup. Rebranding to PHOENIX EDITION. 
+  
 V1.5 : 15-Dec-2020 by wavemotion-dave
   * Overhaul of scaling and X/Y offsets so that more games look pixel perfect.
   * More homebrews run... compatibility table added to the back end of this doc.
@@ -44,12 +47,8 @@ V1.0 : 24/05/2011
 --------------------------------------------------------------------------------
 How tu use a7800DS :
 --------------------------------------------------------------------------------
-YOU NEED PERHAPS TO PATCH THE NDS FILE WITH THE DLDI PATCH BEFORE USING IT. 
-Unzip a7800DS.nds from the a7800DS.zip archive in a directory of your flash / (micro) SD 
-/ MMC card.
-Put the a78/bin files where you want on your flashcard. 
-
-That's all, a7800DS can be use now :) !
+Place .NDS on your SDCARD and launch with Twilight Menu++ or Unlaunch.
+If you want to run on a flash cart, it might work... recommend HBMENU to launch.
 
 When the emulator starts, click on the cartridge slot to choose a file. you are use Up/Down 
 to select a file, then use A to load it.
@@ -84,9 +83,12 @@ Thanks Wintermute for devkitpro and libnds (http://www.devkitpro.org).
   helped me a lot to fix some timing problem).
 
 --------------------------------------------------------------------------------
+Original Author:
 Alekmaul
 alekmaul@portabledev.com
 http://www.portabledev.com
+
+Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 
 Compatibility Table
@@ -99,7 +101,7 @@ Asteroids               07342c78619ba6ffcc61c10e907e3b50    YES   60  Near perfe
 Asteroids Deluxe        a65f79ad4a0bbdecd59d5f7eb3623fd7    YES   60  Near perfect
 Astro Blaster           3d38281ed8a8d8c7cd457a18c92c8604    YES   60  Near perfect
 Astro Fighter           a51e5df28a0fe8c52e9d28fb5f8e44a6    YES   60  Near perfect
-Baby Pac Man            7cdfbe37634e7dcd4dc67db7edbcd3ba    NO    60  High quality play but cuts off score visually (not enough DS resolution)
+Baby Pac Man            7cdfbe37634e7dcd4dc67db7edbcd3ba    NO    60  Near perfect
 Ballblazer              8fc3a695eaea3984912d98ed4a543376    NO    60  Near perfect
 Barnyard Blaster        42682415906c21c6af80e4198403ffda    NO    60  Needs Lightgun Support (not implemented)
 Basketbrawl             f5f6b69c5eb4b55fc163158d1a6b423e    NO    46  Minor glitches. Too slow.
@@ -111,7 +113,6 @@ Commando                2e8e28f6ad8b9b9267d518d880c73ebb    NO    35  Too slow t
 Crack'ed                db691469128d9a4217ec7e315930b646    NO    60  Would be better with lightgun support.
 Crossbow                a94e4560b6ad053a1c24e096f1262ebf    NO    60  Would be better with lightgun support.
 Dark Chambers           179b76ff729d4849b8f66a502398acae    NO    60  Near perfect
-Defender                77f4eea33705389a38c846081c7355fc    NO    --  Won't load.
 Desert Falcon           95ac811c7d27af0032ba090f28c107bd    NO    60  Near perfect
 Dig Dug                 731879ea82fc0ca245e39e036fe293e6    YES   60  Near perfect
 Donkey Kong             19f1ee292a23636bd57d408b62de79c7    NO    60  Near perfect
