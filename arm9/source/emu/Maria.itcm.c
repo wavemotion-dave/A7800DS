@@ -63,32 +63,23 @@ static byte maria_h08;
 static byte maria_h16;
 static byte maria_wmode;
 
-static inline void _maria_ClearCells(void)
-{
-  if(maria_horizontal < MARIA_LINERAM_SIZE) 
-  {
-    if (memory_ram[CTRL] & 4)
-    {
-      *((u16 *)&maria_lineRAM[maria_horizontal]) = 0;
-    }
-  }
-  maria_horizontal += 2;
-}
-
+// ----------------------------------------------------------------------------
+//ClearCells - 4 bytes at a time
+// ----------------------------------------------------------------------------
 static inline void _maria_ClearCells4(void)
 {
-  if(maria_horizontal < MARIA_LINERAM_SIZE) 
+  if (memory_ram[CTRL] & 4) 
   {
-    if (memory_ram[CTRL] & 4)
-    {
-      *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
-    }
+      if ((maria_horizontal+3) < MARIA_LINERAM_SIZE)
+      {
+         *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
+      }
   }
   maria_horizontal += 4;
 }
 
 // ----------------------------------------------------------------------------
-// StoreCell
+// StoreCells - 4 bytes at a time
 // ----------------------------------------------------------------------------
 static inline void _maria_StoreCells4(byte data) 
 {
@@ -119,56 +110,41 @@ static inline void _maria_StoreCells4(byte data)
   maria_horizontal += 4;
 }
 
+// ----------------------------------------------------------------------------
+// StoreCell - wide mode
+// ----------------------------------------------------------------------------
 static inline void maria_StoreCellWide(byte data) 
 {
   if((maria_horizontal+1) < MARIA_LINERAM_SIZE) 
   {
       byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
-      byte high=(data >> 4);
-      byte low=(data & 0x0F);
-      byte mp = (maria_palette & 16);
-      if (high)
+      if (data)
       {
-        *ptr = mp | high;
+          byte high=(data >> 4);
+          byte low=(data & 0x0F);
+          byte mp = (maria_palette & 16);
+          if (high)
+          {
+            *ptr = mp | high;
+          }
+          if (low)
+          {
+            ptr++;
+            *ptr = mp | low;
+          }
       }
       else
       {
-          if(memory_ram[CTRL] & 4) 
+          if ((memory_ram[CTRL] & 4))
           {
-            *ptr = 0;
-          } 
-      }
-      ptr++;
-      if (low)
-      {
-        *ptr = mp | low;
-      }
-      else
-      {
-          if(memory_ram[CTRL] & 4) 
-          {
-            *ptr = 0;
+            *ptr++ = 0;
+            *ptr   = 0;
           }  
       }
   } 
   maria_horizontal += 2;
 }
 
-// ----------------------------------------------------------------------------
-// StoreCell
-// ----------------------------------------------------------------------------
-static inline void maria_ClearCellWide(void) 
-{
-  if(memory_ram[CTRL] & 4) 
-  {
-      byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
-      if(maria_horizontal < MARIA_LINERAM_SIZE) *ptr++ = 0;
-      maria_horizontal++;
-      if(maria_horizontal < MARIA_LINERAM_SIZE) *ptr   = 0;
-      maria_horizontal++;
-  }  
-  else maria_horizontal += 2;
-}
 
 // ----------------------------------------------------------------------------
 // IsHolyDMA
@@ -216,30 +192,6 @@ static u8 wide_lookup[256] =
 };
 
 // ----------------------------------------------------------------------------
-// StoreCell
-// ----------------------------------------------------------------------------
-static inline void maria_StoreCell(byte high, byte low) 
-{
-  if(maria_horizontal < MARIA_LINERAM_SIZE) 
-  {
-    if(low || high) 
-    {
-      maria_lineRAM[maria_horizontal] = (maria_palette & 16) | high | low;
-    }
-    else 
-    { 
-      byte kmode = memory_ram[CTRL] & 4;
-      if(kmode) 
-      {
-        maria_lineRAM[maria_horizontal] = 0;
-      }
-    }
-  }
-  maria_horizontal++;
-}
-
-
-// ----------------------------------------------------------------------------
 // StoreGraphic
 // ----------------------------------------------------------------------------
 static inline void maria_StoreGraphic( ) 
@@ -247,13 +199,9 @@ static inline void maria_StoreGraphic( )
   byte data = memory_ram[maria_pp.w];
   if(maria_wmode) 
   {
-    if(maria_IsHolyDMA() || !data)
+    if(maria_IsHolyDMA())
     {
       maria_horizontal += 2;
-    }
-    else if (!data)
-    {
-      maria_ClearCellWide();        
     }
     else
     {
@@ -262,7 +210,7 @@ static inline void maria_StoreGraphic( )
   }
   else 
   {
-    if(maria_IsHolyDMA() || !data) 
+    if(maria_IsHolyDMA()) 
     {
         maria_horizontal += 4;
     }
