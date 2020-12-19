@@ -249,7 +249,11 @@ static inline void maria_StoreGraphic( )
   {
     if(maria_IsHolyDMA() || !data)
     {
-      maria_ClearCellWide();
+      maria_horizontal += 2;
+    }
+    else if (!data)
+    {
+      maria_ClearCellWide();        
     }
     else
     {
@@ -260,7 +264,11 @@ static inline void maria_StoreGraphic( )
   {
     if(maria_IsHolyDMA() || !data) 
     {
-      _maria_ClearCells4();
+        maria_horizontal += 4;
+    }
+    else if (!data)
+    {
+       _maria_ClearCells4();   
     }
     else 
     {

@@ -12,6 +12,9 @@ Features :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.6a : 19-Dec-2020 by wavemotion-dave
+  * Fixed bug causing black rectangles on some games - thanks to Wii-7800!
+
 V1.6 : 17-Dec-2020 by wavemotion-dave
   * Minor cleanup. Rebranding to PHOENIX EDITION. 
   
