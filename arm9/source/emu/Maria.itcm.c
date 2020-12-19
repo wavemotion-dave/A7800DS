@@ -70,7 +70,7 @@ static inline void _maria_ClearCells4(void)
 {
   if (memory_ram[CTRL] & 4) 
   {
-      if ((maria_horizontal+3) < MARIA_LINERAM_SIZE)
+      if ((maria_horizontal) < MARIA_LINERAM_SIZE)
       {
          *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
       }
@@ -83,7 +83,7 @@ static inline void _maria_ClearCells4(void)
 // ----------------------------------------------------------------------------
 static inline void _maria_StoreCells4(byte data) 
 {
-  if((maria_horizontal+3) < MARIA_LINERAM_SIZE) 
+  if((maria_horizontal) < MARIA_LINERAM_SIZE) 
   {
     byte *ptr = &(maria_lineRAM[maria_horizontal+3]);
     if (memory_ram[CTRL] & 4)
@@ -115,7 +115,7 @@ static inline void _maria_StoreCells4(byte data)
 // ----------------------------------------------------------------------------
 static inline void maria_StoreCellWide(byte data) 
 {
-  if((maria_horizontal+1) < MARIA_LINERAM_SIZE) 
+  if((maria_horizontal) < MARIA_LINERAM_SIZE) 
   {
       byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
       if (data)
