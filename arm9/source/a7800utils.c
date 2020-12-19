@@ -567,7 +567,7 @@ unsigned int dsWaitForRom(void)
     else {
       ucBas = 0;
     }  
-    if (keysCurrent() & KEY_R) {
+    if((keysCurrent() & KEY_R) || (keysCurrent() & KEY_RIGHT)) {
       if (!ucSBas) {
         ucFicAct = (ucFicAct< countpro-nbRomPerPage ? ucFicAct+nbRomPerPage : countpro-nbRomPerPage);
         if (firstRomDisplay<countpro-nbRomPerPage) { firstRomDisplay += nbRomPerPage; }
@@ -584,7 +584,7 @@ unsigned int dsWaitForRom(void)
     else {
       ucSBas = 0;
     }  
-    if (keysCurrent() & KEY_L) {
+    if ((keysCurrent() & KEY_L) || (keysCurrent() & KEY_LEFT)) {
       if (!ucSHaut) {
         ucFicAct = (ucFicAct> nbRomPerPage ? ucFicAct-nbRomPerPage : 0);
         if (firstRomDisplay>nbRomPerPage) { firstRomDisplay -= nbRomPerPage; }
