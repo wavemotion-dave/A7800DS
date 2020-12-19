@@ -13,7 +13,7 @@ include $(DEVKITARM)/ds_rules
 export TARGET		:=	$(shell basename $(TARGNAME))
 export TOPDIR		:=	$(CURDIR)
 
-ICON 		:= -b $(CURDIR)/logo.bmp "A7800DS $(VERSION);wavemotion-dave;https://github.com/wavemotion-dave/StellaDS"
+ICON 		:= -b $(CURDIR)/logo.bmp "A7800DS $(VERSION);wavemotion-dave;https://github.com/wavemotion-dave/A7800DS"
 
 .PHONY: arm7/$(TARGET).elf arm9/$(TARGET).elf
 
