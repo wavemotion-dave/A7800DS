@@ -14,7 +14,7 @@ Features :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V1.6c : 20-Dec-2020 by wavemotion-dave
+V1.7 : 20-Dec-2020 by wavemotion-dave
   * After much thought and debug, I've ditched Kangaroo mode. As near as I can 
     tell it's used on only a couple of games and not for gameplay - and it costs
     more DS-CPU time than it's worth. There is no harm other than a potential 
