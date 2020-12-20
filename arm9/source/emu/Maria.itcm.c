@@ -86,6 +86,7 @@ static inline void _maria_StoreCells4(byte data)
   if((maria_horizontal) < MARIA_LINERAM_SIZE) 
   {
     byte *ptr = &(maria_lineRAM[maria_horizontal+3]);
+#ifdef KANGAROO_MODE_SUPPORTED
     if (memory_ram[CTRL] & 4)
     {
         if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else *ptr-- = 0;
@@ -97,6 +98,7 @@ static inline void _maria_StoreCells4(byte data)
         if (data) *ptr = maria_palette | (data); else *ptr = 0;
     }
     else
+#endif        
     {
         if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else ptr--;
         data = data >> 2;
@@ -210,6 +212,7 @@ static inline void maria_StoreGraphic( )
   }
   else 
   {
+#if KANGAROO_MODE_SUPPORTED      
     if(maria_IsHolyDMA()) 
     {
         maria_horizontal += 4;
@@ -218,7 +221,13 @@ static inline void maria_StoreGraphic( )
     {
        _maria_ClearCells4();   
     }
-    else 
+#else
+    if(maria_IsHolyDMA() || !data) 
+    {
+        maria_horizontal += 4;
+    }
+#endif      
+    else         
     {
       _maria_StoreCells4(data);
     }
@@ -364,7 +373,6 @@ static inline void maria_StoreLineRAM( )
 {
   uint index;
   u32 *ptr=(u32*)maria_lineRAM;
-  //memset(maria_lineRAM, 0, MARIA_LINERAM_SIZE);
   *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
   *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
   *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;

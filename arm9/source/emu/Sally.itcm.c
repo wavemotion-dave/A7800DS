@@ -23,8 +23,8 @@
 // Sally.cpp
 // ----------------------------------------------------------------------------
 #include "Sally.h"
+#include "ProSystem.h"
 
-extern int debug[];
 byte sally_a = 0;
 byte sally_x = 0;
 byte sally_y = 0;

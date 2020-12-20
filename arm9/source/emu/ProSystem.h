@@ -41,6 +41,8 @@
 
 #include "shared.h"
 
+//#define KANGAROO_MODE_SUPPORTED YES   // Uncomment this for KANGAROO support. Slightly slower and virtually no game uses it... but more accurate
+
 extern int debug[];
 
 // The number of cycles per scan line

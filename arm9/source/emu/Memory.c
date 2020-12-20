@@ -27,7 +27,6 @@
 
 byte memory_ram[MEMORY_SIZE] = {0};
 byte memory_rom[MEMORY_SIZE] = {0};
-//ALEK byte *memory_rom = memory_ram;
 
 // ----------------------------------------------------------------------------
 // Reset
@@ -47,32 +46,29 @@ void memory_Reset( ) {
 // ----------------------------------------------------------------------------
 // Read
 // ----------------------------------------------------------------------------
-ITCM_CODE byte memory_Read(word address) {
-  byte tmp_byte;
-
-  switch ( address ) {
-  case INTIM:
-  case INTIM | 0x2:
-	  memory_ram[INTFLG] &= 0x7f;
-    return memory_ram[INTIM];
-	  break;
-  case INTFLG:
-  case INTFLG | 0x2:
-	  tmp_byte = memory_ram[INTFLG];
-	  memory_ram[INTFLG] &= 0x7f;
-	  return tmp_byte; 
-    break;
-  default:
-    return memory_ram[address];
-    break;
+ITCM_CODE byte memory_Read(word address) 
+{ 
+  if ((address & 0xFFFC) == 0x284)
+  {
+      if (address & 0x1)
+      {
+        byte tmp_byte = memory_ram[INTFLG];
+        memory_ram[INTFLG] &= 0x7f;
+        return tmp_byte; 
+      }
+      else
+      {
+        memory_ram[INTFLG] &= 0x7f;
+        return memory_ram[INTIM];
+      }
   }
+  return memory_ram[address];
 }
 
 // ----------------------------------------------------------------------------
 // Write
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_Write(word address, byte data) {
-//ALEK void memory_Write(byte data,word address) {
 
   if(!memory_rom[address]) {
     switch(address) {
@@ -120,24 +116,19 @@ ITCM_CODE void memory_Write(word address, byte data) {
         tia_audv[1] = (data & 15) << 2;
         tia_MemoryChannel(1);
         break;
-//#define WSYNC       36 -> 0x24      
       case WSYNC:
         if(!(cartridge_flags & 128)) {
           memory_ram[WSYNC] = true;
         }
         break;
-// #define SWCHB       642 -> 0x282
-//#define CTLSWB      643
       case SWCHB:
         /*gdement:  Writing here actually writes to DRB inside the RIOT chip.
 					This value only indirectly affects output of SWCHB.*/
-		    riot_SetDRB(data);
+        riot_SetDRB(data);
         break;
       case SWCHA:	
-		    riot_SetDRA(data);
-//      case CTLSWB:
+        riot_SetDRA(data);
         break;
-// #define TIM1T       660
       case TIM1T:
       case TIM1T | 0x8:
         riot_SetTimer(TIM1T, data);
@@ -156,27 +147,37 @@ ITCM_CODE void memory_Write(word address, byte data) {
         break;
       default:
         memory_ram[address] = data;
-        // 0x2040 -> 0x20ff    (0x2000)
-        if(address >= 8256 && address <= 8447) {
-          memory_ram[address - 8192] = data;
+        if (address >= 8256)
+        {
+          // 0x2040 -> 0x20ff    (0x2000)
+          if(address >= 8256 && address <= 8447) 
+          {
+            memory_ram[address - 8192] = data;
+          }
+          // 0x2140 -> 0x21ff    (0x2000)
+          else if(address >= 8512 && address <= 8703) 
+          {
+            memory_ram[address - 8192] = data;
+          }
         }
-        // 0x2140 -> 0x21fe    (0x2000)
-        else if(address >= 8512 && address <= 8702) {
-          memory_ram[address - 8192] = data;
+        else if (address <= 511)
+        {
+          // 0x40 -> 0xff    (0x2000)
+          if(address >= 64 && address <= 255) 
+          {
+            memory_ram[address + 8192] = data;
+          }
+          // 0x140 -> 0x1ff    (0x2000)
+          else if(address >= 320 && address <= 511) 
+          {
+            memory_ram[address + 8192] = data;
+          }
         }
-        // 0x40 -> 0xff    (0x2000)
-        else if(address >= 64 && address <= 255) {
-          memory_ram[address + 8192] = data;
-        }
-        // 0x140 -> 0x1ff    (0x2000)
-        else if(address >= 320 && address <= 511) {
-          memory_ram[address + 8192] = data;
-        }
-      cartridge_Write(address, data);
         break;
     }
   }
-  else {
+  else 
+  {
     cartridge_Write(address, data);
   }
 }

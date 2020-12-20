@@ -2,6 +2,8 @@ a7800DS
 --------------------------------------------------------------------------------
 a7800DS is an Atari ProSystem 7800 console emulator.
 To use this emulator, you must use compatibles rom with a78/bin format. 
+Strongly recommend you use NTSC roms... PAL ones have more scanlines and will render
+more slowly. All the debug on this port to the DS has been done with NTSC roms.
 Do not ask me about such files, I don't have them. A search with Google will certainly 
 help you. 
 
@@ -12,6 +14,12 @@ Features :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.6c : 20-Dec-2020 by wavemotion-dave
+  * After much thought and debug, I've ditched Kangaroo mode. As near as I can 
+    tell it's used on only a couple of games and not for gameplay - and it costs
+    more DS-CPU time than it's worth. There is no harm other than a potential 
+    graphical glitch which I've not noticed and that CPU time is precious. 
+
 V1.6b : 19-Dec-2020 by wavemotion-dave
   * Fixed bug causing black rectangles on some games - thanks to Wii-7800!
 
