@@ -35,7 +35,7 @@ int fpsDisplay=0;
 #define MAX_DEBUG 10 
 int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
-//#define CART_INFO
+#define CART_INFO
 
 #define SOUND_FREQ 22050
 
@@ -355,10 +355,9 @@ void dsLoadGame(char *filename)
 #ifdef CART_INFO
     char cart_info_buf[32];
     dsPrintValue(0,22,0,cartridge_digest); //zzz
-    sprintf(cart_info_buf, "CT=%d PK=%d CO=%d%d RE=%d FL=%d HS=%d ", cartridge_type, cartridge_pokey, cartridge_controller[0], cartridge_controller[1], cartridge_region, cartridge_flags, cartridge_hsc_enabled);
+    sprintf(cart_info_buf, "CT=%d PK=%d RE=%d SY=%d ST=%d HS=%d ", cartridge_type, cartridge_pokey, cartridge_region, cartridge_uses_wsync, cartridge_steals_cycles, cartridge_hsc_enabled);
     dsPrintValue(0,21,0,cart_info_buf); //zzz
-#endif    
-      
+#endif          
       
     // Init palette
     for(index = 0; index < 256; index++) {

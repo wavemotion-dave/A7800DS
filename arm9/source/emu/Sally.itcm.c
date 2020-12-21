@@ -36,8 +36,6 @@ static byte sally_opcode;
 static pair sally_address;
 static uint sally_cycles;
 
-extern bool high_score_set;
-
 // Whether the last operation resulted in a half cycle. (needs to be taken 
 // into consideration by ProSystem when cycle counting). This can occur when
 // a TIA or RIOT are accessed (drops to 1.19Mhz when the TIA or RIOT chips 
@@ -67,11 +65,11 @@ static const Vector SALLY_NMI = {65531, 65530};
 static const Vector SALLY_IRQ = {65535, 65534}; 
 
 static const byte SALLY_CYCLES[256] = {
-	7,6,0,0,0,3,5,0,3,2,2,0,0,4,6,0,
+	7,6,0,0,0,3,5,0,3,2,2,2,0,4,6,0,
 	2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
-	6,6,0,0,3,3,5,0,4,2,2,0,4,4,6,0,
+	6,6,0,0,3,3,5,0,4,2,2,2,4,4,6,0,
 	2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
-	6,6,0,0,0,3,5,0,3,2,2,0,3,4,6,0,
+	6,6,0,0,0,3,5,0,3,2,2,2,3,4,6,0,
 	2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
 	6,6,0,0,0,3,5,0,4,2,2,0,5,4,6,0,
 	2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
@@ -119,21 +117,6 @@ static inline void sally_Flags(byte data) {
   sally_p = (sally_p & ~(_fN | _fZ)) |  ((data) & _fN) | (((data) == 0) ? _fZ : 0);
 }
 
-
-/*
- * Checks to see if the High Score ROM has been accessed via known entry 
- * points. This is necessary due to the fact that some ROMs (Xenophobe, etc.)
- * overwrite SRAM of the high score cart. In such cases, they don't ever 
- * access the high score cartridge. By setting a flag, we know when to persist
- * changes to SRAM
- */
-static inline void sally_checkHighScoreSet()
-{
-  if( sally_pc.w == 0x3fcf || sally_pc.w == 0x3ffd )
-  {  
-     high_score_set = true;
-  }
-}
 
 // ----------------------------------------------------------------------------
 // Branch
@@ -597,8 +580,6 @@ static inline void sally_INY( ) {
 // ----------------------------------------------------------------------------
 static inline void sally_JMP( ) {
   sally_pc = sally_address;
-  // Check for known entry point of high score ROM
-  sally_checkHighScoreSet();
 }
 
 // ----------------------------------------------------------------------------
@@ -610,8 +591,6 @@ static inline void sally_JSR( ) {
   sally_Push(sally_pc.b.l);
     
   sally_pc = sally_address;
-  // Check for known entry point of high score ROM
-  sally_checkHighScoreSet();
 }
 
 // ----------------------------------------------------------------------------
@@ -1835,6 +1814,24 @@ void sally_Execute(unsigned int cycles )
       sally_AbsoluteX( ); 
       sally_INC( ); 
       goto next_inst;
+
+    l_0x4b:
+      sally_Immediate();
+      sally_AND();
+      sally_LSRA();
+      goto next_inst;
+    
+    l_0x0b:
+    l_0x2b:
+      sally_Immediate();
+      sally_AND();
+      if (sally_a & 128) {
+        sally_p |= SALLY_FLAG.C;
+      }
+      else {
+        sally_p = (sally_p & ~SALLY_FLAG.C) & 0xFF;
+      }    
+      goto next_inst;
       
 l_0xff:
 l_0xfc:
@@ -1908,7 +1905,6 @@ l_0x54:
 l_0x53:
 l_0x52:
 l_0x4f:
-l_0x4b:
 l_0x47:
 l_0x44:
 l_0x43:
@@ -1922,7 +1918,6 @@ l_0x34:
 l_0x33:
 l_0x32:
 l_0x2f:
-l_0x2b:
 l_0x27:
 l_0x23:
 l_0x22:
@@ -1936,7 +1931,6 @@ l_0x13:
 l_0x12:
 l_0x0f:
 l_0x0c:
-l_0x0b:
 l_0x07:
 l_0x04:
 l_0x03:
@@ -1950,7 +1944,7 @@ next_inst:
     {
       riot_UpdateTimer(sally_cycles);
     }
-    if(memory_ram[WSYNC] && cartridge_wsync) 
+    if(memory_ram[WSYNC] && cartridge_uses_wsync) 
     {
       prosystem_cycles = 456;
       memory_ram[WSYNC] = false;

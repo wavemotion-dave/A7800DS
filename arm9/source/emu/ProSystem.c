@@ -117,7 +117,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       cycles = maria_RenderScanline( );
     }
     
-    if(cartridge_cycle_stealing) 
+    if(cartridge_steals_cycles) 
     {
       prosystem_cycles += cycles;
       if(riot_timing) riot_UpdateTimer( cycles >> 2 );
@@ -125,7 +125,11 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
  
     sally_Execute(CYCLES_PER_SCANLINE);
     tia_Process(2);
-    if(cartridge_pokey) pokey_Process(2);      
+    if(cartridge_pokey) 
+    {
+        pokey_Process(2);      
+        pokey_Scanline();
+    }
   }  
 }
 

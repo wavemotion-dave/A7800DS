@@ -46,8 +46,18 @@ void memory_Reset( ) {
 // ----------------------------------------------------------------------------
 // Read
 // ----------------------------------------------------------------------------
+uint16 cartridge_pokey_low[]  = {0, 0x4000, 0x0450};
+uint16 cartridge_pokey_high[] = {0, 0x400F, 0x046F};
 ITCM_CODE byte memory_Read(word address) 
 { 
+  if (cartridge_pokey)
+  {
+      if (address >= cartridge_pokey_low[cartridge_pokey] && address <= cartridge_pokey_high[cartridge_pokey])
+      {
+        return pokey_GetRegister(cartridge_pokey == POKEY_AT_450 ? 0x4000 + (address - 0x0450) : address);
+      }
+  }
+
   if ((address & 0xFFFC) == 0x284)
   {
       if (address & 0x1)
@@ -68,8 +78,18 @@ ITCM_CODE byte memory_Read(word address)
 // ----------------------------------------------------------------------------
 // Write
 // ----------------------------------------------------------------------------
-ITCM_CODE void memory_Write(word address, byte data) {
+ITCM_CODE void memory_Write(word address, byte data) 
+{
 
+  if (cartridge_pokey)
+  {
+      if (address >= cartridge_pokey_low[cartridge_pokey] && address <= cartridge_pokey_high[cartridge_pokey])
+      {
+        pokey_SetRegister((cartridge_pokey == POKEY_AT_450 ? 0x4000 + (address - 0x0450) : address), data);
+        return;
+      }
+  }
+    
   if(!memory_rom[address]) {
     switch(address) {
       case INPTCTRL:
@@ -117,9 +137,7 @@ ITCM_CODE void memory_Write(word address, byte data) {
         tia_MemoryChannel(1);
         break;
       case WSYNC:
-        if(!(cartridge_flags & 128)) {
-          memory_ram[WSYNC] = true;
-        }
+        memory_ram[WSYNC] = true;
         break;
       case SWCHB:
         /*gdement:  Writing here actually writes to DRB inside the RIOT chip.

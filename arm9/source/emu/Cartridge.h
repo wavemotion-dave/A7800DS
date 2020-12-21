@@ -24,18 +24,6 @@
 // ----------------------------------------------------------------------------
 #ifndef CARTRIDGE_H
 #define CARTRIDGE_H
-#define CARTRIDGE_TYPE_NORMAL 0
-#define CARTRIDGE_TYPE_SUPERCART 1
-#define CARTRIDGE_TYPE_SUPERCART_LARGE 2
-#define CARTRIDGE_TYPE_SUPERCART_RAM 3
-#define CARTRIDGE_TYPE_SUPERCART_ROM 4
-#define CARTRIDGE_TYPE_ABSOLUTE 5
-#define CARTRIDGE_TYPE_ACTIVISION 6
-#define CARTRIDGE_CONTROLLER_NONE 0
-#define CARTRIDGE_CONTROLLER_JOYSTICK 1
-#define CARTRIDGE_CONTROLLER_LIGHTGUN 2
-#define CARTRIDGE_WSYNC_MASK 2
-#define CARTRIDGE_CYCLE_STEALING_MASK 1
 
 #include <stdio.h>
 #include <string.h>
@@ -47,6 +35,51 @@
 #include "Archive.h"
 
 #include "shared.h"
+
+#define CARTRIDGE_TYPE_NORMAL           0
+#define CARTRIDGE_TYPE_SUPERCART        1
+#define CARTRIDGE_TYPE_SUPERCART_LARGE  2
+#define CARTRIDGE_TYPE_SUPERCART_RAM    3
+#define CARTRIDGE_TYPE_SUPERCART_ROM    4
+#define CARTRIDGE_TYPE_ABSOLUTE         5
+#define CARTRIDGE_TYPE_ACTIVISION       6
+
+#define CARTRIDGE_CONTROLLER_NONE       0
+#define CARTRIDGE_CONTROLLER_JOYSTICK   1
+#define CARTRIDGE_CONTROLLER_LIGHTGUN   2
+#define CARTRIDGE_CONTROLLER_PADDLES    3
+
+#define CARTRIDGE_CYCLE_STEALING_MASK   0x01
+#define CARTRIDGE_WSYNC_MASK            0x02
+
+#define POKEY_NONE      0
+#define POKEY_AT_4000   1
+#define POKEY_AT_450    2
+
+#define HSC_YES         true
+#define HSC_NO          false
+
+#define NTSC            0  
+#define PAL             1
+
+#define JOY             CARTRIDGE_CONTROLLER_JOYSTICK
+#define LGN             CARTRIDGE_CONTROLLER_LIGHTGUN
+#define PAD             CARTRIDGE_CONTROLLER_PADDLES
+
+#define CT_NORMAL       CARTRIDGE_TYPE_NORMAL
+#define CT_SUPCAR       CARTRIDGE_TYPE_SUPERCART
+#define CT_SUPLRG       CARTRIDGE_TYPE_SUPERCART_LARGE
+#define CT_SUPRAM       CARTRIDGE_TYPE_SUPERCART_RAM
+#define CT_SUPROM       CARTRIDGE_TYPE_SUPERCART_ROM
+#define CT_ABSOLU       CARTRIDGE_TYPE_ABSOLUTE
+#define CT_ACTVIS       CARTRIDGE_TYPE_ACTIVISION
+
+
+#define STEAL_CYCLE     true
+#define NO_STEALING     false
+#define USES_WSYNC      true
+#define SKIP_WSYNC      false
+
 
 extern bool cartridge_Load(char* filename);
 extern bool cartridge_Load_buffer(char* rom_buffer, int rom_size);
@@ -65,18 +98,16 @@ extern byte cartridge_digest[128];
 extern char cartridge_filename[128];
 extern byte cartridge_type;
 extern byte cartridge_region;
-extern bool cartridge_pokey;
-extern bool cartridge_pokey450;
+extern byte cartridge_pokey;
 extern bool cartridge_hsc_enabled;
 extern byte cartridge_controller[2];
 extern byte cartridge_bank;
-extern uint cartridge_flags;
 extern int  cartridge_xOffset;
 extern int  cartridge_yOffset;
 extern int  cartridge_xScale;
 extern int  cartridge_yScale;
+extern bool cartridge_steals_cycles;
+extern bool cartridge_uses_wsync;
 
-extern bool cartridge_wsync;
-extern bool cartridge_cycle_stealing;
 
 #endif

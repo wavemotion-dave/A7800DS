@@ -50,13 +50,37 @@
 #define POKEY_AUDF4 0x4006
 #define POKEY_AUDC4 0x4007
 #define POKEY_AUDCTL 0x4008
+#define POKEY_STIMER 0x4009
+#define POKEY_SKRES 0x400a
+#define POKEY_POTGO 0x400b
+#define POKEY_SEROUT 0x400d
+#define POKEY_IRQEN 0x400e
+#define POKEY_SKCTLS 0x400f
+
+#define POKEY_POT0 0x4000
+#define POKEY_POT1 0x4001
+#define POKEY_POT2 0x4002
+#define POKEY_POT3 0x4003
+#define POKEY_POT4 0x4004
+#define POKEY_POT5 0x4005
+#define POKEY_POT6 0x4006
+#define POKEY_POT7 0x4007
+#define POKEY_ALLPOT 0x4008
+#define POKEY_KBCODE 0x4009
+#define POKEY_RANDOM 0x400a
+#define POKEY_SERIN 0x400d
+#define POKEY_IRQST 0x400e
+#define POKEY_SKSTAT 0x400f
+
 
 #include "shared.h"
 
 
 extern void pokey_Reset( );
 extern void pokey_SetRegister(word address, byte value);
+extern byte pokey_GetRegister(word address);
 extern void pokey_Process(uint length);
+extern void pokey_Scanline();
 extern void pokey_Clear( );
 extern byte pokey_buffer[POKEY_BUFFER_SIZE];
 extern uint pokey_size;

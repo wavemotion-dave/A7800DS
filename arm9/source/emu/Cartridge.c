@@ -33,20 +33,16 @@ byte cartridge_digest[128];
 char cartridge_filename[128];
 byte cartridge_type;
 byte cartridge_region;
-bool cartridge_pokey;
-bool cartridge_pokey450;
+byte cartridge_pokey;
 bool cartridge_hsc_enabled;
 byte cartridge_controller[2];
 byte cartridge_bank;
-uint cartridge_flags;
+bool cartridge_steals_cycles;
+bool cartridge_uses_wsync;
 int  cartridge_xOffset = 0;
 int  cartridge_yOffset = 22;
 int  cartridge_xScale  = 256;
 int  cartridge_yScale  = 220;
-
-bool cartridge_wsync;
-bool cartridge_cycle_stealing;
-bool high_score_set = false;
   
 extern int debug[];  
 static byte* cartridge_buffer = NULL;
@@ -110,46 +106,63 @@ static void cartridge_ReadHeader(const byte* header) {
   cartridge_size |= header[51] << 8;
   cartridge_size |= header[52];
 
-  if(header[53] == 0) {
-    if(cartridge_size > 131072) {
+//  bit 0    = pokey at $4000
+//  bit 1    = supergame bank switched
+//  bit 2    = supergame ram at $4000
+//  bit 3    = rom at $4000
+//  bit 4    = bank 6 at $4000
+//  bit 5    = supergame banked ram
+//  bit 6    = pokey at $450
+//  bit 7    = mirror ram at $4000  
+  
+  if(header[53] == 0) 
+  {
+    if(cartridge_size > 131072) 
+    {
       cartridge_type = CARTRIDGE_TYPE_SUPERCART_LARGE;
     }
-    else if(header[54] == 2 || header[54] == 3) {
-      cartridge_type = CARTRIDGE_TYPE_SUPERCART;
-    }
-    else if(header[54] == 4 || header[54] == 5 || header[54] == 6 || header[54] == 7) {
+    else if (header[54] & 0x04)
+    {
       cartridge_type = CARTRIDGE_TYPE_SUPERCART_RAM;
     }
-    else if(header[54] == 8 || header[54] == 9 || header[54] == 10 || header[54] == 11) {
+    else if(header[54] & 0x08) 
+    {
       cartridge_type = CARTRIDGE_TYPE_SUPERCART_ROM;
     }
-    else {
+    else if(header[54] & 0x02) 
+    {
+      cartridge_type = CARTRIDGE_TYPE_SUPERCART;
+    }
+    else 
+    {
       cartridge_type = CARTRIDGE_TYPE_NORMAL;
     }
   }
-  else {
-    if(header[53] == 2) {
+  else 
+  {
+    if(header[53] == 2) 
+    {
       cartridge_type = CARTRIDGE_TYPE_ABSOLUTE;
     }
-    else if(header[53] == 1) {
+    else if(header[53] == 1) 
+    {
       cartridge_type = CARTRIDGE_TYPE_ACTIVISION;
     }
-    else {
+    else 
+    {
       cartridge_type = CARTRIDGE_TYPE_NORMAL;
     }
   }
   
-  cartridge_pokey = (header[54] & 1)? true: false;
-  cartridge_pokey450 = (header[54]&0x40)? true : false;
-  if (cartridge_pokey450) {cartridge_pokey = true;}
+  if (header[54] & 0x01) cartridge_pokey = POKEY_AT_4000;
+  if (header[54] & 0x40) cartridge_pokey = POKEY_AT_450;
   
   cartridge_controller[0] = header[55];
   cartridge_controller[1] = header[56];
   cartridge_region = header[57];
-  cartridge_flags = 0;
-  cartridge_hsc_enabled = (header[0x3A]&1 ? true:false);
-  cartridge_hsc_enabled=true;
-  cartridge_wsync=cartridge_cycle_stealing=true; // Guess as best we can...
+  cartridge_hsc_enabled = (header[0x3A]&1 ? HSC_YES:HSC_NO);
+  cartridge_steals_cycles = true;       // By default, assume the cart steals cycles
+  cartridge_uses_wsync = true;          // By default, assume the cart uses wsync
 }
 
 // ----------------------------------------------------------------------------
@@ -367,38 +380,6 @@ void cartridge_Write(word address, byte data) {
       }
       break;
   }
-    
-  if(cartridge_pokey && address >= 0x4000 && address < 0x4009) {
-    switch(address) {
-      case POKEY_AUDF1:
-        pokey_SetRegister(POKEY_AUDF1, data);
-        break;
-      case POKEY_AUDC1:
-        pokey_SetRegister(POKEY_AUDC1, data);
-        break;
-      case POKEY_AUDF2:
-        pokey_SetRegister(POKEY_AUDF2, data);
-        break;
-      case POKEY_AUDC2:
-        pokey_SetRegister(POKEY_AUDC2, data);
-        break;
-      case POKEY_AUDF3:
-        pokey_SetRegister(POKEY_AUDF3, data);
-        break;
-      case POKEY_AUDC3:
-        pokey_SetRegister(POKEY_AUDC3, data);
-        break;
-      case POKEY_AUDF4:
-        pokey_SetRegister(POKEY_AUDF4, data);
-        break;
-      case POKEY_AUDC4:
-        pokey_SetRegister(POKEY_AUDC4, data);
-        break;
-      case POKEY_AUDCTL:
-        pokey_SetRegister(POKEY_AUDCTL, data);
-        break;
-    }
-  }
 }
 
 // ----------------------------------------------------------------------------
@@ -446,7 +427,7 @@ bool cartridge_SaveHighScoreSram()
     bool status = false;
     byte sram[HS_SRAM_SIZE];
     word retries = 3;
-    if(!high_score_cart_loaded || !high_score_set || !cartridge_hsc_enabled)
+    if(!high_score_cart_loaded || !cartridge_hsc_enabled)
     {
         // If we didn't load the high score cartridge, or didn't access the HSC ROM, or don't have an HSC enabled cart: don't save.
         return false;
@@ -578,13 +559,12 @@ void cartridge_Release( )
     //
     cartridge_type = 0;
     cartridge_region = 0;
-    cartridge_pokey = 0;
-    cartridge_pokey450 = 0;
+    cartridge_pokey = POKEY_NONE;
     cartridge_hsc_enabled = false;
-    high_score_set = false;
    
     memset( cartridge_controller, 0, sizeof( cartridge_controller ) );
     cartridge_bank = 0;
-    cartridge_flags = 0;
+    cartridge_steals_cycles = false;
+    cartridge_uses_wsync = false;
   }
 }

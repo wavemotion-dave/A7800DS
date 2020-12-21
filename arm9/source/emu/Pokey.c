@@ -40,6 +40,7 @@
 // ----------------------------------------------------------------------------
 #include <stdlib.h>
 #include "Pokey.h"
+#include "ProSystem.h"
 #define POKEY_NOTPOLY5 0x80
 #define POKEY_POLY4 0x40
 #define POKEY_PURE 0x20
@@ -64,6 +65,8 @@
 #define POKEY_CHANNEL3 2
 #define POKEY_CHANNEL4 3
 #define POKEY_SAMPLE 4
+
+#define SK_RESET	0x03
 
 byte pokey_buffer[POKEY_BUFFER_SIZE] = {0};
 uint pokey_size = 524;
@@ -90,10 +93,41 @@ static uint pokey_sampleMax;
 static uint pokey_sampleCount[2];
 static uint pokey_baseMultiplier;
 
+static byte rand9[0x1ff];
+static byte rand17[0x1ffff];
+static uint r9;
+static uint r17;
+static byte SKCTL;
+byte RANDOM;
+
+byte POT_input[8] = {228, 228, 228, 228, 228, 228, 228, 228};
+static int pot_scanline;
+
+static uint32 random_scanline_counter;
+static uint32 prev_random_scanline_counter;
+
+static void rand_init(byte *rng, int size, int left, int right, int add)
+{
+    int mask = (1 << size) - 1;
+    int i, x = 0;
+
+    for( i = 0; i < mask; i++ )
+	{
+		if (size == 17)
+			*rng = x >> 6;	/* use bits 6..13 */
+		else
+			*rng = x;		/* use bits 0..7 */
+        rng++;
+        /* calculate next bit */
+		x = ((x << left) + (x >> right) + add) & mask;
+	}
+}
+
 // ----------------------------------------------------------------------------
 // Reset
 // ----------------------------------------------------------------------------
-void pokey_Reset( ) {
+void pokey_Reset( ) 
+{
   uint index, channel;
   for(index = 0; index < POKEY_POLY17_SIZE; index++) {
     pokey_poly17[index] = rand( ) & 1;
@@ -119,9 +153,94 @@ void pokey_Reset( ) {
     pokey_audf[channel] = 0;
   }
 
+  for(int i = 0; i < 8; i++) {
+    POT_input[i] = 228;
+  }
+
   pokey_audctl = 0;
   pokey_baseMultiplier = POKEY_DIV_64;
+
+  /* initialize the random arrays */
+  rand_init(rand9,   9, 8, 1, 0x00180);
+  rand_init(rand17, 17,16, 1, 0x1c000);
+
+  SKCTL = SK_RESET;
+  RANDOM = 0;
+
+  r9 = 0;
+  r17 = 0;
+  random_scanline_counter = 0;
+  prev_random_scanline_counter = 0;  
 }                           
+
+
+/* Called prior to each scanline */
+void pokey_Scanline() 
+{
+  random_scanline_counter += CYCLES_PER_SCANLINE; 
+
+	if (pot_scanline < 228)
+		pot_scanline++;  
+}
+
+byte pokey_GetRegister(word address) 
+{
+  byte data = 0;
+
+  byte addr = address & 0x0f;
+  if (addr < 8) {
+    byte b = POT_input[addr];
+    if (b <= pot_scanline)
+      return b;
+    return pot_scanline;
+  }  
+
+  switch (address) {
+    case POKEY_ALLPOT: {
+      byte b = 0;
+			for (int i = 0; i < 8; i++)
+				if (POT_input[addr] <= pot_scanline)
+					b &= ~(1 << i);		/* reset bit if pot value known */
+      return b;
+		}    
+    case POKEY_RANDOM:
+      {
+        uint32 prosystem_extra_cycles = 0; ///tbd
+      uint32 curr_scanline_counter = 
+        ( random_scanline_counter + prosystem_cycles + prosystem_extra_cycles );
+
+      if( SKCTL & SK_RESET )
+      {
+        uint32 adjust = ( ( curr_scanline_counter - prev_random_scanline_counter ) >> 2 );
+        r9 = (uint)((adjust + r9) % 0x001ff);
+        r17 = (uint)((adjust + r17) % 0x1ffff);
+      }
+      else
+      {
+        r9 = 0;
+        r17 = 0;
+      }
+      if( pokey_audctl & POKEY_POLY9 )
+      {
+        RANDOM = rand9[r9];
+      }
+      else
+      {
+        RANDOM = rand17[r17];
+      }
+
+      prev_random_scanline_counter = curr_scanline_counter;
+
+      RANDOM = RANDOM ^ 0xff;
+      data = RANDOM;
+      }
+      break;
+  }
+
+  return data;
+}
+
+
 
 // ----------------------------------------------------------------------------
 // SetRegister
@@ -131,6 +250,17 @@ void pokey_SetRegister(word address, byte value) {
   uint channel;
   
   switch(address) {
+    case POKEY_POTGO:
+      if (!(SKCTL & 4))
+        pot_scanline = 0;	/* slow pot mode */
+      return;
+
+    case POKEY_SKCTLS:
+      SKCTL = value;
+      if (value & 4)
+        pot_scanline = 228;	/* fast pot mode - return results immediately */
+      return;
+
     case POKEY_AUDF1:
       pokey_audf[POKEY_CHANNEL1] = value;
       channelMask = 1 << POKEY_CHANNEL1;
