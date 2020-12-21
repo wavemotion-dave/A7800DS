@@ -35,6 +35,7 @@ pair sally_pc = {0};
 static byte sally_opcode;
 static pair sally_address;
 static uint sally_cycles;
+static uint sally_cyclesX4;
 
 // Whether the last operation resulted in a half cycle. (needs to be taken 
 // into consideration by ProSystem when cycle counting). This can occur when
@@ -80,7 +81,26 @@ static const byte SALLY_CYCLES[256] = {
 	2,6,0,0,3,3,5,0,2,2,2,0,4,4,6,0,
 	2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
 	2,6,0,0,3,3,5,0,2,2,2,0,4,4,6,0,
-	2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
+	2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0
+};
+
+static const byte SALLY_CYCLESX4[256] = {
+	7*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,0*4,4*4,6*4,0*4,
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
+	6*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,4*4,2*4,2*4,2*4,4*4,4*4,6*4,0*4,
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
+	6*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,3*4,4*4,6*4,0*4,
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
+	6*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,4*4,2*4,2*4,0*4,5*4,4*4,6*4,0*4,
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
+	0*4,6*4,0*4,0*4,3*4,3*4,3*4,0*4,2*4,0*4,2*4,0*4,4*4,4*4,4*4,0*4,
+	2*4,6*4,0*4,0*4,4*4,4*4,4*4,0*4,2*4,5*4,2*4,0*4,0*4,5*4,0*4,0*4,
+	2*4,6*4,2*4,0*4,3*4,3*4,3*4,0*4,2*4,2*4,2*4,0*4,4*4,4*4,4*4,0*4,
+	2*4,5*4,0*4,0*4,4*4,4*4,4*4,0*4,2*4,4*4,2*4,0*4,4*4,4*4,4*4,0*4,
+	2*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,2*4,2*4,2*4,0*4,4*4,4*4,6*4,0*4,
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
+	2*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,2*4,2*4,2*4,0*4,4*4,4*4,6*4,0*4,
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4
 };
 
 // ----------------------------------------------------------------------------
@@ -128,10 +148,10 @@ static inline void sally_Branch(byte branch) {
     sally_pc.w += (signed char)sally_address.b.l;
        
     if(temp.b.h != sally_pc.b.h) {
-      sally_cycles += 2;
+      sally_cyclesX4 += 8;
     }
     else {
-      sally_cycles++;
+      sally_cyclesX4 += 4;
     }
   }
 }
@@ -144,7 +164,7 @@ static inline void sally_Delay(byte delta) {
   pair address2 = sally_address;
   address1.w -= delta;
   if(address1.b.h != address2.b.h) {
-    sally_cycles++;
+    sally_cyclesX4 += 4;
   }
 }
 
@@ -1054,7 +1074,7 @@ void sally_Execute(unsigned int cycles )
   while (prosystem_cycles<cycles) 
   {
   sally_opcode = memory_ram[sally_pc.w++];
-  sally_cycles = SALLY_CYCLES[sally_opcode];
+  sally_cyclesX4 = SALLY_CYCLESX4[sally_opcode];
   
 	goto *a_jump_table[sally_opcode];
   
@@ -1937,14 +1957,14 @@ l_0x03:
 l_0x02:
 
 next_inst:
-    prosystem_cycles += (sally_cycles << 2);
+    prosystem_cycles += sally_cyclesX4;
     if( half_cycle ) prosystem_cycles += 2;
       
     if(riot_timing) 
     {
-      riot_UpdateTimer(sally_cycles);
+      riot_UpdateTimer(sally_cyclesX4 >> 2);
     }
-    if(memory_ram[WSYNC] && cartridge_uses_wsync) 
+    if(memory_ram[WSYNC])   // Will only write true here if cartridge_uses_wsync is true in Memory.c
     {
       prosystem_cycles = 456;
       memory_ram[WSYNC] = false;

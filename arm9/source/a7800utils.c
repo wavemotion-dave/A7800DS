@@ -113,7 +113,8 @@ gamecfg GameConf;                        // Game Config svg
 short cxBG, cyBG, xdxBG,ydyBG;
 
 word atari_pal16[256] = {0};
-unsigned char keyboard_data[19];
+unsigned char keyboard_data[20];
+u32 *ptrKbdData = (u32*) keyboard_data;
 
 unsigned char *filebuffer;
 
@@ -353,10 +354,11 @@ void dsLoadGame(char *filename)
     prosystem_Reset();
 
 #ifdef CART_INFO
-    char cart_info_buf[32];
-    dsPrintValue(0,22,0,cartridge_digest); //zzz
-    sprintf(cart_info_buf, "CT=%d PK=%d RE=%d SY=%d ST=%d HS=%d ", cartridge_type, cartridge_pokey, cartridge_region, cartridge_uses_wsync, cartridge_steals_cycles, cartridge_hsc_enabled);
-    dsPrintValue(0,21,0,cart_info_buf); //zzz
+    char cart_info_buf[64];
+    dsPrintValue(0,22,0, (char*)cartridge_digest);
+    snprintf(cart_info_buf, 63, "CT=%d PK=%d RE=%d SY=%d ST=%d HS=%d ", cartridge_type, cartridge_pokey, cartridge_region, cartridge_uses_wsync, cartridge_steals_cycles, cartridge_hsc_enabled);
+    cart_info_buf[32] = 0;
+    dsPrintValue(0,21,0,cart_info_buf);
 #endif          
       
     // Init palette
@@ -800,7 +802,8 @@ void dsMainLoop(void)
             continue;
         }
             
-        memset(keyboard_data,0,sizeof(keyboard_data)); 
+        ptrKbdData = (u32*)keyboard_data;
+        *ptrKbdData++ = 0;*ptrKbdData++ = 0;*ptrKbdData++ = 0;*ptrKbdData++ = 0;*ptrKbdData++ = 0;
         scanKeys();
         keys_pressed = keysCurrent();
 

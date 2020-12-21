@@ -42,7 +42,6 @@ void memory_Reset( ) {
   }
 }
 
-	// AM_RANGE(0x0020, 0x003f) AM_MIRROR(0x300) AM_READWRITE(a7800_MARIA_r, a7800_MARIA_w)
 // ----------------------------------------------------------------------------
 // Read
 // ----------------------------------------------------------------------------
@@ -52,9 +51,15 @@ ITCM_CODE byte memory_Read(word address)
 { 
   if (cartridge_pokey)
   {
-      if (address >= cartridge_pokey_low[cartridge_pokey] && address <= cartridge_pokey_high[cartridge_pokey])
+      if (cartridge_pokey == POKEY_AT_4000)
       {
-        return pokey_GetRegister(cartridge_pokey == POKEY_AT_450 ? 0x4000 + (address - 0x0450) : address);
+        if ((address & 0xFFF0) == 0x4000) return pokey_GetRegister(address);            
+      }
+      else
+      {
+          // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's 
+          // good enough as nothing else should be mapped in this region except POKEY.
+          if ((address & 0xFFC0) == 0x440) return pokey_GetRegister(0x4000 + (address - 0x0450));
       }
   }
 
@@ -80,17 +85,30 @@ ITCM_CODE byte memory_Read(word address)
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_Write(word address, byte data) 
 {
-
   if (cartridge_pokey)
   {
-      if (address >= cartridge_pokey_low[cartridge_pokey] && address <= cartridge_pokey_high[cartridge_pokey])
+      if (cartridge_pokey == POKEY_AT_4000)
       {
-        pokey_SetRegister((cartridge_pokey == POKEY_AT_450 ? 0x4000 + (address - 0x0450) : address), data);
-        return;
+        if ((address & 0xFFF0) == 0x4000)
+        {
+            pokey_SetRegister(address, data);
+            return;
+        }
+      }
+      else
+      {
+          // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's 
+          // good enough as nothing else should be mapped in this region except POKEY.
+          if ((address & 0xFFC0) == 0x440)
+          {
+            pokey_SetRegister(0x4000 + (address - 0x0450), data);
+            return;
+          }          
       }
   }
-    
-  if(!memory_rom[address]) {
+
+  if(!memory_rom[address]) 
+  {
     switch(address) {
       case INPTCTRL:
         if(data == 22 && cartridge_IsLoaded( )) { 
@@ -137,7 +155,10 @@ ITCM_CODE void memory_Write(word address, byte data)
         tia_MemoryChannel(1);
         break;
       case WSYNC:
-        memory_ram[WSYNC] = true;
+        if (cartridge_uses_wsync)
+        {
+          memory_ram[WSYNC] = true;
+        }
         break;
       case SWCHB:
         /*gdement:  Writing here actually writes to DRB inside the RIOT chip.

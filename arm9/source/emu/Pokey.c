@@ -246,9 +246,9 @@ byte pokey_GetRegister(word address)
 // SetRegister
 // ----------------------------------------------------------------------------
 void pokey_SetRegister(word address, byte value) {
-	byte channelMask;
+  byte channelMask;
   uint channel;
-  
+
   switch(address) {
     case POKEY_POTGO:
       if (!(SKCTL & 4))
@@ -329,6 +329,8 @@ void pokey_SetRegister(word address, byte value) {
       channelMask = 0;
       break;
   }
+    
+  if (!channelMask) return;
     
   uint newValue = 0;
 
@@ -421,8 +423,8 @@ static inline uint loc_get_int(byte *p)
 
 static inline void loc_set_byte(byte *p, uint v)
 {
-  u32 *zz = (u32 *)p;
-  *zz = v;
+  u32 *ptr32 = (u32 *)p;
+  *ptr32 = v;
 }
 
 // ----------------------------------------------------------------------------
