@@ -14,6 +14,11 @@ Features :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.7a : 21-Dec-2020 by wavemotion-dave
+  * Full Pokey Support at both 450 and 4000. XM RAM mapping at 4000 so games
+  like Serpentine will run properly now. Undocumented opcodes for the Sally 
+  processor now implemented so games like Popeye will run fine. 
+
 V1.7 : 20-Dec-2020 by wavemotion-dave
   * After much thought and debug, I've ditched Kangaroo mode. As near as I can 
     tell it's used on only a couple of games and not for gameplay - and it costs

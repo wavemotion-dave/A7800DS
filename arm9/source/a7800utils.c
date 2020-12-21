@@ -35,7 +35,7 @@ int fpsDisplay=0;
 #define MAX_DEBUG 10 
 int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
-#define CART_INFO
+//#define CART_INFO
 
 #define SOUND_FREQ 22050
 
