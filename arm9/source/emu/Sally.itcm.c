@@ -40,7 +40,6 @@ static uint sally_cyclesX4;
 // into consideration by ProSystem when cycle counting). This can occur when
 // a TIA or RIOT are accessed (drops to 1.19Mhz when the TIA or RIOT chips 
 // are accessed)
-bool half_cycle = false;
 
 #define _fC 0x01
 #define _fZ 0x02
@@ -1040,9 +1039,6 @@ void sally_Execute(unsigned int cycles )
         &&l_0xfc, &&l_0xfd, &&l_0xfe, &&l_0xff 
     };
 
-  // Reset half cycle flag
-  half_cycle = false;
-
   while (prosystem_cycles<cycles) 
   {
     sally_opcode = memory_ram[sally_pc.w++];
@@ -1147,14 +1143,6 @@ void sally_Execute(unsigned int cycles )
     l_0x24: 
       sally_ZeroPage( );
       sally_BIT( );
-      // Add a half cycle if RIOT/TIA location is accessed. We only track
-      // INPT4 since it is the only one that is accessed during the lightgun
-      // hit detection loop. This should be extended to take into consideration
-      // all RIOT and TIA accesses.
-      if( sally_address.w == INPT4 )
-      {
-        half_cycle = true;
-      }
       goto next_inst;
 
     l_0x25: 
@@ -1930,7 +1918,6 @@ l_0x02:
 
 next_inst:
     prosystem_cycles += sally_cyclesX4;
-    if( half_cycle ) prosystem_cycles += 2;
 #ifndef DS_LITE        
     if(riot_timing) 
     {
