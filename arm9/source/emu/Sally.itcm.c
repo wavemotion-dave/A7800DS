@@ -36,11 +36,6 @@ static byte sally_opcode;
 static pair sally_address;
 static uint sally_cyclesX4;
 
-// Whether the last operation resulted in a half cycle. (needs to be taken 
-// into consideration by ProSystem when cycle counting). This can occur when
-// a TIA or RIOT are accessed (drops to 1.19Mhz when the TIA or RIOT chips 
-// are accessed)
-
 #define _fC 0x01
 #define _fZ 0x02
 #define _fI 0x04
@@ -371,18 +366,14 @@ static inline void sally_BEQ( ) {
 // ----------------------------------------------------------------------------
 static inline void sally_BIT( ) {
   byte data = memory_Read(sally_address.w);
+  sally_p &= ~(_fV | _fN | _fZ);
     
-  if(!(data & sally_a)) {
+  if(!(data & sally_a)) 
+  {
     sally_p |= _fZ;
   }
-  else {
-    sally_p &= ~_fZ;
-  }
-
-  sally_p &= ~_fV;
-  sally_p &= ~_fN;  
-  sally_p |= data & 64;
-  sally_p |= data & 128;
+  sally_p |= data & _fV;
+  sally_p |= data & _fN;
 }
 
 // ----------------------------------------------------------------------------
@@ -1044,7 +1035,7 @@ void sally_Execute(unsigned int cycles )
     sally_opcode = memory_ram[sally_pc.w++];
     sally_cyclesX4 = SALLY_CYCLESX4[sally_opcode];
   
-	goto *a_jump_table[sally_opcode];
+    goto *a_jump_table[sally_opcode];
   
     l_0x00:
       sally_BRK( ); 
