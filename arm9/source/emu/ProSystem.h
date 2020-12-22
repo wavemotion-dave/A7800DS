@@ -42,6 +42,7 @@
 #include "shared.h"
 
 //#define KANGAROO_MODE_SUPPORTED YES   // Uncomment this for KANGAROO support. Slightly slower and virtually no game uses it... but more accurate
+//#define DS_LITE 1
 
 extern int debug[];
 
@@ -50,8 +51,6 @@ extern int debug[];
 
 extern void prosystem_Reset( );
 extern void prosystem_ExecuteFrame(const byte* input);
-extern bool prosystem_Save(char* filename, bool compress);
-extern bool prosystem_Load(char* filename);
 extern void prosystem_Pause(bool pause);
 extern void prosystem_Close( );
 extern bool prosystem_active;

@@ -422,17 +422,23 @@ byte high_score_cart_loaded = false;
  *
  * return   Whether the save was successful
  */
-bool cartridge_SaveHighScoreSram() 
-{    
+static u32 last_chksum = 0xFFFFEEEF;
+bool cartridge_SaveHighScoreSram(void) 
+{   
     bool status = false;
     byte sram[HS_SRAM_SIZE];
     word retries = 3;
     if(!high_score_cart_loaded || !cartridge_hsc_enabled)
     {
-        // If we didn't load the high score cartridge, or didn't access the HSC ROM, or don't have an HSC enabled cart: don't save.
+        // If we didn't load the high score cartridge, or don't have an HSC enabled cart: don't save.
         return false;
     }
-  
+
+  // ------------------------------------------------------------------------------------------------
+  // We are being fairly paranoid here mainly because there are games that corrupt the SRAM area
+  // of the high score cart... XENOPHOBE is one. The Donkey Kong XM Homebrew is another.  So we
+  // want to make sure we aren't saving crap out - this is fairly robust ... so far...
+  // ------------------------------------------------------------------------------------------------
     while (status == false)
     {
       u32 chksum = 0;
@@ -442,17 +448,27 @@ bool cartridge_SaveHighScoreSram()
           chksum += sram[i];
       }
 
-      if (chksum != 0)
+      // ------------------------------------------------------------
+      // Make sure there is something different/worth saving...
+      // ------------------------------------------------------------
+      if ((chksum != last_chksum) && (chksum != 0))
       {
-          FILE* file = fopen("A7800DS.sram", "wb+");
-          if( file != NULL ) 
+          // -----------------------------------------------------------------------------------------------------------
+          // Check to make sure the High Score Cart "Magic Numbers" are right... otherwise corrupt and don't save...
+          // -----------------------------------------------------------------------------------------------------------
+          if ((sram[2] == 0x68) && (sram[3] == 0x83) && (sram[4] == 0xaa) && (sram[5] == 0x55) && (sram[6] == 0x9c))
           {
-            if( fwrite( sram, 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
-            {
-              status = false;              
-            }
-            fflush(file);
-            fclose(file);
+              last_chksum = chksum;
+              FILE* file = fopen("A7800DS.sram", "wb+");
+              if( file != NULL ) 
+              {
+                if( fwrite( sram, 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
+                {
+                  status = false;              
+                }
+                fflush(file);
+                fclose(file);
+              }
           }
       }
       if (--retries == 0) break;
@@ -483,9 +499,11 @@ static bool cartridge_LoadHighScoreSram()
         if( fread( sram, 1, HS_SRAM_SIZE, file ) == HS_SRAM_SIZE ) 
         {
             fclose( file );
+            last_chksum = 0;
             for( uint i = 0; i < HS_SRAM_SIZE; i++ ) 
             {
                 memory_Write( HS_SRAM_START + i, sram[i] );
+                last_chksum += sram[i];
             }
             status = true;
         }

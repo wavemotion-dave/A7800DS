@@ -37,9 +37,31 @@ int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
 //#define CART_INFO
 
-#define SOUND_FREQ 22050
+#ifndef DS_LITE    
+#define SOUND_FREQ  22050
+#else
+#define SOUND_FREQ  11025
+#endif
+
+// Difficulty switches... 
+#define DIFF_A      0
+#define DIFF_B      1
+
+uint video_height;                       // Actual video height
+u16 *bufVideo;                           // Video flipping buffer
+unsigned int gameCRC;                    // crc checksum of file  
+gamecfg GameConf;                        // Game Config svg
+
+short cxBG, cyBG, xdxBG,ydyBG;
+
+word atari_pal16[256] = {0};
+unsigned char keyboard_data[20];
+
+unsigned char *filebuffer;
 
 bool bRefreshXY = false;
+
+#define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
 static void DumpDebugData(void)
 {
@@ -104,19 +126,6 @@ void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr,
   }
 }
 
-uint video_height;                       // Actual video height
-//unsigned short bufVideo[512*312];        // Video buffer
-u16 *bufVideo;     // Video flipping buffer
-unsigned int gameCRC;                    // crc checksum of file  
-gamecfg GameConf;                        // Game Config svg
-
-short cxBG, cyBG, xdxBG,ydyBG;
-
-word atari_pal16[256] = {0};
-unsigned char keyboard_data[20];
-u32 *ptrKbdData = (u32*) keyboard_data;
-
-unsigned char *filebuffer;
 
 #define tchepres(a) \
    keyboard_data[GameConf.DS_Pad[a]] = 1;
@@ -372,15 +381,15 @@ void dsLoadGame(char *filename)
     // Init vars
     memset(keyboard_data,0,sizeof(keyboard_data));
 
-    // Left difficulty switch defaults to off
-    // Right difficulty swtich defaults to on
-    keyboard_data[15] = 1;
-    keyboard_data[16] = 0;
-    GameConf.DS_Pad[ 0] = 3;  GameConf.DS_Pad[ 1] = 2;
-    GameConf.DS_Pad[ 2] = 1;  GameConf.DS_Pad[ 3] = 0;
-    GameConf.DS_Pad[ 4] = 4;  GameConf.DS_Pad[ 5] = 5;
+    // Left difficulty switch defaults to DIFF_A
+    // Right difficulty swtich defaults to DIFF_A
+    keyboard_data[15] = DIFF_A;
+    keyboard_data[16] = DIFF_A;
+    GameConf.DS_Pad[ 0] = 3;   GameConf.DS_Pad[ 1] = 2;
+    GameConf.DS_Pad[ 2] = 1;   GameConf.DS_Pad[ 3] = 0;
+    GameConf.DS_Pad[ 4] = 4;   GameConf.DS_Pad[ 5] = 5;
     GameConf.DS_Pad[ 6] = 12;  GameConf.DS_Pad[ 7] = 12;
-    GameConf.DS_Pad[ 8] = 15; GameConf.DS_Pad[ 9] = 16;
+    GameConf.DS_Pad[ 8] = 15;  GameConf.DS_Pad[ 9] = 16;
     GameConf.DS_Pad[10] = 14;  GameConf.DS_Pad[11] = 13;
 
     TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);                        
@@ -801,9 +810,7 @@ void dsMainLoop(void)
             }
             continue;
         }
-            
-        ptrKbdData = (u32*)keyboard_data;
-        *ptrKbdData++ = 0;*ptrKbdData++ = 0;*ptrKbdData++ = 0;*ptrKbdData++ = 0;*ptrKbdData++ = 0;
+        memset(keyboard_data, 0x00, 15); // Not the difficulty switches which are the two bytes after this...
         scanKeys();
         keys_pressed = keysCurrent();
 
@@ -824,7 +831,9 @@ void dsMainLoop(void)
                 irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
                 if (dsWaitOnQuit()) etatEmu=A7800_QUITSTDS;
-                else { irqEnable(IRQ_TIMER2); }
+                else { 
+                    irqEnable(IRQ_TIMER2); 
+                }
                 fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
               }
               else if ((iTx>71) && (iTx<106) && (iTy>159) && (iTy<169))  { // 72,160  -> 105,168   pause
@@ -845,6 +854,7 @@ void dsMainLoop(void)
               else if ((iTx>115) && (iTx<138) && (iTy>159) && (iTy<169))  { // Snap HSC Sram
                 dsPrintValue(13,0,0, "SAVING");
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+                WAITVBL
                 cartridge_SaveHighScoreSram();
                 dsPrintValue(13,0,0, "      ");
                 dampen=60;
@@ -856,7 +866,9 @@ void dsMainLoop(void)
                 proFindFiles();
                 romSel=dsWaitForRom();
                 if (romSel) { etatEmu=A7800_PLAYINIT; dsLoadGame(proromlist[ucFicAct].filename); }
-                else { irqEnable(IRQ_TIMER2); }
+                else { 
+                    irqEnable(IRQ_TIMER2); 
+                }
                 fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
               }
             } else keys_touch=0;
@@ -871,6 +883,8 @@ void dsMainLoop(void)
               if ( (keys_pressed & KEY_Y) )  { full_speed = 1-full_speed; if (full_speed) dsPrintValue(28,0,0,"FS"); else dsPrintValue(28,0,0,"  ");}  
               if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
               if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
+//              if ( (keys_pressed & KEY_R) )  { keyboard_data[15] = (keyboard_data[15] == DIFF_A ? DIFF_B:DIFF_A); dsPrintDifficultySwitches();}
+//              if ( (keys_pressed & KEY_L) )  { keyboard_data[16] = (keyboard_data[16] == DIFF_A ? DIFF_B:DIFF_A); dsPrintDifficultySwitches();}
           }
           dampen = 6;
         } else dampen--;
@@ -895,12 +909,12 @@ void dsMainLoop(void)
 
             if (fpsDisplay)
             {
-                int x = gTotalAtariFrames;
+                int fps = gTotalAtariFrames;
                 gTotalAtariFrames = 0;
-                fpsbuf[0] = '0' + (int)x/100;
-                x = x % 100;
-                fpsbuf[1] = '0' + (int)x/10;
-                fpsbuf[2] = '0' + (int)x%10;
+                fpsbuf[0] = '0' + (int)fps/100;
+                fps = fps % 100;
+                fpsbuf[1] = '0' + (int)fps/10;
+                fpsbuf[2] = '0' + (int)fps%10;
                 fpsbuf[3] = 0;
                 dsPrintValue(0,0,0, fpsbuf);
             }

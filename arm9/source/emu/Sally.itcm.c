@@ -83,21 +83,27 @@ static const byte SALLY_CYCLESX4[256] = {
 	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4
 };
 
+// For when you know it's an opcode or operand and, therefore, just a normal RAM/ROM fetch
+static inline byte memory_Read_Fast(word addr)
+{
+    return memory_ram[addr];
+}
+
 // ----------------------------------------------------------------------------
 // Push
 // ----------------------------------------------------------------------------
-static inline void sally_Push(byte data) {
+static inline void sally_Push(byte data) 
+{
   memory_Write(sally_s + 256, data);
-  //ALEK 221209 memory_ram[sally_s + 256] = data;
   sally_s--;
 }
 
 // ----------------------------------------------------------------------------
 // Pop
 // ----------------------------------------------------------------------------
-static inline byte sally_Pop( ) {
+static inline byte sally_Pop( ) 
+{
   sally_s++;
-  //ALEK 221209 return memory_Read(sally_s + 256);
   return memory_ram[sally_s + 256];
 }
 
@@ -124,7 +130,6 @@ static inline void sally_Flags(byte data) {
 static inline void sally_Branch(byte branch) {
   if(branch) {
     pair temp = sally_pc;
-    //sally_pc.w += (char)sally_address.b.l;
     sally_pc.w += (signed char)sally_address.b.l;
        
     if(temp.b.h != sally_pc.b.h) {
@@ -141,9 +146,8 @@ static inline void sally_Branch(byte branch) {
 // ----------------------------------------------------------------------------
 static inline void sally_Delay(byte delta) {
   pair address1 = sally_address;
-  pair address2 = sally_address;
   address1.w -= delta;
-  if(address1.b.h != address2.b.h) {
+  if(address1.b.h != sally_address.b.h) {
     sally_cyclesX4 += 4;
   }
 }
@@ -152,16 +156,16 @@ static inline void sally_Delay(byte delta) {
 // Absolute
 // ----------------------------------------------------------------------------
 static inline void sally_Absolute( ) {
-  sally_address.b.l = memory_Read(sally_pc.w++);
-  sally_address.b.h = memory_Read(sally_pc.w++);
+  sally_address.b.l = memory_Read_Fast(sally_pc.w++);
+  sally_address.b.h = memory_Read_Fast(sally_pc.w++);
 }
 
 // ----------------------------------------------------------------------------
 // AbsoluteX
 // ----------------------------------------------------------------------------
 static inline void sally_AbsoluteX( ) {
-  sally_address.b.l = memory_Read(sally_pc.w++);
-  sally_address.b.h = memory_Read(sally_pc.w++);
+  sally_address.b.l = memory_Read_Fast(sally_pc.w++);
+  sally_address.b.h = memory_Read_Fast(sally_pc.w++);
   sally_address.w += sally_x;
 }
 
@@ -169,8 +173,8 @@ static inline void sally_AbsoluteX( ) {
 // AbsoluteY
 // ----------------------------------------------------------------------------
 static inline void sally_AbsoluteY( ) {
-  sally_address.b.l = memory_Read(sally_pc.w++);
-  sally_address.b.h = memory_Read(sally_pc.w++);
+  sally_address.b.l = memory_Read_Fast(sally_pc.w++);
+  sally_address.b.h = memory_Read_Fast(sally_pc.w++);
   sally_address.w += sally_y;
 }
 
@@ -186,8 +190,8 @@ static inline void sally_Immediate( ) {
 // ----------------------------------------------------------------------------
 static inline void sally_Indirect( ) {
   pair base;
-  base.b.l = memory_Read(sally_pc.w++);
-  base.b.h = memory_Read(sally_pc.w++);
+  base.b.l = memory_Read_Fast(sally_pc.w++);
+  base.b.h = memory_Read_Fast(sally_pc.w++);
   sally_address.b.l = memory_Read(base.w);
   sally_address.b.h = memory_Read(base.w + 1);
 }
@@ -196,7 +200,7 @@ static inline void sally_Indirect( ) {
 // IndirectX
 // ----------------------------------------------------------------------------
 static inline void sally_IndirectX( ) {
-  sally_address.b.l = memory_Read(sally_pc.w++) + sally_x;
+  sally_address.b.l = memory_Read_Fast(sally_pc.w++) + sally_x;
   sally_address.b.h = memory_Read(sally_address.b.l + 1);
   sally_address.b.l = memory_Read(sally_address.b.l);
 }
@@ -205,7 +209,7 @@ static inline void sally_IndirectX( ) {
 // IndirectY
 // ----------------------------------------------------------------------------
 static inline void sally_IndirectY( ) {
-  sally_address.b.l = memory_Read(sally_pc.w++);
+  sally_address.b.l = memory_Read_Fast(sally_pc.w++);
   sally_address.b.h = memory_Read(sally_address.b.l + 1);
   sally_address.b.l = memory_Read(sally_address.b.l);
   sally_address.w += sally_y;
@@ -215,21 +219,21 @@ static inline void sally_IndirectY( ) {
 // Relative
 // ----------------------------------------------------------------------------
 static inline void sally_Relative( ) {
-  sally_address.w = memory_Read(sally_pc.w++);
+  sally_address.w = memory_Read_Fast(sally_pc.w++);
 }
 
 // ----------------------------------------------------------------------------
 // Zero Page
 // ----------------------------------------------------------------------------
 static inline void sally_ZeroPage( ) {
-  sally_address.w = memory_Read(sally_pc.w++);
+  sally_address.w = memory_Read_Fast(sally_pc.w++);
 }
 
 // ----------------------------------------------------------------------------
 // ZeroPageX
 // ----------------------------------------------------------------------------
 static inline void sally_ZeroPageX( ) {
-  sally_address.w = memory_Read(sally_pc.w++);
+  sally_address.w = memory_Read_Fast(sally_pc.w++);
   sally_address.b.l += sally_x;
 }
 
@@ -237,7 +241,7 @@ static inline void sally_ZeroPageX( ) {
 // ZeroPageY
 // ----------------------------------------------------------------------------
 static inline void sally_ZeroPageY( ) {
-  sally_address.w = memory_Read(sally_pc.w++);
+  sally_address.w = memory_Read_Fast(sally_pc.w++);
   sally_address.b.l += sally_y;
 }
 
@@ -1053,8 +1057,8 @@ void sally_Execute(unsigned int cycles )
 
   while (prosystem_cycles<cycles) 
   {
-  sally_opcode = memory_ram[sally_pc.w++];
-  sally_cyclesX4 = SALLY_CYCLESX4[sally_opcode];
+    sally_opcode = memory_ram[sally_pc.w++];
+    sally_cyclesX4 = SALLY_CYCLESX4[sally_opcode];
   
 	goto *a_jump_table[sally_opcode];
   
@@ -1939,7 +1943,7 @@ l_0x02:
 next_inst:
     prosystem_cycles += sally_cyclesX4;
     if( half_cycle ) prosystem_cycles += 2;
-      
+#ifndef DS_LITE        
     if(riot_timing) 
     {
       riot_UpdateTimer(sally_cyclesX4 >> 2);
@@ -1950,5 +1954,6 @@ next_inst:
       memory_ram[WSYNC] = false;
       break;
     }
+#endif      
   }
 }

@@ -45,12 +45,13 @@ typedef struct {
 
 
 Database_Entry game_list[] = {
+  {"f5150c0fc1948832211e57852abb0c6e",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=7800 Utility Cart
   {"4332c24e4f3bc72e7fe1b77adf66c2b7",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=3D Asteroids
   {"0be996d25144966d5541c9eb4919b289",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Ace Of Aces
   {"aadde920b3aaba03bc10b40bd0619c94",  CT_SUPROM,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Ace Of Aces
   {"877dcc97a775ed55081864b2dbf5f1e2",  CT_SUPLRG,    POKEY_NONE, LGN, LGN,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Alien Brigade
   {"de3e9496cb7341f865f27e5a72c7f2f5",  CT_SUPLRG,    POKEY_NONE, LGN, LGN,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Alien Brigade
-  {"212ee2a6e66d8bb7fbf26f343cc8dc19",  CT_SUPCAR,  POKEY_AT_450, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Arkanoid 78b Demo
+  {"212ee2a6e66d8bb7fbf26f343cc8dc19",  CT_SUPCAR,  POKEY_AT_450, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Arkanoid 78b Demo (purposely set HSC to false - game HSC is buggy)
   {"07342c78619ba6ffcc61c10e907e3b50",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25, 256,  220}, // title=Asteroids
   {"a65f79ad4a0bbdecd59d5f7eb3623fd7",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Asteroids Deluxe
   {"3d38281ed8a8d8c7cd457a18c92c8604",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 30, 17, 320,  210}, // title=Astro Blaster
@@ -66,7 +67,8 @@ Database_Entry game_list[] = {
   {"4e325918a8b3bbcf2f9405040abcfc6d",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  26, 256,  220}, // title=BonQ (found on Atairage Age site)
   {"9fa7743a016c9b7015ee1d386326f88e",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    SKIP_WSYNC, HSC_YES, 0,  26, 256,  220}, // title=BonQ (final Atariage)
   {"5a09946e57dbe30408a8f253a28d07db",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Centipede
-  {"38c056a48472d9a9e16ebda5ed91dae7",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Centipede
+  {"20660b667df538ec32a8e1b998438604",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Centipede - Frameless Hack
+  {"38c056a48472d9a9e16ebda5ed91dae7",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Centipede  
   {"93e4387864b014c155d7c17877990d1e",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Choplifter
   {"59d4edb0230b5acc918b94f6bc94779f",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Choplifter
   {"2e8e28f6ad8b9b9267d518d880c73ebb",  CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Commando
@@ -85,7 +87,7 @@ Database_Entry game_list[] = {
   {"4dc5f88243250461bd61053b13777060",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Donkey Kong Jr
   {"19f1ee292a23636bd57d408b62de79c7",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Donkey Kong
   {"8e96ef14ce9b5d84bcbc996b66d6d4c7",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Donkey Kong
-  {"c3107d3e3e17d67e3a11d47a5946a4f3",  CT_SUPLRG, POKEY_AT_4000, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  20, 256,  220}, // title=Donkey Kong XM Demo (purposely set HSC to false)
+  {"c3107d3e3e17d67e3a11d47a5946a4f3",  CT_SUPLRG, POKEY_AT_4000, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  20, 256,  220}, // title=Donkey Kong XM Demo (purposely set HSC to false - game HSC is buggy)
   {"543484c00ba233736bcaba2da20eeea9",  CT_ACTVIS,    POKEY_NONE, JOY, JOY,  NTSC,  NO_STEALING,    SKIP_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Double Dragon
   {"de2ebafcf0e37aaa9d0e9525a7f4dd62",  CT_ACTVIS,    POKEY_NONE, JOY, JOY,   PAL,  NO_STEALING,    SKIP_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Double Dragon
   {"b3143adbbb7d7d189e918e5b29d55a72",  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  23, 256,  220}, // title=Dungeon Stalker (homebrew)  

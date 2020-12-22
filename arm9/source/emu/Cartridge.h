@@ -89,7 +89,7 @@ extern void cartridge_Write(word address, byte data);
 extern bool cartridge_IsLoaded( );
 extern void cartridge_Release( );
 extern bool cartridge_LoadHighScoreCart();
-extern bool cartridge_SaveHighScoreSram();
+extern bool cartridge_SaveHighScoreSram(void);
 extern char cartridge_title[128];
 extern char cartridge_description[128];
 extern char cartridge_year[128];

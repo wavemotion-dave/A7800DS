@@ -45,10 +45,9 @@ void memory_Reset( ) {
 // ----------------------------------------------------------------------------
 // Read
 // ----------------------------------------------------------------------------
-uint16 cartridge_pokey_low[]  = {0, 0x4000, 0x0450};
-uint16 cartridge_pokey_high[] = {0, 0x400F, 0x046F};
 ITCM_CODE byte memory_Read(word address) 
 { 
+#ifndef DS_LITE    
   if (cartridge_pokey)
   {
       if (cartridge_pokey == POKEY_AT_4000)
@@ -62,7 +61,7 @@ ITCM_CODE byte memory_Read(word address)
           if ((address & 0xFFC0) == 0x440) return pokey_GetRegister(0x4000 + (address - 0x0450));
       }
   }
-
+#endif
   if ((address & 0xFFFC) == 0x284)
   {
       if (address & 0x1)
@@ -85,6 +84,7 @@ ITCM_CODE byte memory_Read(word address)
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_Write(word address, byte data) 
 {
+#ifndef DS_LITE        
   if (cartridge_pokey)
   {
       if (cartridge_pokey == POKEY_AT_4000)
@@ -106,7 +106,8 @@ ITCM_CODE void memory_Write(word address, byte data)
           }          
       }
   }
-
+#endif
+    
   if(!memory_rom[address]) 
   {
     switch(address) {
