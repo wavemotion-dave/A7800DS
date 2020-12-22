@@ -20,45 +20,24 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 // ----------------------------------------------------------------------------
-// ProSystem.h
+// HighScore.h
 // ----------------------------------------------------------------------------
-#ifndef PRO_SYSTEM_H
-#define PRO_SYSTEM_H
+#ifndef HIGHSCORE_H
+#define HIGHSCORE_H
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include "Equates.h"
-#include "Bios.h"
-#include "Cartridge.h"
-#include "HighScore.h"
-#include "Maria.h"
 #include "Memory.h"
-#include "Region.h"
-#include "Riot.h"
-#include "Sally.h"
-#include "Archive.h"
-#include "Tia.h"
+#include "Hash.h"
+#include "Logger.h"
 #include "Pokey.h"
+#include "Archive.h"
 
 #include "shared.h"
 
-//#define KANGAROO_MODE_SUPPORTED YES   // Uncomment this for KANGAROO support. Slightly slower and virtually no game uses it... but more accurate
-//#define DS_LITE 1
-
-extern int debug[];
-
-// The number of cycles per scan line
-#define CYCLES_PER_SCANLINE 454
-
-extern void prosystem_Reset( );
-extern void prosystem_ExecuteFrame(const byte* input);
-extern void prosystem_Pause(bool pause);
-extern void prosystem_Close( );
-extern bool prosystem_active;
-extern bool prosystem_paused;
-extern word prosystem_frequency;
-extern byte prosystem_frame;
-extern word prosystem_scanlines;
-extern uint prosystem_cycles;
+extern bool cartridge_LoadHighScoreCart(void);
+extern bool cartridge_SaveHighScoreSram(void);
+extern bool cartridge_SaveHighScoreSram(void);
 
 #endif
