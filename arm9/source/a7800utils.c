@@ -789,8 +789,13 @@ void dsMainLoop(void)
         // 655 -> 50 fps and 546 -> 60 fps
         if (!full_speed)
         {
+#ifndef DS_LITE            
             while(TIMER0_DATA < 546)
                 ;
+#else            
+            while(TIMER0_DATA < 500) // For the DS-LITE we throttle less...
+                ;
+#endif            
         }
         TIMER0_CR=0;
         TIMER0_DATA=0;

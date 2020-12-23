@@ -22,6 +22,7 @@
 // ----------------------------------------------------------------------------
 // Memory.cpp
 // ----------------------------------------------------------------------------
+#include "ProSystem.h"
 #include "Memory.h"
 #include "Maria.h"
 
@@ -45,9 +46,9 @@ void memory_Reset( ) {
 // ----------------------------------------------------------------------------
 // Read
 // ----------------------------------------------------------------------------
+#ifndef DS_LITE    
 ITCM_CODE byte memory_Read(word address) 
 { 
-#ifndef DS_LITE    
   if (cartridge_pokey)
   {
       if (cartridge_pokey == POKEY_AT_4000)
@@ -61,7 +62,6 @@ ITCM_CODE byte memory_Read(word address)
           if ((address & 0xFFC0) == 0x440) return pokey_GetRegister(0x4000 + (address - 0x0450));
       }
   }
-#endif
   if ((address & 0xFFFC) == 0x284)
   {
       if (address & 0x1)
@@ -78,6 +78,7 @@ ITCM_CODE byte memory_Read(word address)
   }
   return memory_ram[address];
 }
+#endif
 
 // ----------------------------------------------------------------------------
 // Write

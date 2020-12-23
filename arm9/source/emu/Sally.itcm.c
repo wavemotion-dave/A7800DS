@@ -73,6 +73,13 @@ static const byte SALLY_CYCLESX4[256] = {
 	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4
 };
 
+#ifdef DS_LITE    
+inline byte memory_Read(word address) 
+{ 
+  return memory_ram[address];
+}
+#endif
+
 // For when you know it's an opcode or operand and, therefore, just a normal RAM/ROM fetch
 static inline byte memory_Read_Fast(word addr)
 {
@@ -84,7 +91,8 @@ static inline byte memory_Read_Fast(word addr)
 // ----------------------------------------------------------------------------
 static inline void sally_Push(byte data) 
 {
-  memory_Write(sally_s + 256, data);
+  //memory_Write(sally_s + 256, data);
+  memory_ram[sally_s + 256] = data;
   sally_s--;
 }
 
@@ -174,8 +182,8 @@ static inline void sally_Indirect( ) {
   pair base;
   base.b.l = memory_Read_Fast(sally_pc.w++);
   base.b.h = memory_Read_Fast(sally_pc.w++);
-  sally_address.b.l = memory_Read(base.w);
-  sally_address.b.h = memory_Read(base.w + 1);
+  sally_address.b.l = memory_Read_Fast(base.w);
+  sally_address.b.h = memory_Read_Fast(base.w + 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -183,8 +191,8 @@ static inline void sally_Indirect( ) {
 // ----------------------------------------------------------------------------
 static inline void sally_IndirectX( ) {
   sally_address.b.l = memory_Read_Fast(sally_pc.w++) + sally_x;
-  sally_address.b.h = memory_Read(sally_address.b.l + 1);
-  sally_address.b.l = memory_Read(sally_address.b.l);
+  sally_address.b.h = memory_Read_Fast(sally_address.b.l + 1);
+  sally_address.b.l = memory_Read_Fast(sally_address.b.l);
 }
 
 // ----------------------------------------------------------------------------
@@ -192,8 +200,8 @@ static inline void sally_IndirectX( ) {
 // ----------------------------------------------------------------------------
 static inline void sally_IndirectY( ) {
   sally_address.b.l = memory_Read_Fast(sally_pc.w++);
-  sally_address.b.h = memory_Read(sally_address.b.l + 1);
-  sally_address.b.l = memory_Read(sally_address.b.l);
+  sally_address.b.h = memory_Read_Fast(sally_address.b.l + 1);
+  sally_address.b.l = memory_Read_Fast(sally_address.b.l);
   sally_address.w += sally_y;
 }
 
@@ -232,7 +240,7 @@ static inline void sally_ZeroPageY( ) {
 // ----------------------------------------------------------------------------
 static inline void sally_ADC( ) {
   byte data = memory_Read(sally_address.w);
-    
+  debug[0]++;
   if(sally_p & _fD) {
     word al = (sally_a & 15) + (data & 15) + (sally_p & _fC);
     word ah = (sally_a >> 4) + (data >> 4);
@@ -459,7 +467,7 @@ static inline void sally_CLV( ) {
 // CMP
 // ----------------------------------------------------------------------------
 static inline void sally_CMP( ) {
-  byte data = memory_Read(sally_address.w);
+  byte data = memory_Read_Fast(sally_address.w);//memory_Read(sally_address.w);
     
   if(sally_a >= data) {
     sally_p |= _fC;

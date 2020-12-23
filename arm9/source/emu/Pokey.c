@@ -188,7 +188,8 @@ byte pokey_GetRegister(word address)
   byte data = 0;
 
   byte addr = address & 0x0f;
-  if (addr < 8) {
+  if (addr < 8) 
+  {
     byte b = POT_input[addr];
     if (b <= pot_scanline)
       return b;

@@ -35,7 +35,9 @@
 #include "shared.h"
 
 extern void memory_Reset( );
+#ifndef DS_LITE
 extern ITCM_CODE byte memory_Read(word address);
+#endif
 extern ITCM_CODE void memory_Write(word address, byte data);
 //ALEK extern void memory_Write(byte data,word address);
 
