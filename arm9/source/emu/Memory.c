@@ -32,7 +32,8 @@ byte memory_rom[MEMORY_SIZE] = {0};
 // ----------------------------------------------------------------------------
 // Reset
 // ----------------------------------------------------------------------------
-void memory_Reset( ) {
+void memory_Reset( ) 
+{
   uint index;
   for(index = 0; index < MEMORY_SIZE; index++) {
     memory_ram[index] = 0;
@@ -226,7 +227,8 @@ ITCM_CODE void memory_Write(word address, byte data)
 // ----------------------------------------------------------------------------
 // WriteROM
 // ----------------------------------------------------------------------------
-void memory_WriteROM(word address, word size, const byte* data) {
+void memory_WriteROM(word address, word size, const byte* data) 
+{
   uint index;
   if((address + size) <= MEMORY_SIZE && data != NULL) {
     for(index = 0; index < size; index++) {
@@ -239,7 +241,8 @@ void memory_WriteROM(word address, word size, const byte* data) {
 // ----------------------------------------------------------------------------
 // ClearROM
 // ----------------------------------------------------------------------------
-void memory_ClearROM(word address, word size) {
+void memory_ClearROM(word address, word size) 
+{
   uint index;
   if((address + size) <= MEMORY_SIZE) {
     for(index = 0; index < size; index++) {

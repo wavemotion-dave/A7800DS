@@ -36,57 +36,22 @@ static word bios_size = 0;
 // ----------------------------------------------------------------------------
 bool bios_Load(char* filename) {
   if(strlen(filename) == 0) {
-#if 0
-    logger_LogError("Bios filename is invalid.", BIOS_SOURCE);
-#endif
     return false;
   }
   
   bios_Release( );
-#if 0
-  logger_LogInfo("Opening bios file " + filename + ".");
-#endif
 
   bios_size = archive_GetUncompressedFileSize(filename);
   if(bios_size == 0) {
     FILE* file = fopen(filename, "rb");
     if(file == NULL) {
-#if 0
-      logger_LogError("Failed to open the bios file " + filename + " for reading.", BIOS_SOURCE);
-#endif
       return false;
     } 
-  
     fseek(file, 0, SEEK_END);
-#if 0
-    if(fseek(file, 0, SEEK_END)) {
-      fclose(file);
-      logger_LogError("Failed to find the end of the bios file.", BIOS_SOURCE);
-      return false;
-    }
-#endif
-  
     bios_size = ftell(file);
     fseek(file, 0, SEEK_SET);
-#if 0
-    if(fseek(file, 0, SEEK_SET)) {
-      fclose(file);
-      logger_LogError("Failed to find the size of the bios file.", BIOS_SOURCE);
-      return false;
-    }
-#endif
-  
     bios_data = (byte *) malloc(bios_size);
     fread(bios_data, 1, bios_size, file);
-#if 0
-    if(fread(bios_data, 1, bios_size, file) != bios_size && ferror(file)) {
-      fclose(file);
-      logger_LogError("Failed to read the bios data.", BIOS_SOURCE);
-      bios_Release( );
-      return false;
-    }
-#endif
-  
     fclose(file);
   }
   else {

@@ -135,11 +135,15 @@ static inline void sally_Branch(byte branch) {
 // Delay
 // ----------------------------------------------------------------------------
 static inline void sally_Delay(byte delta) {
+#if 0
   pair address1 = sally_address;
   address1.w -= delta;
   if(address1.b.h != sally_address.b.h) {
     sally_cyclesX4 += 4;
   }
+#else
+  if (((word)sally_address.b.l + (word)delta) > 255) sally_cyclesX4 += 4;
+#endif  
 }
 
 // ----------------------------------------------------------------------------
@@ -515,7 +519,7 @@ static inline void sally_CPY( ) {
 // DEC
 // ----------------------------------------------------------------------------
 static inline void sally_DEC( ) {
-  byte data = memory_Read(sally_address.w);
+  byte data = memory_Read_Fast(sally_address.w);
   memory_Write(sally_address.w, --data);
   sally_Flags(data);
 }
@@ -546,7 +550,7 @@ static inline void sally_EOR( ) {
 // INC
 // ----------------------------------------------------------------------------
 static inline void sally_INC( ) {
-  byte data = memory_Read(sally_address.w);
+  byte data = memory_Read_Fast(sally_address.w);
   memory_Write(sally_address.w, ++data);
   sally_Flags(data);
 }
@@ -1037,6 +1041,7 @@ void sally_Execute(unsigned int cycles )
         &&l_0xf3, &&l_0xf4, &&l_0xf5, &&l_0xf6, &&l_0xf7, &&l_0xf8, &&l_0xf9, &&l_0xfa, &&l_0xfb,
         &&l_0xfc, &&l_0xfd, &&l_0xfe, &&l_0xff 
     };
+    byte data_cmp;
 
   while (prosystem_cycles<cycles) 
   {
@@ -1611,7 +1616,10 @@ void sally_Execute(unsigned int cycles )
 
     l_0xc1: 
       sally_IndirectX( ); 
-      sally_CMP( ); 
+      //sally_CMP( ); 
+      data_cmp = memory_Read_Fast(sally_address.w);
+      if(sally_a >= data_cmp) sally_p |= _fC; else sally_p &= ~_fC;
+      sally_Flags(sally_a - data_cmp);    
       goto next_inst;
 
     l_0xc4: 
@@ -1621,7 +1629,10 @@ void sally_Execute(unsigned int cycles )
 
     l_0xc5: 
       sally_ZeroPage( );  
-      sally_CMP( ); 
+      //sally_CMP( ); 
+      data_cmp = memory_Read_Fast(sally_address.w);
+      if(sally_a >= data_cmp) sally_p |= _fC; else sally_p &= ~_fC;
+      sally_Flags(sally_a - data_cmp);    
       goto next_inst;
 
     l_0xc6: 
@@ -1635,7 +1646,10 @@ void sally_Execute(unsigned int cycles )
 
     l_0xc9: 
       sally_Immediate( ); 
-      sally_CMP( ); 
+//      sally_CMP( ); 
+      data_cmp = memory_Read_Fast(sally_address.w);
+      if(sally_a >= data_cmp) sally_p |= _fC; else sally_p &= ~_fC;
+      sally_Flags(sally_a - data_cmp);    
       goto next_inst;
 
     l_0xca: 
@@ -1649,7 +1663,10 @@ void sally_Execute(unsigned int cycles )
 
     l_0xcd: 
       sally_Absolute( );  
-      sally_CMP( ); 
+//      sally_CMP( ); 
+      data_cmp = memory_Read_Fast(sally_address.w);
+      if(sally_a >= data_cmp) sally_p |= _fC; else sally_p &= ~_fC;
+      sally_Flags(sally_a - data_cmp);    
       goto next_inst;
 
     l_0xce: 
@@ -1664,13 +1681,19 @@ void sally_Execute(unsigned int cycles )
 
     l_0xd1: 
       sally_IndirectY( ); 
-      sally_CMP( ); 
+//      sally_CMP( ); 
+      data_cmp = memory_Read_Fast(sally_address.w);
+      if(sally_a >= data_cmp) sally_p |= _fC; else sally_p &= ~_fC;
+      sally_Flags(sally_a - data_cmp);    
       sally_Delay(sally_y); 
       goto next_inst;
 
     l_0xd5: 
       sally_ZeroPageX( ); 
-      sally_CMP( ); 
+//      sally_CMP( ); 
+      data_cmp = memory_Read_Fast(sally_address.w);
+      if(sally_a >= data_cmp) sally_p |= _fC; else sally_p &= ~_fC;
+      sally_Flags(sally_a - data_cmp);    
       goto next_inst;
 
     l_0xd6: 
@@ -1684,13 +1707,19 @@ void sally_Execute(unsigned int cycles )
 
     l_0xd9: 
       sally_AbsoluteY( ); 
-      sally_CMP( ); 
+//      sally_CMP( ); 
+      data_cmp = memory_Read_Fast(sally_address.w);
+      if(sally_a >= data_cmp) sally_p |= _fC; else sally_p &= ~_fC;
+      sally_Flags(sally_a - data_cmp);    
       sally_Delay(sally_y); 
       goto next_inst;
 
     l_0xdd: 
       sally_AbsoluteX( ); 
-      sally_CMP( ); 
+//      sally_CMP( ); 
+      data_cmp = memory_Read_Fast(sally_address.w);
+      if(sally_a >= data_cmp) sally_p |= _fC; else sally_p &= ~_fC;
+      sally_Flags(sally_a - data_cmp);    
       sally_Delay(sally_x); 
       goto next_inst;
 
