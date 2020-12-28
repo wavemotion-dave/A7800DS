@@ -884,10 +884,10 @@ void dsMainLoop(void)
           if (keys_pressed != last_keys_pressed)
           {
               last_keys_pressed = keys_pressed;
-              if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
               if ( (keys_pressed & KEY_SELECT) ) { tchepres(11); } // BUTTON SELECT
               if (cartridge_controller[0] != TWIN)
               {
+                if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
                 if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
                 if ( (keys_pressed & KEY_Y) )  { full_speed = 1-full_speed; if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}  
               }
@@ -911,6 +911,8 @@ void dsMainLoop(void)
             if ( (keys_pressed & KEY_B) ) { tchepres(13); }  // Left Joystick Down
             if ( (keys_pressed & KEY_X) ) { tchepres(15); }  // Left Joystick Up
             if ( (keys_pressed & KEY_Y) ) { tchepres(14); }  // Left Joystick Left
+            if ( (keys_pressed & KEY_START) ) { tchepres(4); }  // Fire Button (mainly to enter high scores)
+            
         }
         else
         {
