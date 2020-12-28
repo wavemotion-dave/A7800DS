@@ -391,6 +391,8 @@ void dsLoadGame(char *filename)
     GameConf.DS_Pad[ 6] = 12;  GameConf.DS_Pad[ 7] = 12;
     GameConf.DS_Pad[ 8] = 15;  GameConf.DS_Pad[ 9] = 16;
     GameConf.DS_Pad[10] = 14;  GameConf.DS_Pad[11] = 13;
+    GameConf.DS_Pad[12] = 6;   GameConf.DS_Pad[13] = 8;
+    GameConf.DS_Pad[14] = 7;   GameConf.DS_Pad[15] = 9;
 
     TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);                        
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
@@ -884,8 +886,11 @@ void dsMainLoop(void)
               last_keys_pressed = keys_pressed;
               if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
               if ( (keys_pressed & KEY_SELECT) ) { tchepres(11); } // BUTTON SELECT
-              if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
-              if ( (keys_pressed & KEY_Y) )  { full_speed = 1-full_speed; if (full_speed) dsPrintValue(28,0,0,"FS"); else dsPrintValue(28,0,0,"  ");}  
+              if (cartridge_controller[0] != TWIN)
+              {
+                if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
+                if ( (keys_pressed & KEY_Y) )  { full_speed = 1-full_speed; if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}  
+              }
               if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
               if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
 //              if ( (keys_pressed & KEY_R) )  { keyboard_data[15] = (keyboard_data[15] == DIFF_A ? DIFF_B:DIFF_A); dsPrintDifficultySwitches();}
@@ -894,14 +899,24 @@ void dsMainLoop(void)
           dampen = 6;
         } else dampen--;
         
-        // else manage a7800 pad 
+        // manage a7800 pad 
         if ( (keys_pressed & KEY_UP) ) { tchepres(0); } // UP
         if ( (keys_pressed & KEY_DOWN) ) { tchepres(1); } // DOWN
         if ( (keys_pressed & KEY_RIGHT) ) { tchepres(3); } // RIGHT
         if ( (keys_pressed & KEY_LEFT) ) { tchepres(2); } // LEFT
-
-        if ( (keys_pressed & KEY_A) ) { tchepres(4); }  // BUTTON #1
-        if ( (keys_pressed & KEY_B) ) { tchepres(5); }  // BUTTON #2
+            
+        if (cartridge_controller[0] == TWIN)
+        {
+            if ( (keys_pressed & KEY_A) ) { tchepres(12); }  // Left Joystick Right
+            if ( (keys_pressed & KEY_B) ) { tchepres(13); }  // Left Joystick Down
+            if ( (keys_pressed & KEY_X) ) { tchepres(15); }  // Left Joystick Up
+            if ( (keys_pressed & KEY_Y) ) { tchepres(14); }  // Left Joystick Left
+        }
+        else
+        {
+            if ( (keys_pressed & KEY_A) ) { tchepres(4); }  // BUTTON #1
+            if ( (keys_pressed & KEY_B) ) { tchepres(5); }  // BUTTON #2
+        }
 
         // -------------------------------------------------------------
         // Stuff to do once/second such as FPS display and Debug Data

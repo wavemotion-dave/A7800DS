@@ -24,7 +24,7 @@ typedef struct FICtoLoad {
 typedef struct {
   unsigned int sndLevel;
   unsigned int m_ScreenRatio; // 0 = original show, 1 = full screen
-  unsigned short DS_Pad[12]; // each key mapping
+  unsigned short DS_Pad[16]; // each key mapping
   unsigned int m_DisplayFPS;
 } gamecfg;
 
