@@ -31,6 +31,10 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V1.9 : 31-Dec-2020 by wavemotion-dave
+  * Robotron now works with with Twin-Sticks! 
+  * Minor cleanup and polish to end the year...
+  
 V1.8 : 23-Dec-2020 by wavemotion-dave
   * Major improvements to CPU core to get about 10% speed boost across the board.
     More games playable at full speed on DSi and above. Special DS-LITE build 
