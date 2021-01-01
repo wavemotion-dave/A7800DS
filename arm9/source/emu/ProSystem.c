@@ -124,12 +124,18 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     }
  
     sally_Execute(CYCLES_PER_SCANLINE);
-    tia_Process(2);
     if(cartridge_pokey) 
     {
-        pokey_Process(2);      
+        // --------------------------------------------------------------------
+        // If Pokey is enabled, we will only process 1 sample per scanline
+        // instead of the normal 2 as we also have to process the TIA within
+        // that handler and we're already pressed for emulation speed... 
+        // This is good enough to get about 16KHz sample rate and on the 
+        // DS handheld, it sounds plenty good enough...
+        // --------------------------------------------------------------------
+        pokey_Process(1);
         pokey_Scanline();
-    }
+    } else tia_Process(2); // If all we have to deal with is the TIA, we can do so at 31KHz
   }  
 }
 

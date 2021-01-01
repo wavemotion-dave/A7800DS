@@ -40,7 +40,6 @@
 // ----------------------------------------------------------------------------
 #ifndef TIA_H
 #define TIA_H
-#define TIA_BUFFER_SIZE 624
 
 #include "Equates.h"
 
@@ -56,7 +55,7 @@ extern void tia_SetRegister(word address, byte data);
 extern void tia_MemoryChannel(byte channel);
 extern void tia_Clear( );
 extern void tia_Process(uint length);
-extern byte tia_buffer[TIA_BUFFER_SIZE];
+extern byte tia_buffer[];
 extern uint tia_size;
 
 #endif

@@ -31,6 +31,8 @@ int full_speed = 0;
 int etatEmu;
 int gTotalAtariFrames=0;
 int fpsDisplay=0;
+int atari_frames = 0;
+
 
 #define MAX_DEBUG 10 
 int debug[MAX_DEBUG]={0};
@@ -38,7 +40,7 @@ int debug[MAX_DEBUG]={0};
 //#define CART_INFO
 
 #ifndef DS_LITE    
-#define SOUND_FREQ  22050
+#define SOUND_FREQ  (31440/2)
 #else
 #define SOUND_FREQ  11025
 #endif
@@ -98,6 +100,48 @@ static void DumpDebugData(void)
     }
 #endif
 }
+
+
+static unsigned char lastPokeySample = 0;
+static unsigned char lastTiaSample = 0;
+static unsigned char lastSample = 0;
+
+void VsoundHandler(void) 
+{
+  static unsigned int sound_idx = 0;
+  extern unsigned char tia_buffer[];
+  extern int tiaBufIdx;
+  static int myTiaBufIdx=0;
+  
+  // If there is a fresh sample... 
+  if (myTiaBufIdx != tiaBufIdx)
+  {
+      lastSample = tia_buffer[myTiaBufIdx];
+      myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
+  }
+  sound_buffer[sound_idx] = lastSample;
+  sound_idx = (sound_idx+1) & (SNDLENGTH-1);  
+}
+
+void VsoundHandler_Pokey(void)
+ {
+  static unsigned int sound_idx = 0;
+  extern unsigned char pokey_buffer[];
+  extern int pokeyBufIdx;
+  static int myPokeyBufIdx=0;
+
+  // If there is a fresh Pokey sample... 
+  if (myPokeyBufIdx != pokeyBufIdx)
+  {
+      lastPokeySample = pokey_buffer[myPokeyBufIdx];
+      myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
+  }
+  sound_buffer[sound_idx] = lastPokeySample;
+  sound_idx = (sound_idx+1) & (SNDLENGTH-1);    
+}
+
+
+
 // Color fading effect
 void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr, unsigned char valEnd, unsigned char uWait) {
   unsigned short ucFade;
@@ -315,24 +359,6 @@ void dsFreeEmu(void)
   TIMER2_CR=0; irqDisable(IRQ_TIMER2); 
 }
 
-static word targetIndex = 0;
-void VsoundHandler(void) 
-{
-  static u16 sound_idx=0;
-  sound_buffer[sound_idx] = tia_buffer[targetIndex]+128;
-  sound_idx = (sound_idx + 1) & 0x0FFF;
-  targetIndex=(targetIndex + 1) % 524;  
-}
-
-void VsoundHandler_Pokey(void)
- {
-  static u16 sound_idx=0;
-  sound_buffer[sound_idx] = ((tia_buffer[targetIndex]+pokey_buffer[targetIndex])/2)+128;
-  sound_idx = (sound_idx + 1) & 0x0FFF;
-  targetIndex=(targetIndex + 1) % 524;  
-}
-
-
 void dsLoadGame(char *filename) 
 {
   unsigned int index;
@@ -361,7 +387,11 @@ void dsLoadGame(char *filename)
   
     dsShowScreenEmu();
     prosystem_Reset();
-
+      
+    lastPokeySample = 0;
+    lastTiaSample = 0;
+    lastSample = 0;
+      
 #ifdef CART_INFO
     char cart_info_buf[64];
     dsPrintValue(0,22,0, (char*)cartridge_digest);
@@ -369,6 +399,11 @@ void dsLoadGame(char *filename)
     cart_info_buf[32] = 0;
     dsPrintValue(0,21,0,cart_info_buf);
 #endif          
+      
+    if (cartridge_region != NTSC)
+    {
+        dsPrintValue(0,22,0,"PAL ROM NOT SUPPORTED. SEEK NTSC");
+    }
       
     // Init palette
     for(index = 0; index < 256; index++) {
@@ -394,13 +429,19 @@ void dsLoadGame(char *filename)
     GameConf.DS_Pad[12] = 6;   GameConf.DS_Pad[13] = 8;
     GameConf.DS_Pad[14] = 7;   GameConf.DS_Pad[15] = 9;
 
-    TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);                        
+    dsInstallSoundEmuFIFO();
+    TIMER2_DATA = TIMER_FREQ((cartridge_pokey ? SOUND_FREQ:SOUND_FREQ*2));
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
     if (cartridge_pokey)
         irqSet(IRQ_TIMER2, VsoundHandler_Pokey);  
     else
         irqSet(IRQ_TIMER2, VsoundHandler);
     irqEnable(IRQ_TIMER2);  
+      
+    atari_frames = 0;
+    TIMER0_CR=0;
+    TIMER0_DATA=0;
+    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
   }
 }
 
@@ -742,7 +783,7 @@ void dsInstallSoundEmuFIFO(void)
 {
     FifoMessage msg;
     msg.SoundPlay.data = &sound_buffer;
-    msg.SoundPlay.freq = SOUND_FREQ;
+    msg.SoundPlay.freq = (cartridge_pokey ? SOUND_FREQ:SOUND_FREQ*2);
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
@@ -791,20 +832,20 @@ void dsMainLoop(void)
         // 655 -> 50 fps and 546 -> 60 fps
         if (!full_speed)
         {
-#ifndef DS_LITE            
-            while(TIMER0_DATA < 546)
+            while(TIMER0_DATA < (546*atari_frames))
                 ;
-#else            
-            while(TIMER0_DATA < 500) // For the DS-LITE we throttle less...
-                ;
-#endif            
         }
-        TIMER0_CR=0;
-        TIMER0_DATA=0;
-        TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
 
         // Execute one frame
         prosystem_ExecuteFrame(keyboard_data);
+        if (++atari_frames == 60)
+        {
+            TIMER0_CR=0;
+            TIMER0_DATA=0;
+            TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+            atari_frames=0;
+        }
+        
 
         // Read keys
         if (special_hsc_entry > 0)
@@ -843,6 +884,11 @@ void dsMainLoop(void)
                 }
                 fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
               }
+              else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper corner...
+                 full_speed = 1-full_speed; 
+                 if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");
+                 dampen=10;
+              }
               else if ((iTx>71) && (iTx<106) && (iTy>159) && (iTy<169))  { // 72,160  -> 105,168   pause
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
                 tchepres(10);
@@ -872,7 +918,7 @@ void dsMainLoop(void)
                 // Find files in current directory and show it 
                 proFindFiles();
                 romSel=dsWaitForRom();
-                if (romSel) { etatEmu=A7800_PLAYINIT; dsLoadGame(proromlist[ucFicAct].filename); }
+                if (romSel) { etatEmu=A7800_PLAYINIT; dsLoadGame(proromlist[ucFicAct].filename); if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}
                 else { 
                     irqEnable(IRQ_TIMER2); 
                 }
@@ -889,12 +935,9 @@ void dsMainLoop(void)
               {
                 if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
                 if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
-                if ( (keys_pressed & KEY_Y) )  { full_speed = 1-full_speed; if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}  
               }
               if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
               if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
-//              if ( (keys_pressed & KEY_R) )  { keyboard_data[15] = (keyboard_data[15] == DIFF_A ? DIFF_B:DIFF_A); dsPrintDifficultySwitches();}
-//              if ( (keys_pressed & KEY_L) )  { keyboard_data[16] = (keyboard_data[16] == DIFF_A ? DIFF_B:DIFF_A); dsPrintDifficultySwitches();}
           }
           dampen = 6;
         } else dampen--;
@@ -911,13 +954,13 @@ void dsMainLoop(void)
             if ( (keys_pressed & KEY_B) ) { tchepres(13); }  // Left Joystick Down
             if ( (keys_pressed & KEY_X) ) { tchepres(15); }  // Left Joystick Up
             if ( (keys_pressed & KEY_Y) ) { tchepres(14); }  // Left Joystick Left
-            if ( (keys_pressed & KEY_START) ) { tchepres(4); }  // Fire Button (mainly to enter high scores)
-            
+            if ( (keys_pressed & KEY_START) ) { tchepres(4); }  // Fire Button (mainly to enter high scores and start game)            
         }
         else
         {
             if ( (keys_pressed & KEY_A) ) { tchepres(4); }  // BUTTON #1
             if ( (keys_pressed & KEY_B) ) { tchepres(5); }  // BUTTON #2
+            if ( (keys_pressed & KEY_Y) ) { tchepres(4); }  // BUTTON #1
         }
 
         // -------------------------------------------------------------
@@ -928,7 +971,6 @@ void dsMainLoop(void)
             TIMER1_CR = 0;
             TIMER1_DATA = 0;
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
-
             if (fpsDisplay)
             {
                 int fps = gTotalAtariFrames;

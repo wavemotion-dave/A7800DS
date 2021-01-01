@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #include "Pokey.h"
 #include "ProSystem.h"
+#include "Sound.h"
 #define POKEY_NOTPOLY5 0x80
 #define POKEY_POLY4 0x40
 #define POKEY_PURE 0x20
@@ -68,12 +69,13 @@
 
 #define SK_RESET	0x03
 
-byte pokey_buffer[POKEY_BUFFER_SIZE] = {0};
-uint pokey_size = 524;
+byte pokey_buffer[SNDLENGTH] = {0};
+uint pokey_size = SNDLENGTH;
+
+int pokeyBufIdx = 0;
 
 static uint pokey_frequency = 1787520;
-static uint pokey_sampleRate = 31440;
-static uint pokey_soundCntr = 0;
+static uint pokey_sampleRate = (31440/2);
 static byte pokey_audf[4];
 static byte pokey_audc[4];
 static byte pokey_audctl;
@@ -171,6 +173,8 @@ void pokey_Reset( )
   r17 = 0;
   random_scanline_counter = 0;
   prev_random_scanline_counter = 0;  
+    
+  pokeyBufIdx=0;
 }                           
 
 
@@ -433,13 +437,12 @@ static inline void loc_set_byte(byte *p, uint v)
 // ----------------------------------------------------------------------------
 void pokey_Process(uint length) 
 {
-  byte* buffer = pokey_buffer + pokey_soundCntr;
+  byte* buffer = pokey_buffer + pokeyBufIdx;
   byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
-  uint size = length;
 
   while(length) 
   {
-    byte currentValue;
+    int currentValue;
     byte nextEvent = POKEY_SAMPLE;
     uint eventMin = loc_get_int(sampleCntrPtrB);
 
@@ -497,16 +500,15 @@ void pokey_Process(uint length)
         currentValue += pokey_outVol[channel];
       }
 
+      extern int TIA_Sample(void);
       currentValue = (currentValue << 2) + 8;
+      currentValue += TIA_Sample();        
+      currentValue = (currentValue >> 1);
       *buffer++ = currentValue;
+      pokeyBufIdx++;
+      pokeyBufIdx &= (SNDLENGTH-1);
       length--;
     }
-  }  
-  
-  pokey_soundCntr += size;
-  if(pokey_soundCntr >= pokey_size) 
-  {
-    pokey_soundCntr = 0;
   }
 }
 
@@ -515,8 +517,9 @@ void pokey_Process(uint length)
 // ----------------------------------------------------------------------------
 void pokey_Clear( ) {
   uint index;
-  for(index = 0; index < POKEY_BUFFER_SIZE; index++) {
+  for(index = 0; index < SNDLENGTH; index++) {
     pokey_buffer[index] = 0;
+    pokeyBufIdx=0;
   }
 }
 

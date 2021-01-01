@@ -51,7 +51,7 @@ Database_Entry game_list[] = {
   {"aadde920b3aaba03bc10b40bd0619c94",  CT_SUPROM,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Ace Of Aces
   {"877dcc97a775ed55081864b2dbf5f1e2",  CT_SUPLRG,    POKEY_NONE, LGN, LGN,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Alien Brigade
   {"de3e9496cb7341f865f27e5a72c7f2f5",  CT_SUPLRG,    POKEY_NONE, LGN, LGN,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Alien Brigade
-  {"212ee2a6e66d8bb7fbf26f343cc8dc19",  CT_SUPCAR,  POKEY_AT_450, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Arkanoid 78b Demo (purposely set HSC to false - game HSC is buggy)
+  {"212ee2a6e66d8bb7fbf26f343cc8dc19",  CT_SUPCAR,  POKEY_AT_450, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  17, 256,  200}, // title=Arkanoid 78b Demo (purposely set HSC to false - game HSC is buggy)
   {"07342c78619ba6ffcc61c10e907e3b50",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25, 256,  220}, // title=Asteroids
   {"a65f79ad4a0bbdecd59d5f7eb3623fd7",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Asteroids Deluxe
   {"3d38281ed8a8d8c7cd457a18c92c8604",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 30, 17, 320,  210}, // title=Astro Blaster
@@ -145,7 +145,7 @@ Database_Entry game_list[] = {
   {"74569571a208f8b0b1ccfb22d7c914e1",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  12, 256,  220}, // title=One On One
   {"8dba0425f0262e5704581d8757a1a6e3",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  12, 256,  220}, // title=One On One
   {"5013b69cb05b21a1194ce48517df7bfc",  CT_NORMAL, POKEY_AT_4000, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  19, 256,  220}, // title=Pac-Man Collection (homebrew)
-  {"044657294450c869c45e7ef61f4870de",  CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  27, 256,  220}, // title=Pac-Man Collection 40th Anniversary Edition (homebrew)
+  {"044657294450c869c45e7ef61f4870de",  CT_SUPCAR,  POKEY_AT_450, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  27, 256,  220}, // title=Pac-Man Collection 40th Anniversary Edition (homebrew)
   {"1a5207870dec6fae9111cb747e20d8e3",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Pete Rose Baseball
   {"386bded4a944bae455fedf56206dd1dd",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Pete Rose Baseball
   {"ec206c8db4316eb1ebce9fc960da7d8f",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Pit Fighter                     
@@ -238,7 +238,7 @@ bool database_Load(byte *digest)
     cartridge_xScale  = 256;
     cartridge_yScale  = 220;
   }
-
+  
   return true;
 }
 

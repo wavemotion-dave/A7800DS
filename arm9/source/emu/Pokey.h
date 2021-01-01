@@ -40,7 +40,6 @@
 // ----------------------------------------------------------------------------
 #ifndef POKEY_H
 #define POKEY_H
-#define POKEY_BUFFER_SIZE 624
 #define POKEY_AUDF1 0x4000
 #define POKEY_AUDC1 0x4001
 #define POKEY_AUDF2 0x4002
@@ -82,7 +81,7 @@ extern byte pokey_GetRegister(word address);
 extern void pokey_Process(uint length);
 extern void pokey_Scanline();
 extern void pokey_Clear( );
-extern byte pokey_buffer[POKEY_BUFFER_SIZE];
+extern byte pokey_buffer[];
 extern uint pokey_size;
 
 #endif

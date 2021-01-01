@@ -38,14 +38,16 @@
 // ----------------------------------------------------------------------------
 // Tia.cpp
 // ----------------------------------------------------------------------------
+#include "Sound.h"
 #include "Tia.h"
 #define TIA_POLY4_SIZE 15
 #define TIA_POLY5_SIZE 31
 #define TIA_POLY9_SIZE 511
 
-byte tia_buffer[TIA_BUFFER_SIZE] = {0};
-uint tia_size = 524;
+byte tia_buffer[SNDLENGTH] = {0};
+uint tia_size = SNDLENGTH;
 extern int debug[];
+int tiaBufIdx = 0;
 
 static const byte TIA_POLY4[ ] = {1,1,0,1,1,1,0,0,0,0,1,0,1,0,0};
 static const byte TIA_POLY5[ ] = {0,0,1,0,1,1,0,0,1,1,1,1,1,0,0,0,1,1,0,1,1,1,0,1,0,1,0,0,0,0,1};
@@ -60,7 +62,6 @@ byte tia_audv[2] = {0};
 static uint tia_poly4Cntr[2] = {0};
 static uint tia_poly5Cntr[2] = {0};
 static uint tia_poly9Cntr[2] = {0};
-static uint tia_soundCntr = 0;
 
 // ----------------------------------------------------------------------------
 // ProcessChannel
@@ -101,7 +102,7 @@ static void tia_ProcessChannel(byte channel)
 void tia_Reset( ) {
   uint index;
   
-  tia_soundCntr = 0;
+  tiaBufIdx = 0;
   for(index = 0; index < 2; index++) {
     tia_volume[index] = 0;
     tia_counterMax[index] = 0;
@@ -121,7 +122,7 @@ void tia_Reset( ) {
 // ----------------------------------------------------------------------------
 void tia_Clear( ) {
   uint index;
-  for(index = 0; index < TIA_BUFFER_SIZE; index++) {
+  for(index = 0; index < SNDLENGTH; index++) {
     tia_buffer[index] = 0;
   }
 }
@@ -210,12 +211,34 @@ void tia_MemoryChannel(byte channel)
   }
 }
 
+int TIA_Sample(void)
+{
+    if(tia_counter[0] > 1) 
+    {
+      tia_counter[0]--;
+    }
+    else if(tia_counter[0] == 1) 
+    {
+      tia_counter[0] = tia_counterMax[0];
+      tia_ProcessChannel(0);
+    }
+    if(tia_counter[1] > 1) 
+    {
+      tia_counter[1]--;
+    }
+    else if(tia_counter[1] == 1) 
+    {
+      tia_counter[1] = tia_counterMax[1];
+      tia_ProcessChannel(1);
+    }
+    return ((int)tia_volume[0] + (int)tia_volume[1]);
+}
+
 // --------------------------------------------------------------------------------------
 // Process
 // --------------------------------------------------------------------------------------
 void tia_Process(uint length) 
 {
-  static int sound_sample_150pct=0;
   uint index;
   for(index = 0; index < length; index++) 
   {
@@ -237,12 +260,7 @@ void tia_Process(uint length)
       tia_counter[1] = tia_counterMax[1];
       tia_ProcessChannel(1);
     }
-    // We sample 50% more than we output... helps _slightly_ with sound quality...
-    if (sound_sample_150pct == 0 || sound_sample_150pct == 1)
-    {  
-      tia_buffer[tia_soundCntr] = ((tia_volume[0] + tia_volume[1])) + 128;
-      tia_soundCntr = (tia_soundCntr+1) % tia_size;
-    } else index--;
-    sound_sample_150pct = (sound_sample_150pct+1) % 3;    
+    tia_buffer[tiaBufIdx] = ((tia_volume[0] + tia_volume[1]));
+    tiaBufIdx = (tiaBufIdx+1) & (SNDLENGTH-1);
   }
 }

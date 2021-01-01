@@ -3,13 +3,15 @@ a7800DS
 a7800DS is an Atari ProSystem 7800 console emulator.
 To use this emulator, you must use compatibles rom with a78/bin format. 
 Strongly recommend you use NTSC roms... PAL ones have more scanlines and will render
-more slowly. All the debug on this port to the DS has been done with NTSC roms.
+more slowly and since the sound core is tied to scanlines, the sound will be wrong. 
+All the debug on this port to the DS has been done with NTSC roms - seek them out!
 Do not ask me about such files, I don't have them. A search with Google will certainly 
 help you. 
 
 Features :
 ----------
- Most things you should expect from an emulator. Speed is good. Sound less so.
+ Most things you should expect from an emulator. Speed is good. Sound is passable except
+ for the few games that run below 60FPS.
 
 Philosophy :
 ----------
@@ -31,6 +33,10 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.0 : 1-Jan-2021 by wavemotion-dave
+  * Pokey and TIA sound core reworked to provide sound that is worth listening to.
+  * Please run on a DSi, DSi-XL/LL or 3DS. You won't be happy with the performance on a DS-LITE/PHAT.
+  
 V1.9 : 31-Dec-2020 by wavemotion-dave
   * Robotron now works with with Twin-Sticks! 
   * Minor cleanup and polish to end the year...
@@ -103,7 +109,7 @@ Controls :
  * SELECT : SELECT Button
  * START  : PAUSE Button
  * X      : FPS Display
- * Y      : Full-Speed 
+ * Y      : Fire Button 1 (for those that prefer not using A)
  * L/R    : Shift screen up/down by 1 pixel
  
  Use stylus on buttons for other actions on bottom screen.  
