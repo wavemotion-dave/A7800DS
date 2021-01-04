@@ -283,6 +283,9 @@ void dsInitScreenMain(void)
     //SetYtrigger(192); //trigger 2 lines before vsync
     irqSet(IRQ_VBLANK, vblankIntr);
     irqEnable(IRQ_VBLANK);
+    
+  vramSetBankB(VRAM_B_MAIN_BG_0x06020000 ); // Need to do this early so we can steal a bit of this RAM for bank swap...
+  vramSetBankD(VRAM_D_MAIN_BG_0x06040000 ); // Not using this for video but for cartridge bank swap area... it's faster!
 }
 
 void dsInitTimer(void) 
@@ -294,9 +297,10 @@ void dsInitTimer(void)
 void dsShowScreenEmu(void) 
 {
   // Change vram
-	videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
+  videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
   vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
   vramSetBankB(VRAM_B_MAIN_BG_0x06020000 );
+  vramSetBankD(VRAM_D_MAIN_BG_0x06040000 ); // Not using this for video but for cartridge bank swap area... it's faster!
   bg0 = bgInit(3, BgType_Bmp8, BgSize_B8_512x512, 0,0);
   bg1 = bgInit(2, BgType_Bmp8, BgSize_B8_512x512, 0,0);
 

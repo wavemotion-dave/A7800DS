@@ -40,13 +40,16 @@
 // ----------------------------------------------------------------------------
 #include "Sound.h"
 #include "Tia.h"
+
+// ----------------------------------------------------------------------------------------
+// I've extended these by 1 each so that we can do simple AND rather than %-Modulo which 
+// gains us some speed and sacrifices very little in terms of sound processing...
+// ----------------------------------------------------------------------------------------
 #define TIA_POLY4_SIZE 15
 #define TIA_POLY5_SIZE 31
 #define TIA_POLY9_SIZE 511
 
 byte tia_buffer[SNDLENGTH] = {0};
-uint tia_size = SNDLENGTH;
-extern int debug[];
 int tiaBufIdx = 0;
 
 static const byte TIA_POLY4[ ] = {1,1,0,1,1,1,0,0,0,0,1,0,1,0,0};
@@ -59,42 +62,70 @@ static byte tia_counter[2] = {0};
 byte tia_audc[2] = {0};
 byte tia_audf[2] = {0};
 byte tia_audv[2] = {0};
-static uint tia_poly4Cntr[2] = {0};
-static uint tia_poly5Cntr[2] = {0};
+static byte tia_poly4Cntr[2] = {0};
+static byte tia_poly5Cntr[2] = {0};
 static uint tia_poly9Cntr[2] = {0};
 
 // ----------------------------------------------------------------------------
 // ProcessChannel
 // ----------------------------------------------------------------------------
-static void tia_ProcessChannel(byte channel) 
+static void tia_ProcessChannel0(void)
 {
-  tia_poly5Cntr[channel] = (tia_poly5Cntr[channel] + 1) % TIA_POLY5_SIZE;
-  if(((tia_audc[channel] & 2) == 0) || (((tia_audc[channel] & 1) == 0) && TIA_DIV31[tia_poly5Cntr[channel]]) || (((tia_audc[channel] & 1) == 1) && TIA_POLY5[tia_poly5Cntr[channel]])) 
+  tia_poly5Cntr[0] = (tia_poly5Cntr[0] + 1) % TIA_POLY5_SIZE;
+  if(((tia_audc[0] & 2) == 0) || (((tia_audc[0] & 1) == 0) && TIA_DIV31[tia_poly5Cntr[0]]) || (((tia_audc[0] & 1) == 1) && TIA_POLY5[tia_poly5Cntr[0]])) 
   {
-    if(tia_audc[channel] & 4) 
+    if(tia_audc[0] & 4) 
     {
-      tia_volume[channel] = (!tia_volume[channel])? tia_audv[channel]: 0;
+      tia_volume[0] = (!tia_volume[0])? tia_audv[0]: 0;
     }
-    else if(tia_audc[channel] & 8) 
+    else if(tia_audc[0] & 8) 
     {
-      if(tia_audc[channel] == 8) 
+      if(tia_audc[0] == 8) 
       {
-        tia_poly9Cntr[channel] = (tia_poly9Cntr[channel]+1) % TIA_POLY9_SIZE; 
-        tia_volume[channel] = (TIA_POLY9[tia_poly9Cntr[channel]])? tia_audv[channel]: 0;
+        tia_poly9Cntr[0] = (tia_poly9Cntr[0]+1) % TIA_POLY9_SIZE;
+        tia_volume[0] = (TIA_POLY9[tia_poly9Cntr[0]])? tia_audv[0]: 0;
       }
       else 
       {
-        tia_volume[channel] = (TIA_POLY5[tia_poly5Cntr[channel]])? tia_audv[channel]: 0;
+        tia_volume[0] = (TIA_POLY5[tia_poly5Cntr[0]])? tia_audv[0]: 0;
       }
     }
     else 
     {
-      tia_poly4Cntr[channel] = (tia_poly4Cntr[channel] + 1) % TIA_POLY4_SIZE;
-      tia_volume[channel] = (TIA_POLY4[tia_poly4Cntr[channel]])? tia_audv[channel]: 0;
+      tia_poly4Cntr[0] = (tia_poly4Cntr[0] + 1) % TIA_POLY4_SIZE;
+      tia_volume[0] = (TIA_POLY4[tia_poly4Cntr[0]])? tia_audv[0]: 0;
     }
   }
 }
 
+static void tia_ProcessChannel1(void)
+{
+  tia_poly5Cntr[1] = (tia_poly5Cntr[1] + 1) % TIA_POLY5_SIZE;
+  if(((tia_audc[1] & 2) == 0) || (((tia_audc[1] & 1) == 0) && TIA_DIV31[tia_poly5Cntr[1]]) || (((tia_audc[1] & 1) == 1) && TIA_POLY5[tia_poly5Cntr[1]])) 
+  {
+    if(tia_audc[1] & 4) 
+    {
+      tia_volume[1] = (!tia_volume[1])? tia_audv[1]: 0;
+    }
+    else if(tia_audc[1] & 8) 
+    {
+      if(tia_audc[1] == 8) 
+      {
+        tia_poly9Cntr[1] = (tia_poly9Cntr[1]+1) % TIA_POLY9_SIZE;
+        tia_volume[1] = (TIA_POLY9[tia_poly9Cntr[1]])? tia_audv[1]: 0;
+      }
+      else 
+      {
+        tia_volume[1] = (TIA_POLY5[tia_poly5Cntr[1]])? tia_audv[1]: 0;
+      }
+    }
+    else 
+    {
+      tia_poly4Cntr[1] = (tia_poly4Cntr[1] + 1) % TIA_POLY4_SIZE;
+      tia_volume[1] = (TIA_POLY4[tia_poly4Cntr[1]])? tia_audv[1]: 0;
+    }
+  }
+}
 
 // ----------------------------------------------------------------------------
 // Reset
@@ -211,6 +242,7 @@ void tia_MemoryChannel(byte channel)
   }
 }
 
+// Same as TIA_Process but designed for Pokey integration...
 int TIA_Sample(void)
 {
     if(tia_counter[0] > 1) 
@@ -220,7 +252,7 @@ int TIA_Sample(void)
     else if(tia_counter[0] == 1) 
     {
       tia_counter[0] = tia_counterMax[0];
-      tia_ProcessChannel(0);
+      tia_ProcessChannel0();
     }
     if(tia_counter[1] > 1) 
     {
@@ -229,7 +261,7 @@ int TIA_Sample(void)
     else if(tia_counter[1] == 1) 
     {
       tia_counter[1] = tia_counterMax[1];
-      tia_ProcessChannel(1);
+      tia_ProcessChannel1();
     }
     return ((int)tia_volume[0] + (int)tia_volume[1]);
 }
@@ -249,7 +281,7 @@ void tia_Process(uint length)
     else if(tia_counter[0] == 1) 
     {
       tia_counter[0] = tia_counterMax[0];
-      tia_ProcessChannel(0);
+      tia_ProcessChannel0();
     }
     if(tia_counter[1] > 1) 
     {
@@ -258,7 +290,7 @@ void tia_Process(uint length)
     else if(tia_counter[1] == 1) 
     {
       tia_counter[1] = tia_counterMax[1];
-      tia_ProcessChannel(1);
+      tia_ProcessChannel1();
     }
     tia_buffer[tiaBufIdx] = ((tia_volume[0] + tia_volume[1]));
     tiaBufIdx = (tiaBufIdx+1) & (SNDLENGTH-1);

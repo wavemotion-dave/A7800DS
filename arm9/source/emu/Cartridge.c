@@ -82,8 +82,9 @@ static uint cartridge_GetBankOffset(byte bank) {
 // ----------------------------------------------------------------------------
 // WriteBank
 // ----------------------------------------------------------------------------
-static void cartridge_WriteBank(word address, byte bank) {
-  uint offset = cartridge_GetBankOffset(bank);
+static void cartridge_WriteBank(word address, byte bank) 
+{
+  uint offset = cartridge_GetBank(bank) * 16384;
   if(offset < cartridge_size) {
     memory_WriteROM(address, 16384, cartridge_buffer + offset);
     cartridge_bank = bank;
@@ -194,8 +195,11 @@ static bool _cartridge_Load(const byte* data, uint size)
   {
     cartridge_size = size;
   }
-  
-  cartridge_buffer = (byte *) malloc(cartridge_size);
+
+  if (cartridge_size <= (140 * 1024))
+    cartridge_buffer = (byte *) 0x0603C000;   // If smaller than 140k (98% of all carts are), we can use the VRAM buffer since it's faster to move stuff around...
+  else   
+    cartridge_buffer = (byte *) malloc(cartridge_size); // Otherwise allocate memory 
   for(index = 0; index < cartridge_size; index++) {
     cartridge_buffer[index] = data[index + offset];
   }
@@ -401,7 +405,10 @@ void cartridge_Release( )
     // Snap out the High Score SRAM (if used)
     cartridge_SaveHighScoreSram();
 
-    free(cartridge_buffer);
+    if ((u32)cartridge_buffer != 0x0603C000)
+    {
+        free(cartridge_buffer);
+    }
     cartridge_size = 0;
     cartridge_buffer = NULL;
 

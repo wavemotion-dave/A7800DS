@@ -32,9 +32,9 @@ byte sally_p = 0;
 byte sally_s = 0;
 pair sally_pc = {0};
 
-static byte sally_opcode;
-static pair sally_address;
-static uint sally_cyclesX4;
+static byte sally_opcode __attribute__((section(".dtcm")));
+static pair sally_address __attribute__((section(".dtcm")));
+static uint sally_cyclesX4 __attribute__((section(".dtcm")));
 
 #define _fC 0x01
 #define _fZ 0x02
@@ -54,7 +54,8 @@ static const Vector SALLY_RES = {65533, 65532};
 static const Vector SALLY_NMI = {65531, 65530};
 static const Vector SALLY_IRQ = {65535, 65534}; 
 
-static const byte SALLY_CYCLESX4[256] = {
+static byte SALLY_CYCLESX4[256] __attribute__((section(".dtcm"))) = 
+{
 	7*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,0*4,4*4,6*4,0*4,
 	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
 	6*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,4*4,2*4,2*4,2*4,4*4,4*4,6*4,0*4,
@@ -1009,7 +1010,7 @@ void sally_Execute(unsigned int cycles )
     l_0xf3, l_0xf4, l_0xf5, l_0xf6, l_0xf7, l_0xf8, l_0xf9, l_0xfa, l_0xfb,
     l_0xfc, l_0xfd, l_0xfe, l_0xff;
 
-    static const void* const a_jump_table[256] = 
+    static void* a_jump_table[256] __attribute__((section(".dtcm"))) = 
     {
         &&l_0x00, &&l_0x01, &&l_0x02, &&l_0x03, &&l_0x04, &&l_0x05, &&l_0x06, &&l_0x07, &&l_0x08,
         &&l_0x09, &&l_0x0a, &&l_0x0b, &&l_0x0c, &&l_0x0d, &&l_0x0e, &&l_0x0f, &&l_0x10, &&l_0x11,

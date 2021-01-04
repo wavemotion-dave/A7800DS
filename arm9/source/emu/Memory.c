@@ -229,12 +229,10 @@ ITCM_CODE void memory_Write(word address, byte data)
 // ----------------------------------------------------------------------------
 void memory_WriteROM(word address, word size, const byte* data) 
 {
-  uint index;
-  if((address + size) <= MEMORY_SIZE && data != NULL) {
-    for(index = 0; index < size; index++) {
-      memory_ram[address + index] = data[index];
-      memory_rom[address + index] = 1;
-    }
+  if((address + size) <= MEMORY_SIZE && data != NULL) 
+  {
+    memcpy(&memory_ram[address], data, size);
+    memset(&memory_rom[address], 0x01, size);
   }
 }
 
@@ -243,11 +241,6 @@ void memory_WriteROM(word address, word size, const byte* data)
 // ----------------------------------------------------------------------------
 void memory_ClearROM(word address, word size) 
 {
-  uint index;
-  if((address + size) <= MEMORY_SIZE) {
-    for(index = 0; index < size; index++) {
-      memory_ram[address + index] = 0;
-       memory_rom[address + index] = 0;
-    }
-  }
+    memset(&memory_ram[address], 0x00, size);
+    memset(&memory_rom[address], 0x00, size);
 }

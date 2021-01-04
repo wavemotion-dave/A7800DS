@@ -56,6 +56,5 @@ extern void tia_MemoryChannel(byte channel);
 extern void tia_Clear( );
 extern void tia_Process(uint length);
 extern byte tia_buffer[];
-extern uint tia_size;
 
 #endif

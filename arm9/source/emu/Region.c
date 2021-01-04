@@ -262,7 +262,6 @@ void region_Reset( ) {
       palette_Load(REGION_PALETTE_PAL);  // Added check for default - bberlin
     prosystem_frequency = REGION_FREQUENCY_PAL;
     prosystem_scanlines = REGION_SCANLINES_PAL;
-    tia_size = 624;
     pokey_size = 624;
   }  
   else {
@@ -272,7 +271,6 @@ void region_Reset( ) {
       palette_Load(REGION_PALETTE_NTSC);  // Added check for default - bberlin
     prosystem_frequency = REGION_FREQUENCY_NTSC;
     prosystem_scanlines = REGION_SCANLINES_NTSC;
-    tia_size = 524;
     pokey_size = 524;
   }
   maria_displayArea.GetLength = (maria_displayArea.right - maria_displayArea.left) + 1;
