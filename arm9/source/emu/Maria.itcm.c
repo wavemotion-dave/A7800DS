@@ -41,27 +41,29 @@ union ColorUnion
         word color1;
     } wo;
 };
-union ColorUnion colors;
+union ColorUnion colors __attribute__((section(".dtcm")));
 
 #define MARIA_LINERAM_SIZE 160
 
-rect maria_displayArea = {0, 16, 319, 258};
-rect maria_visibleArea = {0, 26, 319, 248};
+rect maria_displayArea __attribute__((section(".dtcm"))) = {0, 16, 319, 258};
+rect maria_visibleArea __attribute__((section(".dtcm"))) = {0, 26, 319, 248};
 
-word* maria_surface = 0;
-word  maria_scanline = 1;
+word* maria_surface __attribute__((section(".dtcm"))) = 0;
+word  maria_scanline __attribute__((section(".dtcm"))) = 1;
 
-static byte maria_lineRAM[MARIA_LINERAM_SIZE+4];
-static uint maria_cycles;
-static pair maria_dpp;
-static pair maria_dp;
-static pair maria_pp;
-static byte maria_horizontal;
-static byte maria_palette;
-static char maria_offset;
-static byte maria_h08;
-static byte maria_h16;
-static byte maria_wmode;
+static byte maria_lineRAM[MARIA_LINERAM_SIZE+4] __attribute__((section(".dtcm")));
+static uint maria_cycles __attribute__((section(".dtcm")));
+static pair maria_dpp __attribute__((section(".dtcm")));
+static pair maria_dp __attribute__((section(".dtcm")));
+static pair maria_pp __attribute__((section(".dtcm")));
+static byte maria_horizontal __attribute__((section(".dtcm")));
+static byte maria_palette __attribute__((section(".dtcm")));
+static char maria_offset __attribute__((section(".dtcm"))); 
+static byte maria_h08 __attribute__((section(".dtcm")));
+static byte maria_h16 __attribute__((section(".dtcm")));
+static byte maria_wmode __attribute__((section(".dtcm")));
+
+word *framePtr __attribute__((section(".dtcm"))) = (word *)0;
 
 // ----------------------------------------------------------------------------
 //ClearCells - 4 bytes at a time
@@ -173,7 +175,7 @@ static inline byte maria_GetColor(byte data)
   return (data & 3) ? memory_ram[BACKGRND + data] : memory_ram[BACKGRND];
 }
 
-static u8 wide_lookup[256] =
+static u8 wide_lookup[256] __attribute__((section(".dtcm"))) =
 {
     0x00, 0x04, 0x08, 0x0C, 0x40, 0x44, 0x48, 0x4C, 0x80, 0x84, 0x88, 0x8C, 0xC0, 0xC4, 0xC8, 0xCC, 
     0x01, 0x05, 0x09, 0x0D, 0x41, 0x45, 0x49, 0x4D, 0x81, 0x85, 0x89, 0x8D, 0xC1, 0xC5, 0xC9, 0xCD, 
@@ -235,7 +237,7 @@ static inline void maria_StoreGraphic( )
   maria_pp.w++;
 }
 
-static u8 wide_lookup_mode2A[] =
+static u8 wide_lookup_mode2A[] __attribute__((section(".dtcm"))) =
 {
     0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
     0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13, 
@@ -256,7 +258,7 @@ static u8 wide_lookup_mode2A[] =
 };
 
 
-static u8 wide_lookup_mode2B[] =
+static u8 wide_lookup_mode2B[] __attribute__((section(".dtcm"))) =
 {
     0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
     0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 
@@ -469,7 +471,6 @@ void maria_Reset( ) {
 // ----------------------------------------------------------------------------
 // RenderScanline
 // ----------------------------------------------------------------------------
-word *framePtr = (word *)0;
 ITCM_CODE uint maria_RenderScanline( ) 
 {
   extern u32 bg32;

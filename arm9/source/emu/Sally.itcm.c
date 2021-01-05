@@ -25,12 +25,12 @@
 #include "Sally.h"
 #include "ProSystem.h"
 
-byte sally_a = 0;
-byte sally_x = 0;
-byte sally_y = 0;
-byte sally_p = 0;
-byte sally_s = 0;
-pair sally_pc = {0};
+byte sally_a __attribute__((section(".dtcm"))) = 0;
+byte sally_x __attribute__((section(".dtcm"))) = 0;
+byte sally_y __attribute__((section(".dtcm"))) = 0;
+byte sally_p __attribute__((section(".dtcm"))) = 0;
+byte sally_s __attribute__((section(".dtcm"))) = 0;
+pair sally_pc  __attribute__((section(".dtcm"))) = {0};
 
 static byte sally_opcode __attribute__((section(".dtcm")));
 static pair sally_address __attribute__((section(".dtcm")));

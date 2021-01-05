@@ -31,11 +31,12 @@
 
 #define CYCLES_PER_SCANLINE 454
 
-bool prosystem_active = false;
-bool prosystem_paused = false;
-word prosystem_frequency = 60;
-word prosystem_scanlines = 262;
-uint prosystem_cycles = 0;
+bool prosystem_active __attribute__((section(".dtcm"))) = false;
+bool prosystem_paused __attribute__((section(".dtcm"))) = false;
+word prosystem_frequency __attribute__((section(".dtcm"))) = 60;
+word prosystem_scanlines __attribute__((section(".dtcm"))) = 262;
+uint prosystem_cycles __attribute__((section(".dtcm"))) = 0;
+uint32 bg32 __attribute__((section(".dtcm"))) = 0;
 
 // Whether the last CPU operation resulted in a half cycle (need to take it
 // into consideration)
@@ -73,7 +74,6 @@ void prosystem_Reset( )
     prosystem_active = true;
   }
 }
-uint32 bg32 = 0;
 // ----------------------------------------------------------------------------
 // ExecuteFrame
 // ----------------------------------------------------------------------------
