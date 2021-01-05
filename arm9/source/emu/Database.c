@@ -157,6 +157,7 @@ Database_Entry game_list[] = {
   {"1745feadabb24e7cefc375904c73fa4c",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Possible Mission
   {"0710aa2620435230da6a7cf3f620210d",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  17, 256,  210}, // title=Popeye Demo 2.7f (homebrew)
   {"81187dbc08934214bd55187d4b8149dd",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  17, 256,  210}, // title=Popeye Demo 2.8 (homebrew)  
+  {"640c7827fe63082efbaffc13f7983744",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  17, 256,  210}, // title=Popeye Demo 2.9 (homebrew)  
   {"ac03806cef2558fc795a7d5d8dba7bc0",  CT_ACTVIS,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Rampage
   {"bfad016d6e77eaccec74c0340aded8b9",  CT_SUPCAR,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Realsports Baseball
   {"8f7eb10ad0bd75474abf0c6c36c08486",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Rescue On Fractalus
