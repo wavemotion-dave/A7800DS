@@ -280,6 +280,7 @@ void dsInitScreenMain(void)
     
   vramSetBankB(VRAM_B_MAIN_BG_0x06020000 ); // Need to do this early so we can steal a bit of this RAM for bank swap...
   vramSetBankD(VRAM_D_MAIN_BG_0x06040000 ); // Not using this for video but for cartridge bank swap area... it's faster!
+  vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful! Mapped at 0x06880000
 }
 
 void dsInitTimer(void) 
