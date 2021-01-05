@@ -33,6 +33,9 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.2 : 5-Jan-2021 by wavemotion-dave
+  * More memory tweaks - faster processing of memory for another 5% speedup.
+
 V2.1 : 3-Jan-2021 by wavemotion-dave
   * Now using DTCM and VRAM for some key memory areas to speed up the emulator almost 10%
   
