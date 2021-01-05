@@ -39,15 +39,16 @@ int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
 //#define CART_INFO
 
-#ifndef DS_LITE    
-#define SOUND_FREQ  (31440/2)
-#else
-#define SOUND_FREQ  11025
-#endif
+#define SOUND_FREQ  (31440/2)           // Be careful if you change this - this matches the frequency of the POKEY update and if we are TIA-only, we will double it.
 
 // Difficulty switches... 
 #define DIFF_A      0
 #define DIFF_B      1
+
+static unsigned char lastPokeySample    __attribute__((section(".dtcm"))) = 0;
+static unsigned char lastTiaSample      __attribute__((section(".dtcm"))) = 0;
+static unsigned char lastSample         __attribute__((section(".dtcm"))) = 0;
+unsigned char keyboard_data[20]         __attribute__((section(".dtcm")));
 
 uint video_height;                       // Actual video height
 u16 *bufVideo;                           // Video flipping buffer
@@ -55,9 +56,6 @@ unsigned int gameCRC;                    // crc checksum of file
 gamecfg GameConf;                        // Game Config svg
 
 short cxBG, cyBG, xdxBG,ydyBG;
-
-word atari_pal16[256] = {0};
-unsigned char keyboard_data[20];
 
 unsigned char *filebuffer;
 
@@ -101,10 +99,6 @@ static void DumpDebugData(void)
 #endif
 }
 
-
-static unsigned char lastPokeySample = 0;
-static unsigned char lastTiaSample = 0;
-static unsigned char lastSample = 0;
 
 void VsoundHandler(void) 
 {
