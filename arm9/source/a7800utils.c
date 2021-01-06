@@ -41,10 +41,6 @@ int debug[MAX_DEBUG]={0};
 
 #define SOUND_FREQ  (31440/2)           // Be careful if you change this - this matches the frequency of the POKEY update and if we are TIA-only, we will double it.
 
-// Difficulty switches... 
-#define DIFF_A      0
-#define DIFF_B      1
-
 static unsigned char lastPokeySample    __attribute__((section(".dtcm"))) = 0;
 static unsigned char lastTiaSample      __attribute__((section(".dtcm"))) = 0;
 static unsigned char lastSample         __attribute__((section(".dtcm"))) = 0;
@@ -417,8 +413,8 @@ void dsLoadGame(char *filename)
 
     // Left difficulty switch defaults to DIFF_A
     // Right difficulty swtich defaults to DIFF_A
-    keyboard_data[15] = DIFF_A;
-    keyboard_data[16] = DIFF_A;
+    keyboard_data[15] = cartridge_diff1;
+    keyboard_data[16] = cartridge_diff2;
     GameConf.DS_Pad[ 0] = 3;   GameConf.DS_Pad[ 1] = 2;
     GameConf.DS_Pad[ 2] = 1;   GameConf.DS_Pad[ 3] = 0;
     GameConf.DS_Pad[ 4] = 4;   GameConf.DS_Pad[ 5] = 5;

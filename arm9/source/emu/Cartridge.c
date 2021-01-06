@@ -24,6 +24,7 @@
 // ----------------------------------------------------------------------------
 #include "Cartridge.h"
 #include "HighScore.h"
+#include "ProSystem.h"
 
 char cartridge_title[128];
 char cartridge_description[128];
@@ -43,6 +44,8 @@ int  cartridge_xOffset = 0;
 int  cartridge_yOffset = 22;
 int  cartridge_xScale  = 256;
 int  cartridge_yScale  = 220;
+uint cartridge_diff1 = DIFF_A;
+uint cartridge_diff2 = DIFF_A;
   
 extern int debug[];  
 static byte* cartridge_buffer = NULL;

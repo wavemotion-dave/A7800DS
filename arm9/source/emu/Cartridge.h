@@ -110,6 +110,9 @@ extern int  cartridge_xScale;
 extern int  cartridge_yScale;
 extern bool cartridge_steals_cycles;
 extern bool cartridge_uses_wsync;
+extern uint cartridge_diff1;
+extern uint cartridge_diff2;
+
 
 
 #endif

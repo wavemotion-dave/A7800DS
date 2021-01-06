@@ -50,6 +50,10 @@ extern int debug[];
 // The number of cycles per scan line
 #define CYCLES_PER_SCANLINE 454
 
+// Difficulty switches... 
+#define DIFF_A      0
+#define DIFF_B      1
+
 extern void prosystem_Reset( );
 extern void prosystem_ExecuteFrame(const byte* input);
 extern void prosystem_Pause(bool pause);

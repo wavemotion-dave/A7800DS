@@ -33,6 +33,14 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.3 : 6-Jan-2021 by wavemotion-dave
+  * Fixed large cart support so 512kb games run fine. 
+  * Fixed voice in Frenzy/Berzerk.
+  * Fixed graphical glitches in Alien Brigade.
+  * Optmized bank switching so more big games run smoothly.
+  * Added default difficulty switches for the few games that need them.
+  * Lots of cleanups as time permitted.
+
 V2.2 : 5-Jan-2021 by wavemotion-dave
   * More memory tweaks - faster processing of memory for another 5% speedup.
 
