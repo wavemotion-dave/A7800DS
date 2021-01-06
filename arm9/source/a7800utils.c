@@ -935,8 +935,16 @@ void dsMainLoop(void)
                 if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
                 if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
               }
-              if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
-              if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
+              if (cartridge_controller[0] == SOTA)
+              {
+                  if ( (keys_pressed & KEY_R) )  { cartridge_xOffset +=28; bRefreshXY = true; }
+                  if ( (keys_pressed & KEY_L) )  { cartridge_xOffset -=28; bRefreshXY = true; }  
+              }
+              else
+              {
+                  if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
+                  if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
+              }
           }
           dampen = 6;
         } else dampen--;

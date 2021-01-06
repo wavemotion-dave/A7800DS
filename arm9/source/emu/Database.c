@@ -49,8 +49,8 @@ Database_Entry game_list[] = {
   {"4332c24e4f3bc72e7fe1b77adf66c2b7",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=3D Asteroids
   {"0be996d25144966d5541c9eb4919b289",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Ace Of Aces
   {"aadde920b3aaba03bc10b40bd0619c94",  CT_SUPROM,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Ace Of Aces
-  {"877dcc97a775ed55081864b2dbf5f1e2",  CT_SUPLRG,    POKEY_NONE, LGN, LGN,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Alien Brigade
-  {"de3e9496cb7341f865f27e5a72c7f2f5",  CT_SUPLRG,    POKEY_NONE, LGN, LGN,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Alien Brigade
+  {"877dcc97a775ed55081864b2dbf5f1e2",  CT_SUPLRG,    POKEY_NONE, LGN, LGN,  NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  7,  22, 264,  220}, // title=Alien Brigade
+  {"de3e9496cb7341f865f27e5a72c7f2f5",  CT_SUPLRG,    POKEY_NONE, LGN, LGN,   PAL,  NO_STEALING,    USES_WSYNC, HSC_NO,  7,  22, 264,  220}, // title=Alien Brigade
   {"212ee2a6e66d8bb7fbf26f343cc8dc19",  CT_SUPCAR,  POKEY_AT_450, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  17, 256,  200}, // title=Arkanoid 78b Demo (purposely set HSC to false - game HSC is buggy)
   {"07342c78619ba6ffcc61c10e907e3b50",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25, 256,  220}, // title=Asteroids
   {"a65f79ad4a0bbdecd59d5f7eb3623fd7",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Asteroids Deluxe
@@ -152,6 +152,7 @@ Database_Entry game_list[] = {
   {"ec206c8db4316eb1ebce9fc960da7d8f",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Pit Fighter                     
   {"33aea1e2b6634a1dec8c7006d9afda22",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  18, 256,  220}, // title=Planet Smashers
   {"2837a8fd49b7fc7ccd70fd45b69c5099",  CT_SUPROM,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  18, 256,  220}, // title=Planet Smashers
+  {"74f0283c566bdee8543e4fdc5cb8b201",  CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Plutos XM (homebrew)
   {"584582bb09ee8122e7fc09dc7d1ed813",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  35, 22, 320,  230}, // title=Pole Position II                
   {"865457e0e0f48253b08f77b9e18f93b2",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  36, 22, 320,  240}, // title=Pole Position II                
   {"1745feadabb24e7cefc375904c73fa4c",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Possible Mission
@@ -190,6 +191,9 @@ Database_Entry game_list[] = {
   {"70937c3184f0be33d06f7f4382ca54de",  CT_SUPROM,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Xenophobe
   {"d7dc17379aa25e5ae3c14b9e780c6f6d",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Xevious
   {"b1a9f196ce5f47ca8caf8fa7bc4ca46c",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Xevious
+  {"19844117863cd38d4e1e4cbc867ae599",  CT_SUPLRG,    POKEY_NONE, SOTA,SOTA, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 31, 25, 320,  230}, // title=Spire of the Ancients
+  {"fab1290f9a4c4f2b4d831c8a57f969f5",  CT_SUPLRG,    POKEY_NONE, JOY, JOY,  NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 20, 22, 256,  220}, // title=Draker Quest
+  {"faea27017447dd8bae677d91125a8135",  CT_SUPLRG,    POKEY_NONE, JOY, JOY, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 31, 25, 320,  230}, // title=E.X.O.
 
   {"",CT_NORMAL,0,0,0,0,0,0,0,0,0,0},
 };

@@ -196,8 +196,8 @@ static bool _cartridge_Load(const byte* data, uint size)
     cartridge_size = size;
   }
 
-  if (cartridge_size <= (140 * 1024))
-    cartridge_buffer = (byte *) 0x0603C000;   // If smaller than 140k (98% of all carts are), we can use the VRAM buffer since it's faster to move stuff around...
+  if (cartridge_size <= (144 * 1024))
+    cartridge_buffer = (byte *) 0x0603C000;   // If smaller than 144k (98% of all carts are), we can use the VRAM buffer since it's faster to move stuff around...
   else   
     cartridge_buffer = (byte *) malloc(cartridge_size); // Otherwise allocate memory 
   for(index = 0; index < cartridge_size; index++) {

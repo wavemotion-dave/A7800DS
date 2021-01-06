@@ -202,7 +202,8 @@ Pac-Man Collection      5013b69cb05b21a1194ce48517df7bfc    YES   60  Near perfe
 Pac-Man Collection 40th 044657294450c869c45e7ef61f4870de    YES   60  Near perfect
 Planet Smashers         33aea1e2b6634a1dec8c7006d9afda22    NO    60  Near perfect
 Pole Position II        584582bb09ee8122e7fc09dc7d1ed813    NO    60  Font hard to read due to screen resolution but playable
-Popeye Demo 2.7f        0710aa2620435230da6a7cf3f620210d    YES   60  Near perfect. Occasionally drops down to 58FPS but not noticable. 
+Popeye Demo 2.9         640c7827fe63082efbaffc13f7983744    YES   60  Near perfect.
+Spire of the Ancients   19844117863cd38d4e1e4cbc867ae599    NO    44  A bit slow but playable...
 Rampage                 ac03806cef2558fc795a7d5d8dba7bc0    NO    60  Near perfect
 Realsports Baseball     bfad016d6e77eaccec74c0340aded8b9    NO    20  Way too slow.
 Robotron                66ecaafe1b82ae68ffc96267aaf7a4d7    YES   60  Near perfect
