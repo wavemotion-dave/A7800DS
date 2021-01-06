@@ -47,6 +47,7 @@ int  cartridge_yScale  = 220;
 extern int debug[];  
 static byte* cartridge_buffer = NULL;
 static uint cartridge_size = 0;
+static uint maxbank = 9;
 
 // ----------------------------------------------------------------------------
 // HasHeader
@@ -63,7 +64,7 @@ static bool cartridge_HasHeader(const byte* header) {
   return true;
 }
 
-static uint cartridge_GetBank(byte bank) {
+inline static uint cartridge_GetBank(byte bank) {
   if ((cartridge_type == CARTRIDGE_TYPE_SUPERCART || cartridge_type == CARTRIDGE_TYPE_SUPERCART_ROM || cartridge_type == CARTRIDGE_TYPE_SUPERCART_RAM) && cartridge_size <= 65536) {
     // for some of these carts, there are only 4 banks. in this case we ignore bit 3
     // previously, games of this type had to be doubled. The first 4 banks needed to be duplicated at the end of the ROM
@@ -75,14 +76,14 @@ static uint cartridge_GetBank(byte bank) {
 // ----------------------------------------------------------------------------
 // GetBankOffset
 // ----------------------------------------------------------------------------
-static uint cartridge_GetBankOffset(byte bank) {
+inline static uint cartridge_GetBankOffset(byte bank) {
   return cartridge_GetBank(bank) * 16384;
 }
 
 // ----------------------------------------------------------------------------
 // WriteBank
 // ----------------------------------------------------------------------------
-static void cartridge_WriteBank(word address, byte bank) 
+inline static void cartridge_WriteBank(word address, byte bank) 
 {
   uint offset = cartridge_GetBank(bank) * 16384;
   if(offset < cartridge_size) {
@@ -106,7 +107,7 @@ static void cartridge_ReadHeader(const byte* header) {
   cartridge_size |= header[50] << 16;
   cartridge_size |= header[51] << 8;
   cartridge_size |= header[52];
-
+  
 //  bit 0    = pokey at $4000
 //  bit 1    = supergame bank switched
 //  bit 2    = supergame ram at $4000
@@ -118,21 +119,24 @@ static void cartridge_ReadHeader(const byte* header) {
   
   if(header[53] == 0) 
   {
-    if(cartridge_size > 131072) 
-    {
-      cartridge_type = CARTRIDGE_TYPE_SUPERCART_LARGE;
-    }
-    else if (header[54] & 0x04)
+    if (header[54] & 0x04)
     {
       cartridge_type = CARTRIDGE_TYPE_SUPERCART_RAM;
     }
     else if(header[54] & 0x08) 
     {
-      cartridge_type = CARTRIDGE_TYPE_SUPERCART_ROM;
+      if (cartridge_size > 131072)
+        cartridge_type = CARTRIDGE_TYPE_SUPERCART_LARGE;
+      else
+        cartridge_type = CARTRIDGE_TYPE_SUPERCART_ROM;
     }
     else if(header[54] & 0x02) 
     {
       cartridge_type = CARTRIDGE_TYPE_SUPERCART;
+    }
+    else if (cartridge_size > 131072)
+    {
+      cartridge_type = CARTRIDGE_TYPE_SUPERCART_LARGE;
     }
     else 
     {
@@ -154,6 +158,7 @@ static void cartridge_ReadHeader(const byte* header) {
       cartridge_type = CARTRIDGE_TYPE_NORMAL;
     }
   }
+  
   
   if (header[54] & 0x01) cartridge_pokey = POKEY_AT_4000;
   if (header[54] & 0x40) cartridge_pokey = POKEY_AT_450;
@@ -323,29 +328,27 @@ void cartridge_Store( ) {
       }
       break;
   }
+  maxbank = cartridge_size / 16384;
 }
 
 // ----------------------------------------------------------------------------
 // Write
 // ----------------------------------------------------------------------------
 void cartridge_Write(word address, byte data) {
-  switch(cartridge_type) {
+  switch(cartridge_type) 
+  {
     case CARTRIDGE_TYPE_SUPERCART:
     case CARTRIDGE_TYPE_SUPERCART_RAM:
     case CARTRIDGE_TYPE_SUPERCART_ROM:
+      if ((address & 0xC000) == 0x8000) // Is this a bankswitching write?
       {
-      uint maxbank = cartridge_size / 16384;
-      if(address >= 32768 && address < 49152 && cartridge_GetBank(data) < maxbank /*9*/) {
-        cartridge_StoreBank(data);
-      }
+        cartridge_WriteBank(32768, data);
       }
       break;
     case CARTRIDGE_TYPE_SUPERCART_LARGE:
+      if ((address & 0xC000) == 0x8000) // Is this a bankswitching write?
       {
-      uint maxbank = cartridge_size / 16384;
-      if(address >= 32768 && address < 49152 && cartridge_GetBank(data) < maxbank /*9*/) {
-        cartridge_StoreBank(data + 1);
-      }
+        cartridge_WriteBank(32768, data+1);
       }
       break;
     case CARTRIDGE_TYPE_ABSOLUTE:

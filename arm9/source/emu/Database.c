@@ -192,8 +192,9 @@ Database_Entry game_list[] = {
   {"d7dc17379aa25e5ae3c14b9e780c6f6d",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Xevious
   {"b1a9f196ce5f47ca8caf8fa7bc4ca46c",  CT_NORMAL,    POKEY_NONE, JOY, JOY,   PAL,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Xevious
   {"19844117863cd38d4e1e4cbc867ae599",  CT_SUPLRG,    POKEY_NONE, SOTA,SOTA, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 31, 25, 320,  230}, // title=Spire of the Ancients
-  {"fab1290f9a4c4f2b4d831c8a57f969f5",  CT_SUPLRG,    POKEY_NONE, JOY, JOY,  NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 20, 22, 256,  220}, // title=Draker Quest
-  {"faea27017447dd8bae677d91125a8135",  CT_SUPLRG,    POKEY_NONE, JOY, JOY, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 31, 25, 320,  230}, // title=E.X.O.
+  {"fab1290f9a4c4f2b4d831c8a57f969f5",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Draker Quest
+  {"a9f29004412621f20ad9f5c51cc11486",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Draker Quest II
+  {"faea27017447dd8bae677d91125a8135",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 31, 25, 320,  230}, // title=E.X.O.
 
   {"",CT_NORMAL,0,0,0,0,0,0,0,0,0,0},
 };
