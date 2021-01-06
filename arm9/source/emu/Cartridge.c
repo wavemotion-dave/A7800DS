@@ -80,15 +80,20 @@ inline static uint cartridge_GetBankOffset(byte bank) {
   return cartridge_GetBank(bank) * 16384;
 }
 
+byte last_bank = 255;
 // ----------------------------------------------------------------------------
 // WriteBank
 // ----------------------------------------------------------------------------
 inline static void cartridge_WriteBank(word address, byte bank) 
 {
-  uint offset = cartridge_GetBank(bank) * 16384;
-  if(offset < cartridge_size) {
-    memory_WriteROM(address, 16384, cartridge_buffer + offset);
-    cartridge_bank = bank;
+  if (bank != last_bank)
+  {
+    last_bank = bank;
+    uint offset = cartridge_GetBank(bank) * 16384;
+    if(offset < cartridge_size) {
+      memory_WriteROM(address, 16384, cartridge_buffer + offset);
+      cartridge_bank = bank;
+    }
   }
 }
 
@@ -169,6 +174,7 @@ static void cartridge_ReadHeader(const byte* header) {
   cartridge_hsc_enabled = (header[0x3A]&1 ? HSC_YES:HSC_NO);
   cartridge_steals_cycles = true;       // By default, assume the cart steals cycles
   cartridge_uses_wsync = true;          // By default, assume the cart uses wsync
+  last_bank = 255;
 }
 
 // ----------------------------------------------------------------------------
@@ -353,12 +359,12 @@ void cartridge_Write(word address, byte data) {
       break;
     case CARTRIDGE_TYPE_ABSOLUTE:
       if(address == 32768 && (data == 1 || data == 2)) {
-        cartridge_StoreBank(data - 1);
+        cartridge_WriteBank(16384, data-1);
       }
       break;
     case CARTRIDGE_TYPE_ACTIVISION:
       if(address >= 65408) {
-        cartridge_StoreBank(address & 7);
+        cartridge_WriteBank(40960, (address & 7));
       }
       break;
   }
@@ -370,14 +376,8 @@ void cartridge_Write(word address, byte data) {
 void cartridge_StoreBank(byte bank) {
   switch(cartridge_type) {
     case CARTRIDGE_TYPE_SUPERCART:
-      cartridge_WriteBank(32768, bank);
-      break;
     case CARTRIDGE_TYPE_SUPERCART_RAM:
-      cartridge_WriteBank(32768, bank);
-      break;
     case CARTRIDGE_TYPE_SUPERCART_ROM:
-      cartridge_WriteBank(32768, bank);
-      break;
     case CARTRIDGE_TYPE_SUPERCART_LARGE:
       cartridge_WriteBank(32768, bank);        
       break;
