@@ -94,7 +94,7 @@ inline static void cartridge_WriteBank(word address, byte bank)
     last_bank = bank;
     uint offset = cartridge_GetBank(bank) * 16384;
     if(offset < cartridge_size) {
-      memory_WriteROM(address, 16384, cartridge_buffer + offset);
+      memory_WriteROMFast(address, 16384, cartridge_buffer + offset);
       cartridge_bank = bank;
     }
   }

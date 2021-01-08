@@ -229,12 +229,28 @@ ITCM_CODE void memory_Write(word address, byte data)
 // ----------------------------------------------------------------------------
 void memory_WriteROM(word address, word size, const byte* data) 
 {
-  if((address + size) <= MEMORY_SIZE && data != NULL) 
+  u32* ramPtr = (u32*)&memory_ram[address];
+  u32* romPtr = (u32*)&memory_rom[address];
+  u32* dataPtr = (u32*)data;
+  for (word i=0; i<(size>>2); i++)
   {
-    memcpy(&memory_ram[address], data, size);
-    memset(&memory_rom[address], 0x01, size);
+      *ramPtr++ = *dataPtr++;
+      *romPtr++ = 0x01010101;
   }
 }
+// ----------------------------------------------------------------------------
+// WriteROM
+// ----------------------------------------------------------------------------
+void memory_WriteROMFast(word address, word size, const byte* data) 
+{
+  u32* ramPtr = (u32*)&memory_ram[address];
+  u32* dataPtr = (u32*)data;
+  for (word i=0; i<(size>>2); i++)
+  {
+      *ramPtr++ = *dataPtr++;
+  }
+}
+
 
 // ----------------------------------------------------------------------------
 // ClearROM

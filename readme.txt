@@ -33,6 +33,9 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.4 : 8-Jan-2021 by wavemotion-dave
+  * Improvement in bank switching allowing most games to run 60FPS.
+  
 V2.3 : 6-Jan-2021 by wavemotion-dave
   * Fixed large cart support so 512kb games run fine. 
   * Fixed voice in Frenzy/Berzerk.
@@ -159,7 +162,7 @@ Compatibility Table
 GAME                    MD5SUM                              HSC   FPS NOTES
 ========================================================================================================================
 Ace Of Aces             0be996d25144966d5541c9eb4919b289    NO    60  Minor graphical glitches. Very playable.
-Alien Brigade           877dcc97a775ed55081864b2dbf5f1e2    NO    46  A bit slow but playable
+Alien Brigade           877dcc97a775ed55081864b2dbf5f1e2    NO    52  A bit slow but veryplayable
 Arkanoid Demo           212ee2a6e66d8bb7fbf26f343cc8dc19    NO    60  Playable though paddles would be nice.
 Asteroids               07342c78619ba6ffcc61c10e907e3b50    YES   60  Near perfect
 Asteroids Deluxe        a65f79ad4a0bbdecd59d5f7eb3623fd7    YES   60  Near perfect
@@ -173,7 +176,7 @@ Beef Drop (Final)       78b1061d651ef806becac1dd3fda29a0    YES   60  Near perfe
 BonQ (Final)            9fa7743a016c9b7015ee1d386326f88e    YES   60  Graphical glitches on title screen. Play is near perfect.
 Centipede               5a09946e57dbe30408a8f253a28d07db    YES   60  Near perfect
 Choplifter              93e4387864b014c155d7c17877990d1e    NO    60  Near perfect
-Commando                2e8e28f6ad8b9b9267d518d880c73ebb    NO    50  Just on the edge of being playable...
+Commando                2e8e28f6ad8b9b9267d518d880c73ebb    NO    60  Near perfect
 Crack'ed                db691469128d9a4217ec7e315930b646    NO    60  Would be better with lightgun support.
 Crossbow                a94e4560b6ad053a1c24e096f1262ebf    NO    60  Would be better with lightgun support.
 Dark Chambers           179b76ff729d4849b8f66a502398acae    NO    60  Near perfect
@@ -182,7 +185,7 @@ Dig Dug                 731879ea82fc0ca245e39e036fe293e6    YES   60  Near perfe
 Donkey Kong             19f1ee292a23636bd57d408b62de79c7    NO    60  Near perfect
 Donkey Kong Jr          5e332fbfc1e0fc74223d2e73271ce650    NO    60  Near perfect
 Donkey Kong XM Demo     c3107d3e3e17d67e3a11d47a5946a4f3    NO    60  Near perfect
-Double Dragon           543484c00ba233736bcaba2da20eeea9    NO    40  Glitch city. Mostly unplayable.
+Double Dragon           543484c00ba233736bcaba2da20eeea9    NO    60  Glitchy top graphics... but playable.
 Drakers Quest I         fab1290f9a4c4f2b4d831c8a57f969f5    NO    60  Near perfect
 Drakers Quest II        a9f29004412621f20ad9f5c51cc11486    NO    60  Near perfect
 Dungeon Stalker         b3143adbbb7d7d189e918e5b29d55a72    YES   60  Near perfect
@@ -195,7 +198,7 @@ Frenzy (with Berzerk)   e7d89669a7f92ec2cc99d9663a28671c    YES   60  Near perfe
 Froggie                 6053233cb59c0b4ca633623fd76c4576    YES   60  Near perfect
 Galaga                  fb8d803b328b2e442548f7799cfa9a4a    YES   60  Near perfect
 Hat Trick               fd9e78e201b6baafddfd3e1fbfe6ba31    NO    60  Near perfect
-Ikari Warriors          c3672482ca93f70eafd9134b936c3feb    NO    55  A bit slow but playable.
+Ikari Warriors          c3672482ca93f70eafd9134b936c3feb    NO    60  Near perfect
 Impossible Mission      baebc9246c087e893dfa489632157180    NO    60  Near perfect
 Jinks                   045fd12050b7f2b842d5970f2414e912    NO    60  Near perfect
 Joust                   f18b3b897a25ab3885b43b4bd141b396    YES   60  Near perfect                           
@@ -205,30 +208,30 @@ Karateka                c3a5a8692a423d43d9d28dd5b7d109d9    NO    60  Minor glit
 Kung Fu Master          f57d0af323d4e173fb49ed447f0563d7    NO    60  Near perfect
 Mario Bros.             431ca060201ee1f9eb49d44962874049    NO    60  Near perfect
 Meteor Shower           c3f6201d6a9388e860328c963a3301cc    YES   60  Near perfect - my favorite homebrew!
-Midnight Mutants        bc1e905db1008493a9632aa83ab4682b    NO    51  A bit too slow to be playable. But close.
-Missing in Action       017066f522908081ec3ee624f5e4a8aa    NO    55  A bit too slow to be playable. But close.
+Midnight Mutants        bc1e905db1008493a9632aa83ab4682b    NO    60  Near perfect
+Missing in Action       017066f522908081ec3ee624f5e4a8aa    NO    60  Near perfect
 Moon Cresta             9ff38ea62004201d870caa8bd9463525    YES   60  Near perfect
 Ms. Pac-Man             fc0ea52a9fac557251b65ee680d951e5    YES   60  Near perfect
-Ninja Golf              220121f771fc4b98cef97dc040e8d378    NO    40  Too slow. Minor glitches.
+Ninja Golf              220121f771fc4b98cef97dc040e8d378    NO    60  Near perfect
 One On One              74569571a208f8b0b1ccfb22d7c914e1    NO    60  Near perfect
 Pac-Man Collection      5013b69cb05b21a1194ce48517df7bfc    YES   60  Near perfect
 Pac-Man Collection 40th 044657294450c869c45e7ef61f4870de    YES   60  Near perfect
 Planet Smashers         33aea1e2b6634a1dec8c7006d9afda22    NO    60  Near perfect
-Pole Position II        584582bb09ee8122e7fc09dc7d1ed813    NO    60  Font hard to read due to screen resolution but playable
+Pole Position II        584582bb09ee8122e7fc09dc7d1ed813    NO    60  Near perfect
 Popeye Demo 2.9         640c7827fe63082efbaffc13f7983744    YES   60  Near perfect.
-Spire of the Ancients   19844117863cd38d4e1e4cbc867ae599    NO    44  A bit slow but playable...
+Spire of the Ancients   19844117863cd38d4e1e4cbc867ae599    NO    60  Near perfect
 Rampage                 ac03806cef2558fc795a7d5d8dba7bc0    NO    60  Near perfect
-Realsports Baseball     bfad016d6e77eaccec74c0340aded8b9    NO    20  Way too slow.
+Realsports Baseball     bfad016d6e77eaccec74c0340aded8b9    NO    50  A bit slow but playable
 Robotron                66ecaafe1b82ae68ffc96267aaf7a4d7    YES   60  Near perfect
 Scramble                a3a85e507d6f718972b1464ce1aaf8a4    YES   60  Near perfect
-Scrapyard Dog           980c35ae9625773a450aa7ef51751c04    NO    40  Too slow to be playable 
+Scrapyard Dog           980c35ae9625773a450aa7ef51751c04    NO    60  Near perfect
 Space Duel              771cb4609347657f63e6f0eb26036e35    YES   60  Near perfect
 Space Invaders          6adf79558a3d7f5beca1bb8d34337417    YES   60  Near perfect
 Summer Games            cbb0746192540a13b4c7775c7ce2021f    NO    60  Plays fine - font hard to read on small screen.
 Super Skatebordin       59b5793bece1c80f77b55d60fb39cb94    NO    60  Near perfect.
 Super Circus Atariage   81cee326b99d6831de10a566e338bd25    YES   60  Near perfect 
 Winter Games            3799d72f78dda2ee87b0ef8bf7b91186    NO    60  Plays fine - font hard to read on small screen.
-Xenophobe               05fb699db9eef564e2fe45c568746dbc    NO    60  Slows down to 52FPS in some areas but very playable.
+Xenophobe               05fb699db9eef564e2fe45c568746dbc    NO    60  Near perfect
 Xevious                 d7dc17379aa25e5ae3c14b9e780c6f6d    YES   60  Near perfect
   
  
