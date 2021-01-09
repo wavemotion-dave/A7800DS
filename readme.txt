@@ -209,7 +209,6 @@ Kung Fu Master          f57d0af323d4e173fb49ed447f0563d7    NO    60  Near perfe
 Mario Bros.             431ca060201ee1f9eb49d44962874049    NO    60  Near perfect
 Meteor Shower           c3f6201d6a9388e860328c963a3301cc    YES   60  Near perfect - my favorite homebrew!
 Midnight Mutants        bc1e905db1008493a9632aa83ab4682b    NO    60  Near perfect
-Missing in Action       017066f522908081ec3ee624f5e4a8aa    NO    60  Near perfect
 Moon Cresta             9ff38ea62004201d870caa8bd9463525    YES   60  Near perfect
 Ms. Pac-Man             fc0ea52a9fac557251b65ee680d951e5    YES   60  Near perfect
 Ninja Golf              220121f771fc4b98cef97dc040e8d378    NO    60  Near perfect

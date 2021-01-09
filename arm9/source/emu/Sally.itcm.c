@@ -245,7 +245,6 @@ static inline void sally_ZeroPageY( ) {
 // ----------------------------------------------------------------------------
 static inline void sally_ADC( ) {
   byte data = memory_Read(sally_address.w);
-  debug[0]++;
   if(sally_p & _fD) {
     word al = (sally_a & 15) + (data & 15) + (sally_p & _fC);
     word ah = (sally_a >> 4) + (data >> 4);

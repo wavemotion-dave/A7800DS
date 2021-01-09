@@ -37,7 +37,7 @@ int atari_frames = 0;
 #define MAX_DEBUG 10 
 int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
-#define CART_INFO
+//#define CART_INFO
 
 #define SOUND_FREQ  (31440/2)           // Be careful if you change this - this matches the frequency of the POKEY update and if we are TIA-only, we will double it.
 
@@ -265,6 +265,9 @@ void vblankIntr()
     REG_BG2X = cxBG+jitter[2]; 
     REG_BG2Y = cyBG+jitter[3]; 
   }
+    
+  debug[0] = cartridge_xOffset;
+  debug[1] = cartridge_yOffset;
 }
 
 void dsInitScreenMain(void) 
@@ -304,7 +307,7 @@ void dsShowScreenEmu(void)
   cyBG = (cartridge_yOffset << 8);
   xdxBG = ((320 / cartridge_xScale) << 8) | (320 % cartridge_xScale) ;
   ydyBG = ((video_height / cartridge_yScale) << 8) | (video_height % cartridge_yScale);
-  
+  debug[3] = video_height;
 
   REG_BG2PB = 0;
   REG_BG2PC = 0;
@@ -869,7 +872,6 @@ void dsMainLoop(void)
               touchRead(&touch);
               iTx = touch.px;
               iTy = touch.py;
-              debug[0] = iTx; debug[1]=iTy;
               if ((iTx>31) && (iTx<65) && (iTy>159) && (iTy<169))  { // 32,160  -> 64,168   quit
                 irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
