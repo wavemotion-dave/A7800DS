@@ -37,7 +37,7 @@ int atari_frames = 0;
 #define MAX_DEBUG 10 
 int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
-//#define CART_INFO
+#define CART_INFO
 
 #define SOUND_FREQ  (31440/2)           // Be careful if you change this - this matches the frequency of the POKEY update and if we are TIA-only, we will double it.
 
