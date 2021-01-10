@@ -34,7 +34,7 @@ extern gamecfg GameConf;
 
 extern uint video_height;                  // Actual video height
 extern unsigned short *bufVideo;   // Video buffer
-extern unsigned int gameCRC;               // crc checksum of file  
+
 
 extern void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr, unsigned char valEnd, unsigned char uWait);
 

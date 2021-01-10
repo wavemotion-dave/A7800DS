@@ -10,7 +10,7 @@ help you.
 
 Features :
 ----------
- Most things you should expect from an emulator. Speed is good. Sound is passable except
+ Most things you should expect from an emulator. Speed is good. Sound is good except
  for the few games that run below 60FPS.
 
 Philosophy :
@@ -113,8 +113,9 @@ V1.0 : 24/05/2011
 --------------------------------------------------------------------------------
 How tu use a7800DS :
 --------------------------------------------------------------------------------
-Place .NDS on your SDCARD and launch with Twilight Menu++ or Unlaunch.
+Place .NDS on your SD card and launch with Twilight Menu++ or Unlaunch.
 If you want to run on a flash cart, it might work... recommend HBMENU to launch.
+Strongly recommend you run on a DSi or 3DS to get full speed. DS-LITE/PHAT is slow.
 
 When the emulator starts, click on the cartridge slot to choose a file. Use Up/Down 
 to select a file, then use A to load it.

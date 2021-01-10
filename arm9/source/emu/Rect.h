@@ -34,20 +34,6 @@ typedef struct {
   uint GetArea;
   uint GetLength;
   uint GetHeight;
-  
-/*  
-  uint GetArea( ) {
-    return GetLength( ) * GetHeight( );
-  }
-
-  uint GetLength( ) {
-    return (right - left) + 1;
-  }
-  
-  uint GetHeight( ) {
-    return (bottom - top) + 1;
-  }
-*/
 } Rect ;
 
 typedef Rect rect;

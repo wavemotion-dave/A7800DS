@@ -281,6 +281,5 @@ void region_Reset( ) {
   maria_visibleArea.GetHeight = (maria_visibleArea.bottom - maria_visibleArea.top) + 1;
   maria_visibleArea.GetArea = maria_visibleArea.GetLength * maria_visibleArea.GetHeight;
   
-  sound_lenght = 22050 / prosystem_frequency;
   video_height = maria_visibleArea.bottom-maria_displayArea.top;
 }

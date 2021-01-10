@@ -18,8 +18,6 @@
 #include "Sound.h"
 #define SOUND_SOURCE "Sound.cpp"
 
-uint sound_lenght;
-
 unsigned char sound_buffer[SNDLENGTH];    // Sound buffer
 
 unsigned int targetIndex = 0;

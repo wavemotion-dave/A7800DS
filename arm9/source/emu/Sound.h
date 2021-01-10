@@ -29,8 +29,6 @@
 
 #define SNDLENGTH (4096)
 
-extern uint sound_lenght;
-
 extern unsigned char sound_buffer[SNDLENGTH];    // Sound buffer
 
 extern bool sound_Store();

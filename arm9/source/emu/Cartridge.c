@@ -271,7 +271,6 @@ bool cartridge_Load(char *filename) {
     free(data);
   }
   
-  gameCRC = crc32(0, data, size);
   
   strcpy(cartridge_filename, filename);
   return true;
