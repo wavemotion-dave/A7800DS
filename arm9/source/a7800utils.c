@@ -266,8 +266,8 @@ void vblankIntr()
     REG_BG2Y = cyBG+jitter[3]; 
   }
     
-  debug[0] = cartridge_xOffset;
-  debug[1] = cartridge_yOffset;
+  //debug[0] = cartridge_xOffset;
+  //debug[1] = cartridge_yOffset;
 }
 
 void dsInitScreenMain(void) 
@@ -307,7 +307,6 @@ void dsShowScreenEmu(void)
   cyBG = (cartridge_yOffset << 8);
   xdxBG = ((320 / cartridge_xScale) << 8) | (320 % cartridge_xScale) ;
   ydyBG = ((video_height / cartridge_yScale) << 8) | (video_height % cartridge_yScale);
-  debug[3] = video_height;
 
   REG_BG2PB = 0;
   REG_BG2PC = 0;
@@ -884,7 +883,7 @@ void dsMainLoop(void)
               else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper corner...
                  full_speed = 1-full_speed; 
                  if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");
-                 dampen=10;
+                 dampen=60;
               }
               else if ((iTx>71) && (iTx<106) && (iTy>159) && (iTy<169))  { // 72,160  -> 105,168   pause
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);

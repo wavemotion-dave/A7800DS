@@ -207,6 +207,7 @@ static bool _cartridge_Load(const byte* data, uint size)
   }
   else 
   {
+    strcpy(cartridge_title, "NoTitle*#!.)_");
     cartridge_size = size;
   }
 
