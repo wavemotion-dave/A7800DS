@@ -238,8 +238,9 @@ ITCM_CODE void memory_WriteROM(word address, word size, const byte* data)
       *romPtr++ = 0x01010101;
   }
 }
+
 // ----------------------------------------------------------------------------
-// WriteROM
+// WriteROMFast (assumes memory_rom[] already set properly)
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_WriteROMFast(word address, word size, const byte* data) 
 {
@@ -250,7 +251,6 @@ ITCM_CODE void memory_WriteROMFast(word address, word size, const byte* data)
       *ramPtr++ = *dataPtr++;
   }
 }
-
 
 // ----------------------------------------------------------------------------
 // ClearROM

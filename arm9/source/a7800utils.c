@@ -41,7 +41,7 @@ int gTotalAtariFrames=0;
 int fpsDisplay=0;
 int atari_frames = 0;
 
-#define MAX_DEBUG 10 
+#define MAX_DEBUG 5
 int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
 //#define CART_INFO
@@ -319,6 +319,7 @@ void dsLoadGame(char *filename)
     snprintf(cart_info_buf, 63, "CT=%d PK=%d RE=%d SY=%d ST=%d HS=%d ", cartridge_type, cartridge_pokey, cartridge_region, cartridge_uses_wsync, cartridge_steals_cycles, cartridge_hsc_enabled);
     cart_info_buf[32] = 0;
     dsPrintValue(0,21,0,cart_info_buf);
+    dsPrintValue(0,19,0,cartridge_filename);      
 #endif          
       
     if (cartridge_region != NTSC)

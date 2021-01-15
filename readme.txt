@@ -33,6 +33,10 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.5 : 15-Jan-2021 by wavemotion-dave
+  * Added .A78 header naming search and as a backup filename search to help
+    properly identify the game being loaded so that the right settings can be applied.
+
 V2.4 : 8-Jan-2021 by wavemotion-dave
   * Improvement in bank switching allowing most games to run 60FPS.
   

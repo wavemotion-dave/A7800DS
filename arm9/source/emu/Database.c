@@ -49,7 +49,7 @@ typedef struct {
 
 
 Database_Entry game_list[] = {
-  {"f5150c0fc1948832211e57852abb0c6e",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=7800 Utility Cart
+  {"f5150c0fc1948832211e57852abb0c6e",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=7800 Utility Cart
   {"4332c24e4f3bc72e7fe1b77adf66c2b7",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=3D Asteroids
   {"0be996d25144966d5541c9eb4919b289",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Ace Of Aces
   {"877dcc97a775ed55081864b2dbf5f1e2",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  7,  30, 264,  230}, // title=Alien Brigade
@@ -82,7 +82,7 @@ Database_Entry game_list[] = {
   {"fab1290f9a4c4f2b4d831c8a57f969f5",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25, 256,  230}, // title=Draker Quest
   {"a9f29004412621f20ad9f5c51cc11486",  "Draker Quest II",                  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  24, 256,  230}, // title=Draker Quest II
   {"b3143adbbb7d7d189e918e5b29d55a72",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  23, 256,  220}, // title=Dungeon Stalker (homebrew)  
-  {"faea27017447dd8bae677d91125a8135",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25, 256,  230}, // title=E.X.O.
+  {"faea27017447dd8bae677d91125a8135",  "EXO",                              CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25, 256,  230}, // title=E.X.O.
   {"2251a6a0f3aec84cc0aff66fc9fa91e8",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_ABSOLU,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=F-18 Hornet
   {"6287727ab36391a62f728bbdee88675c",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Failsafe (homebrew)
   {"d25d5d19188e9f149977c49eb0367cd1",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Fatal Run
@@ -142,6 +142,7 @@ Database_Entry game_list[] = {
   {"771cb4609347657f63e6f0eb26036e35",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Space Duel (homebrew)
   {"6adf79558a3d7f5beca1bb8d34337417",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 30, 16, 320,  205}, // title=Space Invaders (Homebrew)
   {"19844117863cd38d4e1e4cbc867ae599",  "Spire of the Ancients",            CT_SUPLRG,    POKEY_NONE, SOTA,SOTA, DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 31, 25, 320,  230}, // title=Spire of the Ancients
+  {"19844117863cd38d4e1e4cbc867ae599",  "SotA",                             CT_SUPLRG,    POKEY_NONE, SOTA,SOTA, DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 31, 25, 320,  230}, // title=Spire of the Ancients
   {"cbb0746192540a13b4c7775c7ce2021f",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Summer Games
   {"81cee326b99d6831de10a566e338bd25",  "Super Circus AA-NTSC-joy-4000",    CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  21, 256,  220}, // title=Super Circus Atariage (Pokey 4000)    
   {"cc18e3b37a507c4217eb6cb1de8c8538",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Super Huey UH-IX
@@ -152,7 +153,7 @@ Database_Entry game_list[] = {
   {"c3903ab01a51222a52197dbfe6538ecf",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Tomcat F-14 Simulator
   {"208ef955fa90a29815eb097bce89bace",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Touchdown Football
   {"8d64763db3100aadc552db5e6868506a",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  16, 256,  230}, // title=Tower Toppler
-  {"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",  "UniWarS",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  16, 256,  210}, // title=UniWarS
+  {"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",  "UniWarS",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  13, 256,  200}, // title=UniWarS
   {"acf63758ecf3f3dd03e9d654ae6b69b7",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Water Ski
   {"3799d72f78dda2ee87b0ef8bf7b91186",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Winter Games
   {"05fb699db9eef564e2fe45c568746dbc",  "Xenophobe",                        CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  15, 22, 280,  234}, // title=Xenophobe
@@ -208,7 +209,8 @@ bool database_Load(byte *digest)
       {
         if (cartridge_region == NTSC)
         {
-          if (!strcmp(game_list[i].header_name,(char *) cartridge_title))
+          if ( (!strcmp(game_list[i].header_name,(char *) cartridge_title)) ||
+               (strstr((char *) cartridge_filename, game_list[i].header_name) != NULL) ) 
           {
             cartridge_type          = game_list[i].cardtype;
             cartridge_pokey         = game_list[i].pokeyType;
