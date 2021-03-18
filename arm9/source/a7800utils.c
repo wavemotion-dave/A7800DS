@@ -925,11 +925,18 @@ int a78Filescmp (const void *c1, const void *c2) {
   FICA7800 *p1 = (FICA7800 *) c1;
   FICA7800 *p2 = (FICA7800 *) c2;
   
-  return strcmp (p1->filename, p2->filename);
+  if (p1->filename[0] == '.' && p2->filename[0] != '.')
+      return -1;
+  if (p2->filename[0] == '.' && p1->filename[0] != '.')
+      return 1;
+  if (p1->directory && !(p2->directory))
+      return -1;
+  if (p2->directory && !(p1->directory))
+      return 1;
+  return strcasecmp (p1->filename, p2->filename);
 }
 
 void proFindFiles(void) {
-	struct stat statbuf;
   DIR *pdir;
   struct dirent *pent;
   char filenametmp[255];
@@ -940,12 +947,11 @@ void proFindFiles(void) {
 
   if (pdir) 
   {
-
-    while (((pent=readdir(pdir))!=NULL)) {
-      stat(pent->d_name,&statbuf);
-
+    while (((pent=readdir(pdir))!=NULL)) 
+    {
       strcpy(filenametmp,pent->d_name);
-      if(S_ISDIR(statbuf.st_mode)) {
+      if (pent->d_type == DT_DIR)
+      {
         if (!( (filenametmp[0] == '.') && (strlen(filenametmp) == 1))) {
           proromlist[countpro].directory = true;
           strcpy(proromlist[countpro].filename,filenametmp);
