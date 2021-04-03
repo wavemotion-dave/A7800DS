@@ -33,6 +33,11 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.6 : 02-Apr-2021 by wavemotion-dave
+  * Faster directory/file listing.
+  * Support for the latest homebrews: Galaxian and Popeye
+  * Improved scaling and offset handling using L/R + Arrow Keys to match other emulators.
+
 V2.5 : 15-Jan-2021 by wavemotion-dave
   * Added .A78 header naming search and as a backup filename search to help
     properly identify the game being loaded so that the right settings can be applied.
@@ -126,13 +131,13 @@ to select a file, then use A to load it.
 
 Controls :
  * Direction pad : the joystick ...
- * A      : Fire button 1
- * B      : Fire button 2
- * SELECT : SELECT Button
- * START  : PAUSE Button
- * X      : FPS Display
- * Y      : Fire Button 1 (for those that prefer not using A)
- * L/R    : Shift screen up/down by 1 pixel
+ * A             : Fire button 1
+ * B             : Fire button 2
+ * SELECT        : SELECT Button
+ * START         : PAUSE Button
+ * X             : FPS Display
+ * Y             : Fire Button 1 (for those that prefer not using A)
+ * L/R + DPAD    : Used to Shift Offsets and Scale Screen to desired ratio
  
  Use stylus on buttons for other actions on bottom screen.  
  

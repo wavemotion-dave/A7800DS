@@ -174,10 +174,21 @@ void vblankIntr()
 
   if (bRefreshXY)
   {
-    cxBG = (cartridge_xOffset << 8);
+    cxBG = (cartridge_xOffset << 8); 
     cyBG = (cartridge_yOffset << 8);
+    xdxBG = ((320 / cartridge_xScale) << 8) | (320 % cartridge_xScale) ;
+    ydyBG = ((video_height / cartridge_yScale) << 8) | (video_height % cartridge_yScale);
+
+    REG_BG2X = cxBG; 
+    REG_BG2Y = cyBG; 
     REG_BG3X = cxBG; 
     REG_BG3Y = cyBG; 
+
+    REG_BG2PA = xdxBG; 
+    REG_BG2PD = ydyBG; 
+    REG_BG3PA = xdxBG; 
+    REG_BG3PD = ydyBG; 
+
     bRefreshXY = false;
   }
   if (xx++ & 1)
@@ -190,9 +201,6 @@ void vblankIntr()
     REG_BG2X = cxBG+jitter[2]; 
     REG_BG2Y = cyBG+jitter[3]; 
   }
-    
-  //debug[0] = cartridge_xOffset;
-  //debug[1] = cartridge_yOffset;
 }
 
 void dsInitScreenMain(void) 
@@ -565,6 +573,7 @@ unsigned int dsWaitForRom(void)
         if (firstRomDisplay>nbRomPerPage) { firstRomDisplay -= nbRomPerPage; }
         else { firstRomDisplay = 0; }
         if (ucFicAct == 0) romSelected = 0;
+        if (romSelected > ucFicAct) romSelected = ucFicAct;
         ucSHaut=0x01;
         dsDisplayFiles(firstRomDisplay,romSelected);
       }
@@ -862,11 +871,6 @@ void dsMainLoop(void)
                   if ( (keys_pressed & KEY_R) )  { cartridge_xOffset +=28; bRefreshXY = true; }
                   if ( (keys_pressed & KEY_L) )  { cartridge_xOffset -=28; bRefreshXY = true; }  
               }
-              else
-              {
-                  if ( (keys_pressed & KEY_R) )  { cartridge_yOffset++; bRefreshXY = true; }
-                  if ( (keys_pressed & KEY_L) )  { cartridge_yOffset--; bRefreshXY = true; }  
-              }
           }
           dampen = 6;
         } else dampen--;
@@ -891,6 +895,19 @@ void dsMainLoop(void)
             if ( (keys_pressed & KEY_B) ) { tchepres(5); }  // BUTTON #2
             if ( (keys_pressed & KEY_Y) ) { tchepres(4); }  // BUTTON #1
         }
+            
+        if ((keys_pressed & KEY_R) || (keys_pressed & KEY_L))
+        {
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { cartridge_yOffset++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { cartridge_yOffset--; bRefreshXY = true; }
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { cartridge_xOffset++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { cartridge_xOffset--; bRefreshXY = true; }
+
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (cartridge_yScale <= 256) { cartridge_yScale++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (cartridge_yScale >= 192) { cartridge_yScale--; bRefreshXY = true; }
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT))  if (cartridge_xScale < 320) { cartridge_xScale++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (cartridge_xScale >= 192)  { cartridge_xScale--; bRefreshXY = true; }                  
+        }   
 
         // -------------------------------------------------------------
         // Stuff to do once/second such as FPS display and Debug Data
@@ -976,5 +993,14 @@ void proFindFiles(void) {
     closedir(pdir);
   }
   if (countpro)
+  {
     qsort (proromlist, countpro, sizeof (FICA7800), a78Filescmp);
+  }
+  else  // Failsafe... always provide a back directory...
+  {
+    proromlist[countpro].directory = true;
+    strcpy(proromlist[countpro].filename,"..");
+    countpro = 1;
+  }
+    
 }

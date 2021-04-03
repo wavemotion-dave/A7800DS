@@ -91,6 +91,7 @@ Database_Entry game_list[] = {
   {"e7d89669a7f92ec2cc99d9663a28671c",  "Frenzy (w-Berzerk)",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 30, 15, 320,  205}, // title=Frenzy (with Berzerk) (homebrew)
   {"6053233cb59c0b4ca633623fd76c4576",  "Froggie",                          CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 34, 16, 320,  205}, // title=Froggie (homebrew)
   {"fb8d803b328b2e442548f7799cfa9a4a",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Galaga
+  {"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",  "Galaxian",                         CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  13, 256,  200}, // title=Galaxian
   {"06204dadc975be5e5e37e7cc66f984cf",  "Galaga",                           CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Gato   
   {"e443f7fb5be3283dd44c0f5d80c3a7b3",  "GoSub",                            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  12, 22, 280,  230}, // title=GoSub
   {"fd9e78e201b6baafddfd3e1fbfe6ba31",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=Hat Trick                       
