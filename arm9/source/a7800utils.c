@@ -727,6 +727,7 @@ void dsInstallSoundEmuFIFO(void)
 
 void dsMainLoop(void) 
 {
+  static int lcd_swap_counter=0;
   static int special_hsc_entry=0;    
   static int last_keys_pressed = 999;
   char fpsbuf[32];
@@ -898,6 +899,13 @@ void dsMainLoop(void)
             
         if ((keys_pressed & KEY_R) || (keys_pressed & KEY_L))
         {
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_L))
+          {
+              if (++lcd_swap_counter == 30)
+              {
+                  if (keys_pressed & KEY_A)   lcdSwap();
+              }
+          } 
           if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { cartridge_yOffset++; bRefreshXY = true; }
           if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { cartridge_yOffset--; bRefreshXY = true; }
           if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { cartridge_xOffset++; bRefreshXY = true; }
@@ -907,7 +915,7 @@ void dsMainLoop(void)
           if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (cartridge_yScale >= 192) { cartridge_yScale--; bRefreshXY = true; }
           if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT))  if (cartridge_xScale < 320) { cartridge_xScale++; bRefreshXY = true; }
           if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (cartridge_xScale >= 192)  { cartridge_xScale--; bRefreshXY = true; }                  
-        }   
+        }  else lcd_swap_counter=0;
 
         // -------------------------------------------------------------
         // Stuff to do once/second such as FPS display and Debug Data
