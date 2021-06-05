@@ -33,6 +33,10 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.7 : 02-Apr-2021 by wavemotion-dave
+  * New support for the latest homebrews: Galaxian final
+  * Added ability to swap screens using L+R+A 
+
 V2.6 : 02-Apr-2021 by wavemotion-dave
   * Faster directory/file listing.
   * Support for the latest homebrews: Galaxian and Popeye
