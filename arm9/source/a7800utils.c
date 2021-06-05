@@ -734,6 +734,7 @@ void dsMainLoop(void)
   unsigned int keys_pressed,keys_touch=0, romSel;
   int iTx,iTy;
   static int dampen = 0;
+  static int scale_screen_dampen=0;
   
     // Timers are fed with 33.513982 MHz clock.
     // With DIV_1024 the clock is 32,728.5 ticks per sec...
@@ -906,15 +907,19 @@ void dsMainLoop(void)
                   if (keys_pressed & KEY_A)   lcdSwap();
               }
           } 
-          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { cartridge_yOffset++; bRefreshXY = true; }
-          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { cartridge_yOffset--; bRefreshXY = true; }
-          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { cartridge_xOffset++; bRefreshXY = true; }
-          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { cartridge_xOffset--; bRefreshXY = true; }
+          if (scale_screen_dampen > 5)
+          {
+              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { cartridge_yOffset++; bRefreshXY = true; }
+              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { cartridge_yOffset--; bRefreshXY = true; }
+              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { cartridge_xOffset++; bRefreshXY = true; }
+              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { cartridge_xOffset--; bRefreshXY = true; }
 
-          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (cartridge_yScale <= 256) { cartridge_yScale++; bRefreshXY = true; }
-          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (cartridge_yScale >= 192) { cartridge_yScale--; bRefreshXY = true; }
-          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT))  if (cartridge_xScale < 320) { cartridge_xScale++; bRefreshXY = true; }
-          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (cartridge_xScale >= 192)  { cartridge_xScale--; bRefreshXY = true; }                  
+              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (cartridge_yScale <= 256) { cartridge_yScale++; bRefreshXY = true; }
+              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (cartridge_yScale > 192) { cartridge_yScale--; bRefreshXY = true; }
+              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT))  if (cartridge_xScale < 320) { cartridge_xScale++; bRefreshXY = true; }
+              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (cartridge_xScale > 192)  { cartridge_xScale--; bRefreshXY = true; }                  
+              scale_screen_dampen=0;
+          } else scale_screen_dampen++;
         }  else lcd_swap_counter=0;
 
         // -------------------------------------------------------------
