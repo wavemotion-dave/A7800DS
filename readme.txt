@@ -36,6 +36,9 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.9 : 03-Nov-2021 by wavemotion-dave
+  * Fixed loading of large SUPER CART roms.
+
 V2.8 : 02-Nov-2021 by wavemotion-dave
   * A bit of speed - enough to eliminate the old DS-LITE version. 
   * A few new homebrews added to the internal database. 
