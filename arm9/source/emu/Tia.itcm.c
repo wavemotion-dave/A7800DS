@@ -50,21 +50,21 @@
 #define TIA_POLY9_SIZE 511
 
 byte tia_buffer[SNDLENGTH] = {0};
-int tiaBufIdx = 0;
+u16 tiaBufIdx __attribute__((section(".dtcm"))) = 0;
 
 static const byte TIA_POLY4[ ] = {1,1,0,1,1,1,0,0,0,0,1,0,1,0,0};
 static const byte TIA_POLY5[ ] = {0,0,1,0,1,1,0,0,1,1,1,1,1,0,0,0,1,1,0,1,1,1,0,1,0,1,0,0,0,0,1};
 static const byte TIA_POLY9[ ] = {0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,1,1,0,0,1,0,1,0,0,1,1,1,1,1,0,0,1,1,0,1,1,0,1,0,1,1,1,0,1,1,0,0,1,0,0,1,1,1,1,0,1,0,0,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,1,1,1,0,1,0,1,1,0,1,0,1,0,0,0,0,1,1,0,1,0,1,0,0,0,1,0,1,0,0,0,1,1,1,0,0,1,1,0,1,1,0,0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,0,0,0,1,1,1,0,0,1,1,0,1,0,1,1,0,1,1,0,1,0,0,1,0,0,1,1,1,1,1,1,0,1,1,1,1,0,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,1,0,1,0,0,0,1,1,0,0,0,1,1,1,0,1,1,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,1,1,0,0,1,0,0,1,0,1,1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,1,1,1,1,0,0,0,1,1,1,0,0,0,1,0,0,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1,1,1,1,0,0,1,0,1,0,1,1,1,0,0,0,0,0,1,1,0,1,1,0,0,0,1,0,1,0,1,0,0,0,0,1,0,1,1,1,0,0,0,0,1,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,0,1,0,0,0,1,1,0,1,0,0,0,0,0,1,1,1,1,0,0,1,0,0,1,0,1,1,1,1,1,1,1,0,1,0,0,1,0,0,0,1,1,0,1,1,1,0,0,0,1,0,1,0,0,1,0,1,0,1,0,1,1,1,0,0,1,0,1,1,0,0,1,1,1,1,1,0,0,0,1,1,0};
 static const byte TIA_DIV31[ ] = {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
-static byte tia_volume[2] = {0};
-static byte tia_counterMax[2] = {0};
-static byte tia_counter[2] = {0};
-byte tia_audc[2] = {0};
-byte tia_audf[2] = {0};
-byte tia_audv[2] = {0};
-static byte tia_poly4Cntr[2] = {0};
-static byte tia_poly5Cntr[2] = {0};
-static uint tia_poly9Cntr[2] = {0};
+static byte tia_volume[2] __attribute__((section(".dtcm"))) = {0};
+static byte tia_counterMax[2] __attribute__((section(".dtcm"))) = {0};
+static byte tia_counter[2] __attribute__((section(".dtcm"))) = {0};
+byte tia_audc[2] __attribute__((section(".dtcm"))) = {0};
+byte tia_audf[2] __attribute__((section(".dtcm"))) = {0};
+byte tia_audv[2] __attribute__((section(".dtcm"))) = {0};
+static byte tia_poly4Cntr[2] __attribute__((section(".dtcm"))) = {0};
+static byte tia_poly5Cntr[2] __attribute__((section(".dtcm"))) = {0};
+static u16 tia_poly9Cntr[2] __attribute__((section(".dtcm"))) = {0};
 
 // ----------------------------------------------------------------------------
 // ProcessChannel
@@ -271,8 +271,9 @@ int TIA_Sample(void)
 // --------------------------------------------------------------------------------------
 void tia_Process(uint length) 
 {
-  uint index;
-  for(index = 0; index < length; index++) 
+  if (is_mute) return;
+
+  for(u16 index = 0; index < length; index++) 
   {
     if(tia_counter[0] > 1) 
     {

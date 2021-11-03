@@ -27,7 +27,7 @@
 #include "Maria.h"
 
 byte memory_ram[MEMORY_SIZE] = {0};
-byte memory_rom[MEMORY_SIZE] = {0};
+u16 *memory_rom = (u16*) 0x0688C000;
 
 // ----------------------------------------------------------------------------
 // Reset
@@ -44,10 +44,10 @@ void memory_Reset( )
   }
 }
 
+extern u8 isDS_LITE;
 // ----------------------------------------------------------------------------
 // Read
 // ----------------------------------------------------------------------------
-#ifndef DS_LITE    
 ITCM_CODE byte memory_Read(word address) 
 { 
   if (cartridge_pokey)
@@ -79,14 +79,12 @@ ITCM_CODE byte memory_Read(word address)
   }
   return memory_ram[address];
 }
-#endif
 
 // ----------------------------------------------------------------------------
 // Write
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_Write(word address, byte data) 
 {
-#ifndef DS_LITE        
   if (cartridge_pokey)
   {
       if (cartridge_pokey == POKEY_AT_4000)
@@ -108,7 +106,6 @@ ITCM_CODE void memory_Write(word address, byte data)
           }          
       }
   }
-#endif
     
   if(!memory_rom[address]) 
   {
@@ -241,12 +238,13 @@ ITCM_CODE void memory_WriteROM(word address, word size, const byte* data)
 
 // ----------------------------------------------------------------------------
 // WriteROMFast (assumes memory_rom[] already set properly)
+// size is already in multiples of u32 dwords
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_WriteROMFast(word address, word size, const byte* data) 
 {
   u32* ramPtr = (u32*)&memory_ram[address];
   u32* dataPtr = (u32*)data;
-  for (word i=0; i<(size>>2); i++)
+  for (word i=0; i<size; i++)
   {
       *ramPtr++ = *dataPtr++;
   }

@@ -147,6 +147,10 @@ bool cartridge_LoadHighScoreCart(void)
 
     FILE* file = fopen("highscore.rom", "rb" );
 
+    // If we don't find it in the current directory, always try /roms/bios and /data/bios
+    if (file == NULL)  file = fopen("/roms/bios/highscore.rom", "rb" );
+    if (file == NULL)  file = fopen("/data/bios/highscore.rom", "rb" );
+
     if( file != NULL )
     {
       fread(high_score_buffer, 1, HSC_CART_ROM_SIZE, file );

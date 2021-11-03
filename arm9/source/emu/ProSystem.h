@@ -43,7 +43,6 @@
 #include "shared.h"
 
 //#define KANGAROO_MODE_SUPPORTED YES   // Uncomment this for KANGAROO support. Slightly slower and virtually no game uses it... but more accurate
-//#define DS_LITE 1                     // Uncomment this for a very stripped-down version that has very low compaitibility but will run fast enough on the DS_LITE
 
 extern int debug[];
 

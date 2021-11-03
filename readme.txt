@@ -12,27 +12,37 @@ Features :
 ----------
  Most things you should expect from an emulator. Speed is good. Sound is good except
  for the few games that run below 60FPS.
+ 
+ Add highscore.rom for 7800 High Score saving.
 
 Philosophy :
 ----------
- I'm not striving for emulation accuracy - the goal is to get as many games as close 
- to perfectly playable as possible. Nothing else matters if the game won't run at
- near full speed with all the gameplay in-tact. Minor screen glitches or minor sound
- issues are secondary to making sure the game will actually run. If you're looking
- for a highly accurate emulator for the 7800 ProSystem, this isn't it - try MAME/MESS.
- But if you're looking to enjoy some classic console goodness on your DS/DSi then 
- you've come to the right place!
+ For this particular emulator, I'm not striving for emulation accuracy - the goal is to 
+ get as many games as close to perfectly playable as possible. Nothing else matters if
+ the game won't run at near full speed with all the gameplay in-tact. Minor screen 
+ glitches or minor sound issues are secondary to making sure the game will actually run. 
+ If you're looking for a highly accurate emulator for the 7800 ProSystem, this isn't 
+ it - try MAME/MESS. But if you're looking to enjoy some classic 7800 console goodness 
+ on your DS/DSi then you've come to the right place!
  
  Be warned, the emulation of the ProSystem is tricky as there are several CPU-like
- elments that need to be emulated (6502, TIA, RIOT, Pokey Chip) and the DS-LITE
+ elements that need to be emulated (6502, TIA, RIOT, Pokey Chip) and the DS-LITE
  just doesn't have the horsepower to do it properly so only the smallest non-Pokey 
  games will run (Asteroids, Centipede, Joust, Meteor Shower, Moon Cresta, Ms Pac Man).
  The DSi will run most games at near full speed or beyond - with much higher emulation
  compatibility. 
 
+
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V2.8 : 02-Nov-2021 by wavemotion-dave
+  * A bit of speed - enough to eliminate the old DS-LITE version. 
+  * A few new homebrews added to the internal database. 
+  * Optmized sound buffers for (very) slightly better performance.
+  * highscore.rom can now bin in /roms/bios or /data/bios 
+  * Cleanup code as time permitted.
+  
 V2.7 : 02-Apr-2021 by wavemotion-dave
   * New support for the latest homebrews: Galaxian final
   * Added ability to swap screens using L+R+A 

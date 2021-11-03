@@ -35,19 +35,15 @@
 #include "shared.h"
 
 extern void memory_Reset( );
-#ifndef DS_LITE
 extern ITCM_CODE byte memory_Read(word address);
-#endif
 extern ITCM_CODE void memory_Write(word address, byte data);
-//ALEK extern void memory_Write(byte data,word address);
 
 extern void memory_WriteROM(word address, word size, const byte* data);
 extern void memory_WriteROMFast(word address, word size, const byte* data);
 extern void memory_WriteROM32(word address, word size, const byte* data);
 extern void memory_ClearROM(word address, word size);
 extern byte memory_ram[MEMORY_SIZE];
-extern byte memory_rom[MEMORY_SIZE];
-//ALEK extern byte *memory_rom;
+extern u16 *memory_rom;
 
 extern byte* get_memory_ram();
 

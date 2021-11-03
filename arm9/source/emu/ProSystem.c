@@ -38,9 +38,6 @@ word prosystem_scanlines __attribute__((section(".dtcm"))) = 262;
 uint prosystem_cycles __attribute__((section(".dtcm"))) = 0;
 uint32 bg32 __attribute__((section(".dtcm"))) = 0;
 
-// Whether the last CPU operation resulted in a half cycle (need to take it
-// into consideration)
-extern bool half_cycle;
 
 // ----------------------------------------------------------------------------
 // Reset
@@ -80,7 +77,7 @@ void prosystem_Reset( )
 ITCM_CODE void prosystem_ExecuteFrame(const byte* input) 
 {
   static byte last_background = 254;
-  extern int gTotalAtariFrames;
+  extern u16 gTotalAtariFrames;
   extern word *framePtr;
   bool bRenderScanline = false;
 

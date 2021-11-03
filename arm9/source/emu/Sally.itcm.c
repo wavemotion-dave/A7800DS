@@ -36,6 +36,8 @@ static byte sally_opcode __attribute__((section(".dtcm")));
 static pair sally_address __attribute__((section(".dtcm")));
 static uint sally_cyclesX4 __attribute__((section(".dtcm")));
 
+extern u8 isDS_LITE;
+
 #define _fC 0x01
 #define _fZ 0x02
 #define _fI 0x04
@@ -74,12 +76,6 @@ static byte SALLY_CYCLESX4[256] __attribute__((section(".dtcm"))) =
 	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4
 };
 
-#ifdef DS_LITE    
-inline byte memory_Read(word address) 
-{ 
-  return memory_ram[address];
-}
-#endif
 
 // For when you know it's an opcode or operand and, therefore, just a normal RAM/ROM fetch
 static inline byte memory_Read_Fast(word addr)
@@ -1946,17 +1942,19 @@ l_0x02:
 
 next_inst:
     prosystem_cycles += sally_cyclesX4;
-#ifndef DS_LITE        
-    if(riot_timing) 
+
+    if (!isDS_LITE)
     {
-      riot_UpdateTimer(sally_cyclesX4 >> 2);
+        if(riot_timing) 
+        {
+          riot_UpdateTimer(sally_cyclesX4 >> 2);
+        }
+        if(memory_ram[WSYNC])   // Will only write true here if cartridge_uses_wsync is true in Memory.c
+        {
+          prosystem_cycles = 456;
+          memory_ram[WSYNC] = false;
+          break;
+        }
     }
-    if(memory_ram[WSYNC])   // Will only write true here if cartridge_uses_wsync is true in Memory.c
-    {
-      prosystem_cycles = 456;
-      memory_ram[WSYNC] = false;
-      break;
-    }
-#endif      
   }
 }

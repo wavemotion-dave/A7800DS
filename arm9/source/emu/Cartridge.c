@@ -32,24 +32,24 @@ char cartridge_year[128];
 char cartridge_maker[128];
 byte cartridge_digest[128];
 char cartridge_filename[128];
-byte cartridge_type;
-byte cartridge_region;
-byte cartridge_pokey;
+byte cartridge_type __attribute__((section(".dtcm")));
+byte cartridge_region __attribute__((section(".dtcm")));
+byte cartridge_pokey __attribute__((section(".dtcm")));
 bool cartridge_hsc_enabled;
 byte cartridge_controller[2];
-byte cartridge_bank;
-bool cartridge_steals_cycles;
-bool cartridge_uses_wsync;
-int  cartridge_xOffset = 0;
-int  cartridge_yOffset = 22;
-int  cartridge_xScale  = 256;
-int  cartridge_yScale  = 220;
+byte cartridge_bank __attribute__((section(".dtcm")));
+bool cartridge_steals_cycles __attribute__((section(".dtcm")));
+bool cartridge_uses_wsync __attribute__((section(".dtcm")));
+short cartridge_xOffset = 0;
+short cartridge_yOffset = 22;
+short cartridge_xScale  = 256;
+short cartridge_yScale  = 220;
 uint cartridge_diff1 = DIFF_A;
 uint cartridge_diff2 = DIFF_A;
   
 extern int debug[];  
-static byte* cartridge_buffer = NULL;
-static uint cartridge_size = 0;
+static byte* cartridge_buffer __attribute__((section(".dtcm"))) = NULL;
+static uint cartridge_size __attribute__((section(".dtcm"))) = 0;
 static uint maxbank = 9;
 
 // ----------------------------------------------------------------------------
@@ -94,7 +94,7 @@ inline static void cartridge_WriteBank(word address, byte bank)
     last_bank = bank;
     uint offset = cartridge_GetBank(bank) * 16384;
     if(offset < cartridge_size) {
-      memory_WriteROMFast(address, 16384, cartridge_buffer + offset);
+      memory_WriteROMFast(address, (16384/4), cartridge_buffer + offset);
       cartridge_bank = bank;
     }
   }
@@ -212,7 +212,7 @@ static bool _cartridge_Load(const byte* data, uint size)
   }
 
   if (cartridge_size <= (144 * 1024))
-    cartridge_buffer = (byte *) 0x0603C000;   // If smaller than 144k (98% of all carts are), we can use the VRAM buffer since it's faster to move stuff around...
+    cartridge_buffer = (byte *) 0x06860000;   // If smaller than 144k (98% of all carts are), we can use the VRAM buffer since it's faster to move stuff around...
   else   
     cartridge_buffer = (byte *) malloc(cartridge_size); // Otherwise allocate memory 
   for(index = 0; index < cartridge_size; index++) {
@@ -411,7 +411,7 @@ void cartridge_Release( )
     // Snap out the High Score SRAM (if used)
     cartridge_SaveHighScoreSram();
 
-    if ((u32)cartridge_buffer != 0x0603C000)
+    if ((u32)cartridge_buffer != 0x06860000)
     {
         free(cartridge_buffer);
     }

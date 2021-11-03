@@ -27,10 +27,10 @@
 
 #include "shared.h"
 
-#define SNDLENGTH (4096)
+#define SNDLENGTH (8192)
 
 extern unsigned char sound_buffer[SNDLENGTH];    // Sound buffer
-
+extern u8 is_mute;
 extern bool sound_Store();
 extern void processSound(register unsigned char *buffer);
 

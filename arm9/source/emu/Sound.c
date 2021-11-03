@@ -20,7 +20,7 @@
 
 unsigned char sound_buffer[SNDLENGTH];    // Sound buffer
 
-unsigned int targetIndex = 0;
+u8 is_mute __attribute__((section(".dtcm"))) = false;
 
 void processSound(register unsigned char *buffer) 
 {

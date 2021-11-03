@@ -17,8 +17,8 @@
 #include "bgTop.h"
 #include "bgFileSel.h"
 
-static unsigned int  sound_idx          __attribute__((section(".dtcm"))) = 0;
-static unsigned int  myPokeyBufIdx      __attribute__((section(".dtcm"))) = 0;
+u8 isDS_LITE                            __attribute__((section(".dtcm"))) = 0;
+
 static unsigned char lastPokeySample    __attribute__((section(".dtcm"))) = 0;
 static unsigned char lastTiaSample      __attribute__((section(".dtcm"))) = 0;
 static unsigned char lastSample         __attribute__((section(".dtcm"))) = 0;
@@ -35,10 +35,10 @@ int bg2;
 int bg3;             // BG pointers 
 int bg0s, bg1s, bg2s, bg3s;         // sub BG pointers 
 
-int full_speed = 0;
+u16 full_speed = 0;
 int etatEmu;
-int gTotalAtariFrames=0;
-int fpsDisplay=0;
+u16 gTotalAtariFrames=0;
+u16 fpsDisplay=0;
 int atari_frames = 0;
 
 #define MAX_DEBUG 5
@@ -56,7 +56,7 @@ short cxBG, cyBG, xdxBG,ydyBG;
 
 unsigned char *filebuffer;
 
-bool bRefreshXY = false;
+u8 bRefreshXY = false;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
@@ -96,28 +96,36 @@ static void DumpDebugData(void)
 #endif
 }
 
-
+u16 myTiaBufIdx __attribute__((section(".dtcm"))) = 0;
+u8* snd_ptr __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
+u8* snd_sta __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
+u8* snd_end __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
 void VsoundHandler(void) 
 {
-  static unsigned int sound_idx = 0;
   extern unsigned char tia_buffer[];
-  extern int tiaBufIdx;
-  static int myTiaBufIdx=0;
-  
-  // If there is a fresh sample... 
-  if (myTiaBufIdx != tiaBufIdx)
+  extern u16 tiaBufIdx;
+
+  for (u8 i=0; i<2; i++)
   {
-      lastSample = tia_buffer[myTiaBufIdx];
-      myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
+      // If there is a fresh sample... 
+      if (myTiaBufIdx != tiaBufIdx)
+      {
+          lastSample = tia_buffer[myTiaBufIdx];
+          myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
+      }
+      *snd_ptr++ = lastSample;
+      if (snd_ptr == snd_end)
+      {
+          snd_ptr = snd_sta;
+      }
   }
-  sound_buffer[sound_idx] = lastSample;
-  sound_idx = (sound_idx+1) & (SNDLENGTH-1);  
 }
 
+u16 myPokeyBufIdx __attribute__((section(".dtcm"))) = 0;
 void VsoundHandler_Pokey(void)
  {
   extern unsigned char pokey_buffer[];
-  extern int pokeyBufIdx;
+  extern u16 pokeyBufIdx;
 
   // If there is a fresh Pokey sample... 
   if (myPokeyBufIdx != pokeyBufIdx)
@@ -125,8 +133,11 @@ void VsoundHandler_Pokey(void)
       lastPokeySample = pokey_buffer[myPokeyBufIdx];
       myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
   }
-  sound_buffer[sound_idx] = lastPokeySample;
-  sound_idx = (sound_idx+1) & (SNDLENGTH-1);    
+  *snd_ptr++ = lastPokeySample;
+  if (snd_ptr == snd_end)
+  {
+      snd_ptr = snd_sta;
+  }
 }
 
 
@@ -205,13 +216,21 @@ void vblankIntr()
 
 void dsInitScreenMain(void) 
 {
-    SetYtrigger(192); //trigger 2 lines before vsync
+    SetYtrigger(190); //trigger 2 lines before vsync
     irqSet(IRQ_VBLANK, vblankIntr);
     irqEnable(IRQ_VBLANK);
+    
+    if (isDSiMode()) isDS_LITE = false; 
+    else isDS_LITE = true;    
 
     vramSetBankB(VRAM_B_MAIN_BG_0x06020000 ); // Need to do this early so we can steal a bit of this RAM for bank swap...
-    vramSetBankD(VRAM_D_MAIN_BG_0x06040000 ); // Not using this for video but for cartridge bank swap area... it's faster!
-    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful! Mapped at 0x06880000
+    vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
+    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
+    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
+    vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 -   ..
+    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 -   ..
+    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 -   ..
+    
 }
 
 void dsInitTimer(void) 
@@ -226,7 +245,8 @@ void dsShowScreenEmu(void)
     videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
     vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
     vramSetBankB(VRAM_B_MAIN_BG_0x06020000 );
-    vramSetBankD(VRAM_D_MAIN_BG_0x06040000 ); // Not using this for video but for cartridge bank swap area... it's faster!
+    vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
+    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     bg0 = bgInit(3, BgType_Bmp8, BgSize_B8_512x512, 0,0);
     bg1 = bgInit(2, BgType_Bmp8, BgSize_B8_512x512, 0,0);
 
@@ -360,13 +380,6 @@ void dsLoadGame(char *filename)
     GameConf.DS_Pad[14] = 7;   GameConf.DS_Pad[15] = 9;
 
     dsInstallSoundEmuFIFO();
-    TIMER2_DATA = TIMER_FREQ((cartridge_pokey ? SOUND_FREQ:SOUND_FREQ*2));
-    TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
-    if (cartridge_pokey)
-        irqSet(IRQ_TIMER2, VsoundHandler_Pokey);  
-    else
-        irqSet(IRQ_TIMER2, VsoundHandler);
-    irqEnable(IRQ_TIMER2);  
       
     atari_frames = 0;
     TIMER0_CR=0;
@@ -454,7 +467,7 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   dsPrintValue(16-strlen(szName)/2,3,0,szName);
   dsPrintValue(31,5,0,(char *) (NoDebGame>0 ? "<" : " "));
   dsPrintValue(31,22,0,(char *) (NoDebGame+14<countpro ? ">" : " "));
-  sprintf(szName,"%s","A TO SELECT A GAME, B TO GO BACK");
+  sprintf(szName,"%s","A=SELECT, X=NO SOUND, B=BACK");
   dsPrintValue(16-strlen(szName)/2,23,0,szName);
   for (ucBcl=0;ucBcl<17; ucBcl++) 
   {
@@ -590,12 +603,16 @@ unsigned int dsWaitForRom(void)
       while (keysCurrent() & KEY_B);
     }
 
-    if (keysCurrent() & KEY_A) {
-      if (!proromlist[ucFicAct].directory) {
+    if (keysCurrent() & (KEY_A | KEY_X)) 
+    {
+      if (!proromlist[ucFicAct].directory) 
+      {
+        if (keysCurrent() & KEY_X) is_mute = true; else is_mute=false;
         bRet=true;
         bDone=true;
       }
-      else {
+      else 
+      {
         chdir(proromlist[ucFicAct].filename);
         proFindFiles();
         ucFicAct = 0;
@@ -712,9 +729,17 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 //---------------------------------------------------------------------------------
 void dsInstallSoundEmuFIFO(void) 
 {
+    memset(sound_buffer, 0x00, SNDLENGTH);
+    irqDisable(IRQ_TIMER2);  
+    
+    if (is_mute) 
+    {
+        return;    // We've been asked to not install sound... 
+    }
+
     FifoMessage msg;
     msg.SoundPlay.data = &sound_buffer;
-    msg.SoundPlay.freq = (cartridge_pokey ? SOUND_FREQ:SOUND_FREQ*2);
+    msg.SoundPlay.freq = (cartridge_pokey ? SOUND_FREQ+21:(SOUND_FREQ*2)+21);
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
@@ -723,6 +748,27 @@ void dsInstallSoundEmuFIFO(void)
     msg.SoundPlay.dataSize = SNDLENGTH >> 2;
     msg.type = EMUARM7_PLAY_SND;
     fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
+    
+    if (isDS_LITE)
+    {
+        snd_ptr = (u8*)((u32)sound_buffer + 0x00400000);
+        snd_sta = (u8*)((u32)sound_buffer + 0x00400000);
+        snd_end = (u8*)((u32)sound_buffer + 0x00400000 + SNDLENGTH);
+    }
+    else
+    {
+        snd_ptr = (u8*)((u32)sound_buffer + 0xA000000);
+        snd_sta = (u8*)((u32)sound_buffer + 0xA000000);
+        snd_end = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
+    }
+    
+    TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);
+    TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
+    if (cartridge_pokey)
+        irqSet(IRQ_TIMER2, VsoundHandler_Pokey);  
+    else
+        irqSet(IRQ_TIMER2, VsoundHandler);
+    irqEnable(IRQ_TIMER2);  
 }
 
 void dsMainLoop(void) 
@@ -933,6 +979,7 @@ void dsMainLoop(void)
             if (fpsDisplay)
             {
                 int fps = gTotalAtariFrames;
+                if (fps == 61) fps=60;
                 gTotalAtariFrames = 0;
                 fpsbuf[0] = '0' + (int)fps/100;
                 fps = fps % 100;

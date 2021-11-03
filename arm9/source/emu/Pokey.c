@@ -72,7 +72,7 @@
 byte pokey_buffer[SNDLENGTH] = {0};
 uint pokey_size = SNDLENGTH;
 
-int pokeyBufIdx = 0;
+u16 pokeyBufIdx __attribute__((section(".dtcm"))) = 0;
 
 static uint pokey_frequency = 1787520;
 static uint pokey_sampleRate = (31440/2);
