@@ -27,7 +27,7 @@
 #include "Maria.h"
 
 byte memory_ram[MEMORY_SIZE] = {0};
-u16 *memory_rom = (u16*) 0x0688C000;
+byte memory_rom[MEMORY_SIZE] = {0};
 
 // ----------------------------------------------------------------------------
 // Reset

@@ -43,7 +43,7 @@ extern void memory_WriteROMFast(word address, word size, const byte* data);
 extern void memory_WriteROM32(word address, word size, const byte* data);
 extern void memory_ClearROM(word address, word size);
 extern byte memory_ram[MEMORY_SIZE];
-extern u16 *memory_rom;
+extern byte memory_rom[MEMORY_SIZE];
 
 extern byte* get_memory_ram();
 

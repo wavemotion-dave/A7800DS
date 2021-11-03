@@ -82,6 +82,7 @@ Database_Entry game_list[] = {
   {"a9f29004412621f20ad9f5c51cc11486",  "Draker Quest II",                  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  24, 256,  230}, // title=Draker Quest II
   {"fab1290f9a4c4f2b4d831c8a57f969f5",  "Draker Quest",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25, 256,  230}, // title=Draker Quest
   {"b3143adbbb7d7d189e918e5b29d55a72",  "Dungeon Stalker",                  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  23, 256,  220}, // title=Dungeon Stalker (homebrew)  
+  {"7099cc31cbc492d525d218efe88b8685",  "EXO",                              CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25, 256,  230}, // title=E.X.O.
   {"faea27017447dd8bae677d91125a8135",  "EXO",                              CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25, 256,  230}, // title=E.X.O.
   {"2251a6a0f3aec84cc0aff66fc9fa91e8",  "F-18 Hornet",                      CT_ABSOLU,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220}, // title=F-18 Hornet
   {"6287727ab36391a62f728bbdee88675c",  "Failsafe",                         CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22, 256,  220}, // title=Failsafe (homebrew)
