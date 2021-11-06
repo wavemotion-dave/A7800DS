@@ -96,28 +96,24 @@ static void DumpDebugData(void)
 #endif
 }
 
+
+u16 sampleExtender[256] = {0};
+u16 *aptr __attribute__((section(".dtcm"))) = (u16*)((u32)&sound_buffer[0] + 0xA000000); 
+u16 *bptr __attribute__((section(".dtcm"))) = (u16*)((u32)&sound_buffer[2] + 0xA000000); 
+
 u16 myTiaBufIdx __attribute__((section(".dtcm"))) = 0;
-u8* snd_ptr __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
-u8* snd_sta __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
-u8* snd_end __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
 void VsoundHandler(void) 
 {
   extern unsigned char tia_buffer[];
   extern u16 tiaBufIdx;
 
-  for (u8 i=0; i<2; i++)
+  // If there is a fresh sample... 
+  if (myTiaBufIdx != tiaBufIdx)
   {
-      // If there is a fresh sample... 
-      if (myTiaBufIdx != tiaBufIdx)
-      {
-          lastSample = tia_buffer[myTiaBufIdx];
-          myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
-      }
-      *snd_ptr++ = lastSample;
-      if (snd_ptr == snd_end)
-      {
-          snd_ptr = snd_sta;
-      }
+      u16 sample = sampleExtender[tia_buffer[myTiaBufIdx]];
+      myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
+      *aptr = sample;
+      *bptr = sample;
   }
 }
 
@@ -130,13 +126,10 @@ void VsoundHandler_Pokey(void)
   // If there is a fresh Pokey sample... 
   if (myPokeyBufIdx != pokeyBufIdx)
   {
-      lastPokeySample = pokey_buffer[myPokeyBufIdx];
+      u16 sample = sampleExtender[pokey_buffer[myPokeyBufIdx]];
       myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
-  }
-  *snd_ptr++ = lastPokeySample;
-  if (snd_ptr == snd_end)
-  {
-      snd_ptr = snd_sta;
+      *aptr = sample;
+      *bptr = sample;
   }
 }
 
@@ -247,6 +240,10 @@ void dsShowScreenEmu(void)
     vramSetBankB(VRAM_B_MAIN_BG_0x06020000 );
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
+    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
+    vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 -   ..
+    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 -   ..
+    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 -   ..
     bg0 = bgInit(3, BgType_Bmp8, BgSize_B8_512x512, 0,0);
     bg1 = bgInit(2, BgType_Bmp8, BgSize_B8_512x512, 0,0);
 
@@ -736,38 +733,54 @@ void dsInstallSoundEmuFIFO(void)
     {
         return;    // We've been asked to not install sound... 
     }
+    
+    for (int i=0; i<256; i++)
+    {
+        sampleExtender[i] = (i << 8);
+    }
 
     FifoMessage msg;
     msg.SoundPlay.data = &sound_buffer;
-    msg.SoundPlay.freq = (cartridge_pokey ? SOUND_FREQ+21:(SOUND_FREQ*2)+21);
+    msg.SoundPlay.freq = (isDSiMode() ? 48000: 32000);
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
-    msg.SoundPlay.format = ((1)<<4) | SoundFormat_8Bit;
+    msg.SoundPlay.format = ((1)<<4) | SoundFormat_16Bit;
     msg.SoundPlay.loopPoint = 0;
-    msg.SoundPlay.dataSize = SNDLENGTH >> 2;
+    msg.SoundPlay.dataSize = 4 >> 2;
     msg.type = EMUARM7_PLAY_SND;
     fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
     
     if (isDS_LITE)
     {
-        snd_ptr = (u8*)((u32)sound_buffer + 0x00400000);
-        snd_sta = (u8*)((u32)sound_buffer + 0x00400000);
-        snd_end = (u8*)((u32)sound_buffer + 0x00400000 + SNDLENGTH);
+        aptr = (u16*)((u32)&sound_buffer[0] + 0x00400000); 
+        bptr = (u16*)((u32)&sound_buffer[2] + 0x00400000); 
     }
     else
     {
-        snd_ptr = (u8*)((u32)sound_buffer + 0xA000000);
-        snd_sta = (u8*)((u32)sound_buffer + 0xA000000);
-        snd_end = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
+        aptr = (u16*)((u32)&sound_buffer[0] + 0xA000000); 
+        bptr = (u16*)((u32)&sound_buffer[2] + 0xA000000); 
     }
     
-    TIMER2_DATA = TIMER_FREQ(SOUND_FREQ);
-    TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
     if (cartridge_pokey)
+    {
+        TIMER2_DATA = TIMER_FREQ(SOUND_FREQ+3);
+        TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
         irqSet(IRQ_TIMER2, VsoundHandler_Pokey);  
+    }
     else
+    {
+        if (isDSiMode())
+        {
+            TIMER2_DATA = TIMER_FREQ((SOUND_FREQ*2)+3); // For the DSi we can run at the full 31KHz.
+        }
+        else
+        {
+            TIMER2_DATA = TIMER_FREQ((SOUND_FREQ)+3);   // For the older DS-LITE we only run at 15.5KHz
+        }
+        TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
         irqSet(IRQ_TIMER2, VsoundHandler);
+    }
     irqEnable(IRQ_TIMER2);  
 }
 
@@ -846,14 +859,11 @@ void dsMainLoop(void)
           // if touch screen pressed
           if (keys_pressed & KEY_TOUCH) 
           {
-            if (!keys_touch) 
-            {
               touchPosition touch;
-              keys_touch=1;
               touchRead(&touch);
               iTx = touch.px;
               iTy = touch.py;
-              if ((iTx>31) && (iTx<65) && (iTy>159) && (iTy<169))  { // 32,160  -> 64,168   quit
+              if ((iTx>8) && (iTx<55) && (iTy>154) && (iTy<171))  { // 32,160  -> 64,168   POWER
                 irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
                 if (dsWaitOnQuit()) etatEmu=A7800_QUITSTDS;
@@ -867,25 +877,25 @@ void dsMainLoop(void)
                  if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");
                  dampen=60;
               }
-              else if ((iTx>71) && (iTx<106) && (iTy>159) && (iTy<169))  { // 72,160  -> 105,168   pause
-                soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+              else if ((iTx>63) && (iTx<105) && (iTy>154) && (iTy<171))  { // 72,160  -> 105,168   PAUSE
+                if (keys_touch == 0) soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
                 tchepres(10);
               }
-              else if ((iTx>190) && (iTx<225) && (iTy>159) && (iTy<169))  { // 191,160  -> 224,168   reset
-                soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
-                tchepres(6);
-              }
-              else if ((iTx>141) && (iTx<176) && (iTy>159) && (iTy<169))  { // 142,160  -> 175,168   select
-                soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+              else if ((iTx>152) && (iTx<198) && (iTy>154) && (iTy<171))  { // 142,160  -> 175,168   SELECT
+                if (keys_touch == 0) soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
                 tchepres(11);
+              }
+              else if ((iTx>208) && (iTx<251) && (iTy>154) && (iTy<171))  { // 191,160  -> 224,168   RESET
+                if (keys_touch == 0) soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+                tchepres(6);
               }
               else if ((iTx>90) && (iTx<110) && (iTy>90) && (iTy<110))  { // Atari Logo - Activate HSC Maintenence Mode (only on High Score screen)
                 special_hsc_entry=70; 
               }
-              else if ((iTx>115) && (iTx<138) && (iTy>159) && (iTy<169))  { // Snap HSC Sram
+              else if ((iTx>115) && (iTx<144) && (iTy>154) && (iTy<171))  { // Snap HSC Sram
                 dsPrintValue(13,0,0, "SAVING");
                 soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
-                WAITVBL
+                WAITVBL;WAITVBL;
                 cartridge_SaveHighScoreSram();
                 dsPrintValue(13,0,0, "      ");
                 dampen=60;
@@ -902,8 +912,9 @@ void dsMainLoop(void)
                 }
                 fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
               }
-            } else keys_touch=0;
-          }
+              
+              keys_touch=1;
+          } else keys_touch=0;
           
           if (keys_pressed != last_keys_pressed)
           {

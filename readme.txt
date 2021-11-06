@@ -13,7 +13,8 @@ Features :
  Most things you should expect from an emulator. Speed is good. Sound is good except
  for the few games that run below 60FPS.
  
- Add highscore.rom for 7800 High Score saving.
+ Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
+ or in the same directory as the emulator.
 
 Philosophy :
 ----------
@@ -36,6 +37,10 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.0 : 06-Nov-2021 by wavemotion-dave
+  * Reworked sound output core so it's now zinger-free!
+  * Refresh of bottom screen - improved font and button debounce.
+  
 V2.9 : 03-Nov-2021 by wavemotion-dave
   * Fixed loading of large SUPER CART roms.
 

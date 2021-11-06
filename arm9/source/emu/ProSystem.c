@@ -132,7 +132,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
         // --------------------------------------------------------------------
         pokey_Process(1);
         pokey_Scanline();
-    } else tia_Process(2); // If all we have to deal with is the TIA, we can do so at 31KHz
+    } else tia_Process(isDSiMode() ? 2:1); // If all we have to deal with is the TIA, we can do so at 31KHz unless we are older DS-LITE in which case we run at 15.5KHz
   }  
 }
 
