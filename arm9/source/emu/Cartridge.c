@@ -48,7 +48,7 @@ uint cartridge_diff1 = DIFF_A;
 uint cartridge_diff2 = DIFF_A;
   
 extern int debug[];  
-static byte* cartridge_buffer __attribute__((section(".dtcm"))) = NULL;
+static byte cartridge_buffer[512 * 1024] ALIGN(32);
 static uint cartridge_size __attribute__((section(".dtcm"))) = 0;
 static uint maxbank = 9;
 
@@ -93,9 +93,13 @@ inline static void cartridge_WriteBank(word address, byte bank)
   {
     last_bank = bank;
     uint offset = cartridge_GetBank(bank) * 16384;
-    if(offset < cartridge_size) {
-      memory_WriteROMFast(address, (16384/4), cartridge_buffer + offset);
-      cartridge_bank = bank;
+    if(offset < cartridge_size) 
+    {
+        if (offset < (256*1024))    // If we are in fast VRAM memory
+            memory_WriteROM_DMA((u32*)&memory_ram[address], (u32*)(0x06860000 + offset), 16384);
+        else    // Normal memory
+            memory_WriteROMFast(address, (16384/4), cartridge_buffer + offset);
+        cartridge_bank = bank;
     }
   }
 }
@@ -201,7 +205,7 @@ static bool _cartridge_Load(const byte* data, uint size)
   uint offset = 0;
   if(cartridge_HasHeader(header)) 
   {
-    cartridge_ReadHeader(header);
+    cartridge_ReadHeader(header);   // cartridge_size will get filled in from this
     size -= 128;
     offset = 128;
   }
@@ -211,10 +215,15 @@ static bool _cartridge_Load(const byte* data, uint size)
     cartridge_size = size;
   }
 
-  if (cartridge_size <= (144 * 1024))
-    cartridge_buffer = (byte *) 0x06860000;   // If smaller than 144k (98% of all carts are), we can use the VRAM buffer since it's faster to move stuff around...
-  else   
-    cartridge_buffer = (byte *) malloc(cartridge_size); // Otherwise allocate memory 
+  // -----------------------------------------------------------------------------
+  // Copy up to 256K bytes of cart into the fast memory - used for bank swap only
+  // -----------------------------------------------------------------------------
+  u32 *fast_mem = (u32*)0x06860000;
+  memcpy(fast_mem, &data[offset], (256 * 1024));
+    
+  // ----------------------------------------------------  
+  // And copy the full ROM into the main cart area...
+  // ----------------------------------------------------  
   for(index = 0; index < cartridge_size; index++) {
     cartridge_buffer[index] = data[index + offset];
   }
@@ -410,13 +419,7 @@ void cartridge_Release( )
   {
     // Snap out the High Score SRAM (if used)
     cartridge_SaveHighScoreSram();
-
-    if ((u32)cartridge_buffer != 0x06860000)
-    {
-        free(cartridge_buffer);
-    }
     cartridge_size = 0;
-    cartridge_buffer = NULL;
 
     // These values need to be reset so that moving between carts works
     // consistently. This seems to be a ProSystem emulator bug.

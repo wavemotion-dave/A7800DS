@@ -37,6 +37,11 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.1 : 31-Jan-2022 by wavemotion-dave
+  * Now using more VRAM for bank swapping and partial DMA transfer to speed up large games.
+  * Reverted part of the sound core to improve sound quality.
+  * File selection cleanups to scroll less fast and be generally easier to see.
+  
 V3.0 : 06-Nov-2021 by wavemotion-dave
   * Reworked sound output core so it's now zinger-free!
   * Refresh of bottom screen - improved font and button debounce.

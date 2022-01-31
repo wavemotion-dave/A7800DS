@@ -96,40 +96,50 @@ static void DumpDebugData(void)
 #endif
 }
 
-
-u16 sampleExtender[256] = {0};
-u16 *aptr __attribute__((section(".dtcm"))) = (u16*)((u32)&sound_buffer[0] + 0xA000000); 
-u16 *bptr __attribute__((section(".dtcm"))) = (u16*)((u32)&sound_buffer[2] + 0xA000000); 
-
 u16 myTiaBufIdx __attribute__((section(".dtcm"))) = 0;
-void VsoundHandler(void) 
+u8* snd_ptr __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
+u8* snd_sta __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
+u8* snd_end __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
+ITCM_CODE void VsoundHandler(void) 
 {
   extern unsigned char tia_buffer[];
   extern u16 tiaBufIdx;
 
-  // If there is a fresh sample... 
-  if (myTiaBufIdx != tiaBufIdx)
+  for (u8 i=0; i<4; i++)
   {
-      u16 sample = sampleExtender[tia_buffer[myTiaBufIdx]];
-      myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
-      *aptr = sample;
-      *bptr = sample;
+      // If there is a fresh sample... 
+      if (myTiaBufIdx != tiaBufIdx)
+      {
+          lastSample = tia_buffer[myTiaBufIdx];
+          myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
+      }
+      *snd_ptr++ = lastSample;
+      if (snd_ptr == snd_end)
+      {
+          snd_ptr = snd_sta;
+      }
   }
 }
 
 u16 myPokeyBufIdx __attribute__((section(".dtcm"))) = 0;
-void VsoundHandler_Pokey(void)
+ITCM_CODE void VsoundHandler_Pokey(void)
  {
   extern unsigned char pokey_buffer[];
   extern u16 pokeyBufIdx;
 
-  // If there is a fresh Pokey sample... 
-  if (myPokeyBufIdx != pokeyBufIdx)
+  for (u8 i=0; i<2; i++)
   {
-      u16 sample = sampleExtender[pokey_buffer[myPokeyBufIdx]];
-      myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
-      *aptr = sample;
-      *bptr = sample;
+      // If there is a fresh Pokey sample... 
+      if (myPokeyBufIdx != pokeyBufIdx)
+      {
+          lastPokeySample = pokey_buffer[myPokeyBufIdx];
+          myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
+      }
+      *snd_ptr++ = lastPokeySample;
+      if (snd_ptr == snd_end)
+      {
+          snd_ptr = snd_sta;
+      }
   }
 }
 
@@ -489,7 +499,8 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 unsigned int dsWaitForRom(void) 
 {
   bool bDone=false, bRet=false;
-  u32 ucHaut=0x00, ucBas=0x00,ucSHaut=0x00, ucSBas=0x00,romSelected= 0, firstRomDisplay=0,nbRomPerPage, uNbRSPage, uLenFic=0,ucFlip=0, ucFlop=0;
+  u32 ucHaut=0x00, ucBas=0x00,ucSHaut=0x00, ucSBas=0x00,romSelected= 0, firstRomDisplay=0,nbRomPerPage, uNbRSPage, uLenFic=0;
+  s32 ucFlip=0, ucFlop=0;
   char szName[64];
 
   decompress(bgFileSelTiles, bgGetGfxPtr(bg0b), LZ77Vram);
@@ -511,6 +522,9 @@ unsigned int dsWaitForRom(void)
   dsDisplayFiles(firstRomDisplay,romSelected);
   while (!bDone) {
     if (keysCurrent() & KEY_UP) {
+      ucFlip = -50;
+      ucFlop = 0;
+      uLenFic = 0;  
       if (!ucHaut) {
         ucFicAct = (ucFicAct>0 ? ucFicAct-1 : countpro-1);
         if (romSelected>uNbRSPage) { romSelected -= 1; }
@@ -536,6 +550,9 @@ unsigned int dsWaitForRom(void)
       ucHaut = 0;
     }  
     if (keysCurrent() & KEY_DOWN) {
+      ucFlip = -50;
+      ucFlop = 0;
+      uLenFic = 0;
       if (!ucBas) {
         ucFicAct = (ucFicAct< countpro-1 ? ucFicAct+1 : 0);
         if (romSelected<uNbRSPage-1) { romSelected += 1; }
@@ -630,12 +647,12 @@ unsigned int dsWaitForRom(void)
     // Scroll la selection courante
     if (strlen(proromlist[ucFicAct].filename) > 29) {
       ucFlip++;
-      if (ucFlip >= 8) {
+      if (ucFlip >= 20) {
         ucFlip = 0;
         uLenFic++;
         if ((uLenFic+29)>strlen(proromlist[ucFicAct].filename)) {
           ucFlop++;
-          if (ucFlop >= 8) {
+          if (ucFlop >= 20) {
             uLenFic=0;
             ucFlop = 0;
           }
@@ -733,56 +750,41 @@ void dsInstallSoundEmuFIFO(void)
     {
         return;    // We've been asked to not install sound... 
     }
-    
-    for (int i=0; i<256; i++)
-    {
-        sampleExtender[i] = (i << 8);
-    }
 
     FifoMessage msg;
     msg.SoundPlay.data = &sound_buffer;
-    msg.SoundPlay.freq = (isDSiMode() ? 48000: 32000);
+    msg.SoundPlay.freq = (cartridge_pokey ? SOUND_FREQ+21:(SOUND_FREQ*2)+21);
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
-    msg.SoundPlay.format = ((1)<<4) | SoundFormat_16Bit;
+    msg.SoundPlay.format = ((1)<<4) | SoundFormat_8Bit;
     msg.SoundPlay.loopPoint = 0;
-    msg.SoundPlay.dataSize = 4 >> 2;
+    msg.SoundPlay.dataSize = SNDLENGTH >> 2;
     msg.type = EMUARM7_PLAY_SND;
     fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
     
     if (isDS_LITE)
     {
-        aptr = (u16*)((u32)&sound_buffer[0] + 0x00400000); 
-        bptr = (u16*)((u32)&sound_buffer[2] + 0x00400000); 
+        snd_ptr = (u8*)((u32)sound_buffer + 0x00400000);
+        snd_sta = (u8*)((u32)sound_buffer + 0x00400000);
+        snd_end = (u8*)((u32)sound_buffer + 0x00400000 + SNDLENGTH);
     }
     else
     {
-        aptr = (u16*)((u32)&sound_buffer[0] + 0xA000000); 
-        bptr = (u16*)((u32)&sound_buffer[2] + 0xA000000); 
+        snd_ptr = (u8*)((u32)sound_buffer + 0xA000000);
+        snd_sta = (u8*)((u32)sound_buffer + 0xA000000);
+        snd_end = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
     }
     
+    TIMER2_DATA = TIMER_FREQ(SOUND_FREQ/2);
+    TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
     if (cartridge_pokey)
-    {
-        TIMER2_DATA = TIMER_FREQ(SOUND_FREQ+3);
-        TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
         irqSet(IRQ_TIMER2, VsoundHandler_Pokey);  
-    }
     else
-    {
-        if (isDSiMode())
-        {
-            TIMER2_DATA = TIMER_FREQ((SOUND_FREQ*2)+3); // For the DSi we can run at the full 31KHz.
-        }
-        else
-        {
-            TIMER2_DATA = TIMER_FREQ((SOUND_FREQ)+3);   // For the older DS-LITE we only run at 15.5KHz
-        }
-        TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
         irqSet(IRQ_TIMER2, VsoundHandler);
-    }
     irqEnable(IRQ_TIMER2);  
 }
+
 
 void dsMainLoop(void) 
 {
