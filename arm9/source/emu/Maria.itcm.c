@@ -476,7 +476,7 @@ void maria_Reset( ) {
 // ----------------------------------------------------------------------------
 // RenderScanline
 // ----------------------------------------------------------------------------
-ITCM_CODE uint maria_RenderScanline( ) 
+ITCM_CODE uint maria_RenderScanlineTOP( ) 
 {
   extern u32 bg32;
   maria_cycles = 0;
@@ -484,7 +484,7 @@ ITCM_CODE uint maria_RenderScanline( )
   //
   // Displays the background color when Maria is disabled (if applicable)
   //
-  if( ( ( memory_ram[CTRL] & 96 ) != 64 ) && maria_scanline >= maria_visibleArea.top &&  maria_scanline <= maria_visibleArea.bottom)
+  if ((memory_ram[CTRL] & 96) != 64)
   {
       u32 *bgstart = (u32*)framePtr;
       for(uint index = 0; index < MARIA_LINERAM_SIZE/4; index++ ) 
@@ -492,11 +492,10 @@ ITCM_CODE uint maria_RenderScanline( )
         *bgstart++ = bg32;
       }
   }
-    
-  if(((memory_ram[CTRL] & 0x60) == 0x40))
+  else
   {
     maria_cycles += 5; // Maria cycles (DMA Startup)
-    if(maria_scanline == maria_displayArea.top) 
+    //if(maria_scanline == maria_displayArea.top) 
     {
       maria_cycles += 10; // Maria cycles (End of VBLANK)
       maria_dpp.b.l = memory_ram[DPPL];
@@ -512,17 +511,63 @@ ITCM_CODE uint maria_RenderScanline( )
         sally_ExecuteNMI( );
       }
     }
-    else
+    
+    //if(maria_scanline != maria_displayArea.bottom) 
     {
-        // This is where we render the video memory... 
-        if (gTotalAtariFrames & 1)  // Skip every other frame...
+      maria_dp.b.l = memory_ram[maria_dpp.w + 2];
+      maria_dp.b.h = memory_ram[maria_dpp.w + 1];
+      maria_StoreLineRAM( );
+      maria_offset--;
+      if(maria_offset < 0) 
+      {
+        maria_cycles += 10; // Maria cycles (Last line of zone) ( /*20*/ 
+        maria_dpp.w += 3;
+        maria_h08 = memory_ram[maria_dpp.w] & 32;
+        maria_h16 = memory_ram[maria_dpp.w] & 64;
+        maria_offset = memory_ram[maria_dpp.w] & 15;
+        if(memory_ram[maria_dpp.w] & 128) 
         {
-            maria_WriteLineRAM(framePtr);
-            framePtr += 256;
+          maria_cycles += 20; // Maria cycles (NMI) /*29, 16, 20*/
+          //ALEK Fst6502_Cause_Interrupt(IRQ_NMI);
+          sally_ExecuteNMI( );
         }
+      }
+      else
+      {
+         maria_cycles += 4; // Maria cycles (Other lines of zone)
+      }
+    }
+  }
+  return maria_cycles;
+}
+
+ITCM_CODE uint maria_RenderScanline( ) 
+{
+  extern u32 bg32;
+  maria_cycles = 0;
+    
+  //
+  // Displays the background color when Maria is disabled (if applicable)
+  //
+  if ((memory_ram[CTRL] & 96) != 64)
+  {
+      u32 *bgstart = (u32*)framePtr;
+      for(uint index = 0; index < MARIA_LINERAM_SIZE/4; index++ ) 
+      {
+        *bgstart++ = bg32;
+      }
+  }
+  else
+  {
+    maria_cycles += 5; // Maria cycles (DMA Startup)
+    // This is where we render the video memory... 
+    if (gTotalAtariFrames & 1)  // Skip every other frame...
+    {
+        maria_WriteLineRAM(framePtr);
+        framePtr += 256;
     }
     
-    if(maria_scanline != maria_displayArea.bottom) 
+    //if(maria_scanline != maria_displayArea.bottom) 
     {
       maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       maria_dp.b.h = memory_ram[maria_dpp.w + 1];

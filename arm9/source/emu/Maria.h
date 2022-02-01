@@ -44,6 +44,7 @@
 
 extern void maria_Reset( );
 extern ITCM_CODE uint maria_RenderScanline( );
+extern ITCM_CODE uint maria_RenderScanlineTOP( );
 extern void maria_Clear( );
 extern rect maria_displayArea;
 extern rect maria_visibleArea;

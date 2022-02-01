@@ -89,31 +89,36 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   
   for(maria_scanline = 1; maria_scanline <= prosystem_scanlines; maria_scanline++) 
   {
+    uint cycles=0;
+    prosystem_cycles %= CYCLES_PER_SCANLINE;
+      
     if(maria_scanline == maria_displayArea.top) 
     {
       memory_ram[MSTAT] = 0;
       framePtr = (word*)(maria_surface + ((maria_scanline - maria_displayArea.top) * 256));
       bRenderScanline = true;
+      sally_Execute(34);
+      cycles = maria_RenderScanlineTOP( );
     }
     else if(maria_scanline == maria_displayArea.bottom) 
     {
       memory_ram[MSTAT] = 128;
       bRenderScanline = false;
     }
-    
-    uint cycles=0;
-    prosystem_cycles %= CYCLES_PER_SCANLINE;
-    sally_Execute(34);
-    
-    if (bRenderScanline)
-    {
-      // If our background has changed... set our global 32-bit version of that now... speeds up scanline renders
-      if (memory_ram[BACKGRND] != last_background)
-      {
-          last_background = memory_ram[BACKGRND];
-          bg32 =  last_background | (last_background<<8) | (last_background<<16) | (last_background<<24);
-      }
-      cycles = maria_RenderScanline( );
+    else
+    {    
+        sally_Execute(34);
+
+        if (bRenderScanline)
+        {
+          // If our background has changed... set our global 32-bit version of that now... speeds up scanline renders
+          if (memory_ram[BACKGRND] != last_background)
+          {
+              last_background = memory_ram[BACKGRND];
+              bg32 =  last_background | (last_background<<8) | (last_background<<16) | (last_background<<24);
+          }
+          cycles = maria_RenderScanline( );
+        }
     }
     
     if(cartridge_steals_cycles) 
