@@ -36,8 +36,6 @@ static byte sally_opcode __attribute__((section(".dtcm")));
 static pair sally_address __attribute__((section(".dtcm")));
 static uint sally_cyclesX4 __attribute__((section(".dtcm")));
 
-extern u8 isDS_LITE;
-
 #define _fC 0x01
 #define _fZ 0x02
 #define _fI 0x04
@@ -1943,18 +1941,15 @@ l_0x02:
 next_inst:
     prosystem_cycles += sally_cyclesX4;
 
-    if (!isDS_LITE)
+    if(riot_timing) 
     {
-        if(riot_timing) 
-        {
-          riot_UpdateTimer(sally_cyclesX4 >> 2);
-        }
-        if(memory_ram[WSYNC])   // Will only write true here if cartridge_uses_wsync is true in Memory.c
-        {
-          prosystem_cycles = 456;
-          memory_ram[WSYNC] = false;
-          break;
-        }
+      riot_UpdateTimer(sally_cyclesX4 >> 2);
+    }
+    if(memory_ram[WSYNC])   // Will only write true here if cartridge_uses_wsync is true in Memory.c
+    {
+      prosystem_cycles = 456;
+      memory_ram[WSYNC] = false;
+      break;
     }
   }
 }

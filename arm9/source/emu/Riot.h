@@ -37,7 +37,7 @@ extern void riot_SetDRA(byte data);
 extern void riot_SetDRB(byte data);
 extern void riot_SetTimer(word timer, byte intervals);
 extern void riot_UpdateTimer(byte cycles);
-extern bool riot_timing;
+extern u8 riot_timing;
 extern word riot_timer;
 extern byte riot_intervals;
 extern void riot_SetDRA(byte data);

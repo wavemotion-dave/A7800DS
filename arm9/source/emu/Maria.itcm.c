@@ -27,6 +27,8 @@
 
 #include "ProSystem.h"
 
+extern int gTotalAtariFrames;
+
 union ColorUnion
 {
     int32 color32;
@@ -375,17 +377,20 @@ static inline void maria_StoreLineRAM( )
 {
   uint index;
   u32 *ptr=(u32*)maria_lineRAM;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-  *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr   = 0;
-  
+    
+  if (gTotalAtariFrames & 1)  // Skip every other frame...
+  {
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr   = 0;
+  }
   byte mode = memory_ram[maria_dp.w + 1];
   while(mode & 0x5f) 
   {
@@ -474,7 +479,6 @@ void maria_Reset( ) {
 ITCM_CODE uint maria_RenderScanline( ) 
 {
   extern u32 bg32;
-  extern int gTotalAtariFrames;
   maria_cycles = 0;
     
   //

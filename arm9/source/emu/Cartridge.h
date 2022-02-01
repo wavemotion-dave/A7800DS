@@ -108,8 +108,8 @@ extern short cartridge_xOffset;
 extern short cartridge_yOffset;
 extern short cartridge_xScale;
 extern short cartridge_yScale;
-extern bool cartridge_steals_cycles;
-extern bool cartridge_uses_wsync;
+extern u8 cartridge_steals_cycles;
+extern u8 cartridge_uses_wsync;
 extern uint cartridge_diff1;
 extern uint cartridge_diff2;
 

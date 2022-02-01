@@ -120,6 +120,27 @@ ITCM_CODE void VsoundHandler(void)
   }
 }
 
+ITCM_CODE void VsoundHandler_Lite(void) 
+{
+  extern unsigned char tia_buffer[];
+  extern u16 tiaBufIdx;
+
+  for (u8 i=0; i<2; i++)
+  {
+      // If there is a fresh sample... 
+      if (myTiaBufIdx != tiaBufIdx)
+      {
+          lastSample = tia_buffer[myTiaBufIdx];
+          myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
+      }
+      *snd_ptr++ = lastSample;
+      if (snd_ptr == snd_end)
+      {
+          snd_ptr = snd_sta;
+      }
+  }
+}
+
 u16 myPokeyBufIdx __attribute__((section(".dtcm"))) = 0;
 ITCM_CODE void VsoundHandler_Pokey(void)
  {
@@ -752,7 +773,7 @@ void dsInstallSoundEmuFIFO(void)
 
     FifoMessage msg;
     msg.SoundPlay.data = &sound_buffer;
-    msg.SoundPlay.freq = (cartridge_pokey ? SOUND_FREQ+21:(SOUND_FREQ*2)+21);
+    msg.SoundPlay.freq = (cartridge_pokey ? SOUND_FREQ+21:(SOUND_FREQ*(isDS_LITE ? 1:2))+21);
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
@@ -780,7 +801,12 @@ void dsInstallSoundEmuFIFO(void)
     if (cartridge_pokey)
         irqSet(IRQ_TIMER2, VsoundHandler_Pokey);  
     else
-        irqSet(IRQ_TIMER2, VsoundHandler);
+    {
+        if (isDS_LITE)
+            irqSet(IRQ_TIMER2, VsoundHandler_Lite);
+        else
+            irqSet(IRQ_TIMER2, VsoundHandler);
+    }
     irqEnable(IRQ_TIMER2);  
 }
 

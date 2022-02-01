@@ -24,14 +24,14 @@
 // ----------------------------------------------------------------------------
 #include "Riot.h"
 
-bool riot_timing __attribute__((section(".dtcm"))) = false;
+u8 riot_timing __attribute__((section(".dtcm"))) = false;
 word riot_timer __attribute__((section(".dtcm"))) = TIM64T;
 byte riot_intervals __attribute__((section(".dtcm")));
 
 byte riot_dra __attribute__((section(".dtcm"))) = 0;
 byte riot_drb __attribute__((section(".dtcm"))) = 0;
 
-bool riot_elapsed __attribute__((section(".dtcm")));
+u8 riot_elapsed __attribute__((section(".dtcm")));
 int riot_currentTime __attribute__((section(".dtcm")));
 word riot_clocks __attribute__((section(".dtcm")));
 word riot_shift __attribute__((section(".dtcm")))=0;

@@ -31,6 +31,8 @@
 
 #define CYCLES_PER_SCANLINE 454
 
+extern u8 isDS_LITE;
+
 bool prosystem_active __attribute__((section(".dtcm"))) = false;
 bool prosystem_paused __attribute__((section(".dtcm"))) = false;
 word prosystem_frequency __attribute__((section(".dtcm"))) = 60;
@@ -132,7 +134,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
         // --------------------------------------------------------------------
         pokey_Process(1);
         pokey_Scanline();
-    } else tia_Process(2); // If all we have to deal with is the TIA, we can do so at 31KHz
+    } else tia_Process(isDS_LITE ? 1:2); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
   }  
 }
 
