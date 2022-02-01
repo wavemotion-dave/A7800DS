@@ -72,11 +72,13 @@ word *framePtr __attribute__((section(".dtcm"))) = (word *)0;
 // ----------------------------------------------------------------------------
 static inline void _maria_ClearCells4(void)
 {
-  if (memory_ram[CTRL] & 4) 
+  if ((maria_horizontal) < MARIA_LINERAM_SIZE)
   {
-      if ((maria_horizontal) < MARIA_LINERAM_SIZE)
+      if (memory_ram[CTRL] & 4) 
       {
-         *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
+          {
+             *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
+          }
       }
   }
   maria_horizontal += 4;
@@ -89,7 +91,7 @@ static inline void _maria_StoreCells4(byte data)
 {
   if((maria_horizontal) < MARIA_LINERAM_SIZE) 
   {
-    byte *ptr = &(maria_lineRAM[maria_horizontal+3]);
+    byte *ptr = &(maria_lineRAM[maria_horizontal]);
 #ifdef KANGAROO_MODE_SUPPORTED
     if (memory_ram[CTRL] & 4)
     {
@@ -104,13 +106,10 @@ static inline void _maria_StoreCells4(byte data)
     else
 #endif        
     {
-        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else ptr--;
-        data = data >> 2;
-        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else ptr--;
-        data = data >> 2;
-        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else ptr--;
-        data = data >> 2;
-        if (data) *ptr = maria_palette | (data);
+        if (data & 0xC0) *ptr++ = maria_palette | ((data & 0xC0) >> 6); else ptr++;
+        if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else ptr++;
+        if (data & 0x0C) *ptr++ = maria_palette | ((data & 0x0C) >> 2); else ptr++;
+        if (data & 0x03) *ptr++ = maria_palette | (data & 0x03); 
     }
   }
   maria_horizontal += 4;
@@ -123,28 +122,25 @@ static inline void maria_StoreCellWide(byte data)
 {
   if((maria_horizontal) < MARIA_LINERAM_SIZE) 
   {
-      byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
       if (data)
       {
-          byte high=(data >> 4);
-          byte low=(data & 0x0F);
-          byte mp = (maria_palette & 16);
-          if (high)
+          byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
+          if (data & 0xF0)  // high
           {
-            *ptr = mp | high;
+              *ptr = (maria_palette & 16) | (data >> 4);
           }
-          if (low)
+          if (data & 0x0F)  // low
           {
             ptr++;
-            *ptr = mp | low;
+            *ptr = (maria_palette & 16) | (data & 0x0F);
           }
       }
       else
       {
           if ((memory_ram[CTRL] & 4))
           {
-            *ptr++ = 0;
-            *ptr   = 0;
+              u16 *ptr = (u16 *)&maria_lineRAM[maria_horizontal];
+              *ptr++ = 0x0000;
           }  
       }
   } 

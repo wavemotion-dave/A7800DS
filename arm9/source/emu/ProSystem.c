@@ -73,15 +73,16 @@ void prosystem_Reset( )
     prosystem_active = true;
   }
 }
+
+byte last_background __attribute__((section(".dtcm"))) = 254;
 // ----------------------------------------------------------------------------
 // ExecuteFrame
 // ----------------------------------------------------------------------------
 ITCM_CODE void prosystem_ExecuteFrame(const byte* input) 
 {
-  static byte last_background = 254;
   extern u16 gTotalAtariFrames;
   extern word *framePtr;
-  bool bRenderScanline = false;
+  u8 bRenderScanline = false;
 
   gTotalAtariFrames++;
 
