@@ -158,6 +158,7 @@ ITCM_CODE void memory_Write(word address, byte data)
         if (cartridge_uses_wsync)
         {
           memory_ram[WSYNC] = true;
+          riot_timing |= 0x01;
         }
         break;
       case SWCHB:

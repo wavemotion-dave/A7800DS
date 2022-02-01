@@ -1940,14 +1940,14 @@ l_0x02:
 
 next_inst:
     prosystem_cycles += sally_cyclesX4;
-
-    if(memory_ram[WSYNC])   // Will only write true here if cartridge_uses_wsync is true in Memory.c
+    if(riot_timing & 1)   // Will only write true here if cartridge_uses_wsync is true in Memory.c
     {
       prosystem_cycles = 456;
       memory_ram[WSYNC] = false;
+      riot_timing &= 0xFE;
       break;
     }
-    if(riot_timing) 
+    if(riot_timing & 2) 
     {
       riot_UpdateTimer(sally_cyclesX4 >> 2);
     }
