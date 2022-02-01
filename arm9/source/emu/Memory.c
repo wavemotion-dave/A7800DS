@@ -26,8 +26,8 @@
 #include "Memory.h"
 #include "Maria.h"
 
-byte memory_ram[MEMORY_SIZE] = {0};
-byte memory_rom[MEMORY_SIZE] = {0};
+byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
+byte memory_rom[MEMORY_SIZE] ALIGN(32) = {0};
 
 // ----------------------------------------------------------------------------
 // Reset
@@ -50,19 +50,6 @@ extern u8 isDS_LITE;
 // ----------------------------------------------------------------------------
 ITCM_CODE byte memory_Read(word address) 
 { 
-  if (cartridge_pokey)
-  {
-      if (cartridge_pokey == POKEY_AT_4000)
-      {
-        if ((address & 0xFFF0) == 0x4000) return pokey_GetRegister(address);            
-      }
-      else
-      {
-          // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's 
-          // good enough as nothing else should be mapped in this region except POKEY.
-          if ((address & 0xFFC0) == 0x440) return pokey_GetRegister(0x4000 + (address - 0x0450));
-      }
-  }
   if ((address & 0xFFFC) == 0x284)
   {
       if (address & 0x1)
@@ -75,6 +62,19 @@ ITCM_CODE byte memory_Read(word address)
       {
         memory_ram[INTFLG] &= 0x7f;
         return memory_ram[INTIM];
+      }
+  }
+  else if (cartridge_pokey)
+  {
+      if (cartridge_pokey == POKEY_AT_4000)
+      {
+        if ((address & 0xFFF0) == 0x4000) return pokey_GetRegister(address);            
+      }
+      else
+      {
+          // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's 
+          // good enough as nothing else should be mapped in this region except POKEY.
+          if ((address & 0xFFC0) == 0x440) return pokey_GetRegister(0x4000 + (address - 0x0450));
       }
   }
   return memory_ram[address];
