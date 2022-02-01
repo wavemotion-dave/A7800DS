@@ -22,6 +22,9 @@ u8 isDS_LITE                            __attribute__((section(".dtcm"))) = 0;
 static unsigned char lastPokeySample    __attribute__((section(".dtcm"))) = 0;
 static unsigned char lastTiaSample      __attribute__((section(".dtcm"))) = 0;
 static unsigned char lastSample         __attribute__((section(".dtcm"))) = 0;
+u16 gTotalAtariFrames                   __attribute__((section(".dtcm"))) = 0;
+int atari_frames                        __attribute__((section(".dtcm"))) = 0;
+u8 bRefreshXY                           __attribute__((section(".dtcm"))) = false;
 
 unsigned char keyboard_data[20]         __attribute__((section(".dtcm")));
 
@@ -37,9 +40,7 @@ int bg0s, bg1s, bg2s, bg3s;         // sub BG pointers
 
 u16 full_speed = 0;
 int etatEmu;
-u16 gTotalAtariFrames=0;
 u16 fpsDisplay=0;
-int atari_frames = 0;
 
 #define MAX_DEBUG 5
 int debug[MAX_DEBUG]={0};
@@ -55,8 +56,6 @@ gamecfg GameConf;                        // Game Config svg
 short cxBG, cyBG, xdxBG,ydyBG;
 
 unsigned char *filebuffer;
-
-u8 bRefreshXY = false;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
