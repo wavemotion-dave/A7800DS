@@ -813,9 +813,9 @@ void dsInstallSoundEmuFIFO(void)
 
 void dsMainLoop(void) 
 {
-  static int lcd_swap_counter=0;
-  static int special_hsc_entry=0;    
-  static int last_keys_pressed = 999;
+  static u8 lcd_swap_counter=0;
+  static u8 special_hsc_entry=0;    
+  static short int last_keys_pressed = 999;
   char fpsbuf[32];
   unsigned int keys_pressed,keys_touch=0, romSel;
   int iTx,iTy;
@@ -863,8 +863,7 @@ void dsMainLoop(void)
             TIMER0_DATA=0;
             TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
             atari_frames=0;
-        }
-        
+        }        
 
         // Read keys
         if (special_hsc_entry > 0)

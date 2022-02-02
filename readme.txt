@@ -10,8 +10,12 @@ help you.
 
 Features :
 ----------
- Most things you should expect from an emulator. Speed is good. Sound is good except
- for the few games that run below 60FPS.
+ Most things you should expect from an emulator. Speed is excellent on the DSi and 
+ not great on the older DS-LITE. For the DS-LITE you can expect full speed only on a
+ handful of games: Asteroids, Asteroids Deluxe, Astro Blaster, Joust, Robotron, 
+ Food Fight, Astro Fighter, Centipede, Galaga, Moon Cresta, Pole Position II,
+ Space Duel, Space Invaders.  Games that are a little slow but still playable 
+ include Meteor Shower and Time Salvo.
  
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.
@@ -37,6 +41,9 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.2 : 1-Feb-2022 by wavemotion-dave
+  * A 5-8% speedup across the board through a number of small optimizations in core areas.
+  
 V3.1 : 31-Jan-2022 by wavemotion-dave
   * Now using more VRAM for bank swapping and partial DMA transfer to speed up large games.
   * Reverted part of the sound core to improve sound quality.
@@ -194,12 +201,12 @@ http://www.portabledev.com
 Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 
-Compatibility Table
+Compatibility Table (on the faster DSi)
 
 GAME                    MD5SUM                              HSC   FPS NOTES
 ========================================================================================================================
 Ace Of Aces             0be996d25144966d5541c9eb4919b289    NO    60  Minor graphical glitches. Very playable.
-Alien Brigade           877dcc97a775ed55081864b2dbf5f1e2    NO    52  A bit slow but playable
+Alien Brigade           877dcc97a775ed55081864b2dbf5f1e2    NO    56  A bit slow but playable
 Arkanoid Demo           212ee2a6e66d8bb7fbf26f343cc8dc19    NO    60  Playable though paddles would be nice.
 Asteroids               07342c78619ba6ffcc61c10e907e3b50    YES   60  Near perfect
 Asteroids Deluxe        a65f79ad4a0bbdecd59d5f7eb3623fd7    YES   60  Near perfect
@@ -259,7 +266,7 @@ Pole Position II        584582bb09ee8122e7fc09dc7d1ed813    NO    60  Near perfe
 Popeye Demo 2.9         640c7827fe63082efbaffc13f7983744    YES   60  Near perfect.
 Spire of the Ancients   19844117863cd38d4e1e4cbc867ae599    NO    60  Near perfect
 Rampage                 ac03806cef2558fc795a7d5d8dba7bc0    NO    60  Near perfect
-Realsports Baseball     bfad016d6e77eaccec74c0340aded8b9    NO    50  A bit slow but playable
+Realsports Baseball     bfad016d6e77eaccec74c0340aded8b9    NO    53  A bit slow but playable
 Robotron                66ecaafe1b82ae68ffc96267aaf7a4d7    YES   60  Near perfect
 Scramble                a3a85e507d6f718972b1464ce1aaf8a4    YES   60  Near perfect
 Scrapyard Dog           980c35ae9625773a450aa7ef51751c04    NO    60  Near perfect

@@ -292,24 +292,17 @@ static inline void maria_WriteLineRAM(word* buffer)
     for(index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
     {
       colors.color32 = *ptr++;
-      if ((colors.wo.color0) == 0)
+      if (colors.color32 == 0)
       {
           *pix++ = bg32;
-      } 
+          *pix++ = bg32;
+      }
       else
       {
           word color, color1;
           color = maria_GetColor(colors.by.color0);
           color1 = maria_GetColor(colors.by.color1);
           *pix++ = color | (color<<8) | (color1<<16) | (color1<<24);
-      }
-      if ((colors.wo.color1) == 0)
-      {
-          *pix++ = bg32;
-      } 
-      else
-      {
-          word color, color1;
           color = maria_GetColor(colors.by.color2);
           color1 = maria_GetColor(colors.by.color3);
           *pix++ = color | (color<<8) | (color1<<16) | (color1<<24);      

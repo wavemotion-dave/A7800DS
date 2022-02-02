@@ -32,7 +32,6 @@ byte sally_p __attribute__((section(".dtcm"))) = 0;
 byte sally_s __attribute__((section(".dtcm"))) = 0;
 pair sally_pc  __attribute__((section(".dtcm"))) = {0};
 
-static byte sally_opcode __attribute__((section(".dtcm")));
 static pair sally_address __attribute__((section(".dtcm")));
 static uint sally_cyclesX4 __attribute__((section(".dtcm")));
 
@@ -1039,6 +1038,7 @@ void sally_Execute(unsigned int cycles )
 
   while (prosystem_cycles<cycles) 
   {
+      register byte sally_opcode;
     sally_opcode = memory_ram[sally_pc.w++];
     sally_cyclesX4 = SALLY_CYCLESX4[sally_opcode];
   
