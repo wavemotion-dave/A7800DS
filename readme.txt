@@ -14,8 +14,8 @@ Features :
  not great on the older DS-LITE. For the DS-LITE you can expect full speed only on a
  handful of games: Asteroids, Asteroids Deluxe, Astro Blaster, Joust, Robotron, 
  Food Fight, Astro Fighter, Centipede, Galaga, Moon Cresta, Pole Position II,
- Space Duel, Space Invaders.  Games that are a little slow but still playable 
- include Meteor Shower and Time Salvo.
+ Space Duel, Space Invaders, Ms Pac-Man.  Games that are a little slow but still 
+ playable include Meteor Shower and Time Salvo.
  
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.
