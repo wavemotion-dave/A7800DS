@@ -49,7 +49,7 @@ uint cartridge_diff2 = DIFF_A;
   
 extern int debug[];  
 static byte cartridge_buffer[512 * 1024] ALIGN(32);
-static uint cartridge_size __attribute__((section(".dtcm"))) = 0;
+uint cartridge_size __attribute__((section(".dtcm"))) = 0;
 static uint maxbank = 9;
 
 // ----------------------------------------------------------------------------

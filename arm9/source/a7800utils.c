@@ -18,6 +18,8 @@
 #include "bgFileSel.h"
 
 u8 isDS_LITE                            __attribute__((section(".dtcm"))) = 0;
+u8 frameSkipMask                        __attribute__((section(".dtcm"))) = 1;
+u8 bForceFrameskip                      __attribute__((section(".dtcm"))) = 0;
 
 static unsigned char lastPokeySample    __attribute__((section(".dtcm"))) = 0;
 static unsigned char lastTiaSample      __attribute__((section(".dtcm"))) = 0;
@@ -26,7 +28,9 @@ u16 gTotalAtariFrames                   __attribute__((section(".dtcm"))) = 0;
 int atari_frames                        __attribute__((section(".dtcm"))) = 0;
 u8 bRefreshXY                           __attribute__((section(".dtcm"))) = false;
 
-unsigned char keyboard_data[20]         __attribute__((section(".dtcm")));
+u16 dampen __attribute__((section(".dtcm"))) = 0;
+
+unsigned char keyboard_data[20]         __attribute__((section(".dtcm"))) ALIGN(32);
 
 FICA7800 proromlist[1024];  
 unsigned int countpro=0, countfiles=0, ucFicAct=0;
@@ -38,7 +42,7 @@ int bg2;
 int bg3;             // BG pointers 
 int bg0s, bg1s, bg2s, bg3s;         // sub BG pointers 
 
-u16 full_speed = 0;
+u16 full_speed __attribute__((section(".dtcm")))= 0;
 int etatEmu;
 u16 fpsDisplay=0;
 
@@ -53,7 +57,10 @@ uint video_height;                       // Actual video height
 u16 *bufVideo;                           // Video flipping buffer
 gamecfg GameConf;                        // Game Config svg
 
-short cxBG, cyBG, xdxBG,ydyBG;
+short cxBG __attribute__((section(".dtcm")));
+short cyBG __attribute__((section(".dtcm")));
+short xdxBG  __attribute__((section(".dtcm")));
+short ydyBG  __attribute__((section(".dtcm")));
 
 unsigned char *filebuffer;
 
@@ -113,10 +120,10 @@ ITCM_CODE void VsoundHandler(void)
           myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
       }
       *snd_ptr++ = lastSample;
-      if (snd_ptr == snd_end)
-      {
-          snd_ptr = snd_sta;
-      }
+  }
+  if (snd_ptr == snd_end)
+  {
+      snd_ptr = snd_sta;
   }
 }
 
@@ -134,10 +141,11 @@ ITCM_CODE void VsoundHandler_Lite(void)
           myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
       }
       *snd_ptr++ = lastSample;
-      if (snd_ptr == snd_end)
-      {
-          snd_ptr = snd_sta;
-      }
+  }
+    
+  if (snd_ptr == snd_end)
+  {
+      snd_ptr = snd_sta;
   }
 }
 
@@ -156,10 +164,10 @@ ITCM_CODE void VsoundHandler_Pokey(void)
           myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
       }
       *snd_ptr++ = lastPokeySample;
-      if (snd_ptr == snd_end)
-      {
-          snd_ptr = snd_sta;
-      }
+  }
+  if (snd_ptr == snd_end)
+  {
+      snd_ptr = snd_sta;
   }
 }
 
@@ -197,7 +205,7 @@ void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr,
 #define tchepres(a) \
    keyboard_data[GameConf.DS_Pad[a]] = 1;
 
-static const u8 jitter[] = 
+u8 jitter[] __attribute__((section(".dtcm"))) = 
 {
   0x48, 0x22, 
   0x40, 0x44
@@ -337,6 +345,7 @@ void dsFreeEmu(void)
 
 void dsLoadGame(char *filename) 
 {
+  extern uint cartridge_size;
   unsigned int index;
   
   // Free buffer if needed
@@ -360,7 +369,14 @@ void dsLoadGame(char *filename)
     {
       bios_enabled = true;
     }
-  
+      
+    frameSkipMask = 1;  // Default to skip every other frame
+    if (isDSiMode())    // DSi can handle many games in full framerate
+    {
+        if (cartridge_size < 135000)  frameSkipMask=0xFF;    // For smaller cart sizes, don't frameskip
+    }
+    if (bForceFrameskip) frameSkipMask=1;   // A few games force it on - e.g. Ninja Golf which is just barely keeping up the framerate
+      
     dsShowScreenEmu();
     prosystem_Reset();
       
@@ -819,7 +835,6 @@ void dsMainLoop(void)
   char fpsbuf[32];
   unsigned int keys_pressed,keys_touch=0, romSel;
   int iTx,iTy;
-  static int dampen = 0;
   static int scale_screen_dampen=0;
   
     // Timers are fed with 33.513982 MHz clock.
@@ -901,7 +916,7 @@ void dsMainLoop(void)
               else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper corner...
                  full_speed = 1-full_speed; 
                  if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");
-                 dampen=60;
+                 dampen=120;
               }
               else if ((iTx>63) && (iTx<105) && (iTy>154) && (iTy<171))  { // 72,160  -> 105,168   PAUSE
                 if (keys_touch == 0) soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
@@ -924,7 +939,7 @@ void dsMainLoop(void)
                 WAITVBL;WAITVBL;
                 cartridge_SaveHighScoreSram();
                 dsPrintValue(13,0,0, "      ");
-                dampen=60;
+                dampen=120;
                 continue;
               }
               else if ((iTx>79) && (iTx<180) && (iTy>31) && (iTy<62)) {     // 80,32 -> 179,61 cartridge slot
@@ -956,8 +971,8 @@ void dsMainLoop(void)
                   if ( (keys_pressed & KEY_R) )  { cartridge_xOffset +=28; bRefreshXY = true; }
                   if ( (keys_pressed & KEY_L) )  { cartridge_xOffset -=28; bRefreshXY = true; }  
               }
+              dampen = 6;
           }
-          dampen = 6;
         } else dampen--;
         
         // manage a7800 pad 
@@ -1016,14 +1031,19 @@ void dsMainLoop(void)
             if (fpsDisplay)
             {
                 int fps = gTotalAtariFrames;
-                if (fps == 61) fps=60;
+                if (fps == 61 && !full_speed) fps=60;
                 gTotalAtariFrames = 0;
-                fpsbuf[0] = '0' + (int)fps/100;
-                fps = fps % 100;
-                fpsbuf[1] = '0' + (int)fps/10;
-                fpsbuf[2] = '0' + (int)fps%10;
-                fpsbuf[3] = 0;
-                dsPrintValue(0,0,0, fpsbuf);
+                static u8 lastFPS=99;
+                if (fps != lastFPS)
+                {
+                    lastFPS = fps;
+                    fpsbuf[0] = '0' + (int)fps/100;
+                    fps = fps % 100;
+                    fpsbuf[1] = '0' + (int)fps/10;
+                    fpsbuf[2] = '0' + (int)fps%10;
+                    fpsbuf[3] = 0;
+                    dsPrintValue(0,0,0, fpsbuf);
+                }
             }
             DumpDebugData();
         }

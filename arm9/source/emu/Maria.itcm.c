@@ -27,7 +27,7 @@
 
 #include "ProSystem.h"
 
-extern int gTotalAtariFrames;
+extern u8 bRenderFrame;
 
 union ColorUnion
 {
@@ -47,14 +47,14 @@ union ColorUnion colors __attribute__((section(".dtcm")));
 
 #define MARIA_LINERAM_SIZE 160
 
-rect maria_displayArea __attribute__((section(".dtcm"))) = {0, 16, 319, 258};
-rect maria_visibleArea __attribute__((section(".dtcm"))) = {0, 26, 319, 248};
+rect maria_displayArea __attribute__((section(".dtcm"))) = {0, 16, 319, 258, 26, 247};
+rect maria_visibleArea __attribute__((section(".dtcm"))) = {0, 26, 319, 248, 228};
 
 word* maria_surface __attribute__((section(".dtcm"))) = 0;
 word  maria_scanline __attribute__((section(".dtcm"))) = 1;
 
 static byte maria_lineRAM[MARIA_LINERAM_SIZE+4] __attribute__((section(".dtcm")));
-static uint maria_cycles __attribute__((section(".dtcm")));
+uint maria_cycles __attribute__((section(".dtcm")));
 static pair maria_dpp __attribute__((section(".dtcm")));
 static pair maria_dp __attribute__((section(".dtcm")));
 static pair maria_pp __attribute__((section(".dtcm")));
@@ -282,9 +282,9 @@ static u8 wide_lookup_mode2B[] __attribute__((section(".dtcm"))) =
 static inline void maria_WriteLineRAM(word* buffer) 
 {
   extern uint32 bg32;
-  uint index;
-  unsigned int *pix=(unsigned int *) buffer;
-  uint32 *ptr = (uint32 *)&maria_lineRAM[0];
+  u8 index;
+  register unsigned int *pix=(unsigned int *) buffer;
+  register uint32 *ptr = (uint32 *)&maria_lineRAM[0];
   byte rmode = memory_ram[CTRL] & 3;
     
   if(rmode == 0) 
@@ -299,7 +299,7 @@ static inline void maria_WriteLineRAM(word* buffer)
       }
       else
       {
-          word color, color1;
+          register word color, color1;
           color = maria_GetColor(colors.by.color0);
           color1 = maria_GetColor(colors.by.color1);
           *pix++ = color | (color<<8) | (color1<<16) | (color1<<24);
@@ -367,7 +367,7 @@ static inline void maria_StoreLineRAM( )
   uint index;
   u32 *ptr=(u32*)maria_lineRAM;
     
-  if (gTotalAtariFrames & 1)  // Skip every other frame...
+  if (bRenderFrame)  // Skip every other frame...
   {
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
@@ -465,7 +465,7 @@ void maria_Reset( ) {
 // ----------------------------------------------------------------------------
 // RenderScanline
 // ----------------------------------------------------------------------------
-ITCM_CODE uint maria_RenderScanlineTOP( ) 
+ITCM_CODE void maria_RenderScanlineTOP(void) 
 {
   extern u32 bg32;
   maria_cycles = 0;
@@ -480,13 +480,14 @@ ITCM_CODE uint maria_RenderScanlineTOP( )
       {
         *bgstart++ = bg32;
       }
+      framePtr += 256;
   }
   else
   {
-    maria_cycles += 5; // Maria cycles (DMA Startup)
+    //maria_cycles += 5; // Maria cycles (DMA Startup)
     //if(maria_scanline == maria_displayArea.top) 
     {
-      maria_cycles += 10; // Maria cycles (End of VBLANK)
+      maria_cycles += 15; // Maria cycles (DMA Startup + End of VBLANK)
       maria_dpp.b.l = memory_ram[DPPL];
       maria_dpp.b.h = memory_ram[DPPH];
       maria_h08 = memory_ram[maria_dpp.w] & 32;
@@ -527,10 +528,10 @@ ITCM_CODE uint maria_RenderScanlineTOP( )
       }
     }
   }
-  return maria_cycles;
+  //return maria_cycles;
 }
 
-ITCM_CODE uint maria_RenderScanline( ) 
+ITCM_CODE void maria_RenderScanline(void) 
 {
   extern u32 bg32;
   maria_cycles = 0;
@@ -550,7 +551,7 @@ ITCM_CODE uint maria_RenderScanline( )
   {
     maria_cycles += 5; // Maria cycles (DMA Startup)
     // This is where we render the video memory... 
-    if (gTotalAtariFrames & 1)  // Skip every other frame...
+    if (bRenderFrame)  // Skip every other frame...
     {
         maria_WriteLineRAM(framePtr);
         framePtr += 256;
@@ -582,7 +583,7 @@ ITCM_CODE uint maria_RenderScanline( )
       }
     }
   }
-  return maria_cycles;
+  //return maria_cycles;
 }
 
 // ----------------------------------------------------------------------------

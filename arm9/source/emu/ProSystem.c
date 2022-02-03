@@ -32,6 +32,7 @@
 #define CYCLES_PER_SCANLINE 454
 
 extern u8 isDS_LITE;
+extern u8 frameSkipMask;
 
 bool prosystem_active __attribute__((section(".dtcm"))) = false;
 bool prosystem_paused __attribute__((section(".dtcm"))) = false;
@@ -39,6 +40,8 @@ word prosystem_frequency __attribute__((section(".dtcm"))) = 60;
 word prosystem_scanlines __attribute__((section(".dtcm"))) = 262;
 uint prosystem_cycles __attribute__((section(".dtcm"))) = 0;
 uint32 bg32 __attribute__((section(".dtcm"))) = 0;
+
+u8 bRenderFrame __attribute__((section(".dtcm"))) = 0;
 
 
 // ----------------------------------------------------------------------------
@@ -82,50 +85,76 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 {
   extern u16 gTotalAtariFrames;
   extern word *framePtr;
-  u8 bRenderScanline = false;
+  extern uint maria_cycles;
 
   gTotalAtariFrames++;
+  bRenderFrame = 0;
 
   riot_SetInput(input);
   
-  for(maria_scanline = 1; maria_scanline <= prosystem_scanlines; maria_scanline++) 
+  // ------------------------------------------------------------
+  // Handle the TOP area first... speeds up processing below...
+  // ------------------------------------------------------------
+  for (maria_scanline = 1; maria_scanline <= 16; maria_scanline++) 
   {
-    uint cycles=0;
     prosystem_cycles %= CYCLES_PER_SCANLINE;
       
-    if(maria_scanline == maria_displayArea.top) 
+    if (maria_scanline == maria_displayArea.top) 
     {
       memory_ram[MSTAT] = 0;
       framePtr = (word*)(maria_surface + ((maria_scanline - maria_displayArea.top) * 256));
-      bRenderScanline = true;
       sally_Execute(34);
-      cycles = maria_RenderScanlineTOP( );
-    }
-    else if(maria_scanline == maria_displayArea.bottom) 
-    {
-      memory_ram[MSTAT] = 128;
-      bRenderScanline = false;
+      maria_RenderScanlineTOP( );
+      if(cartridge_steals_cycles) 
+      {
+        prosystem_cycles += maria_cycles;
+        if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
+      }
     }
     else
     {    
         sally_Execute(34);
-
-        if (bRenderScanline)
-        {
-          // If our background has changed... set our global 32-bit version of that now... speeds up scanline renders
-          if (memory_ram[BACKGRND] != last_background)
-          {
-              last_background = memory_ram[BACKGRND];
-              bg32 =  last_background | (last_background<<8) | (last_background<<16) | (last_background<<24);
-          }
-          cycles = maria_RenderScanline( );
-        }
     }
+    
+    sally_Execute(CYCLES_PER_SCANLINE);
+      
+    if(cartridge_pokey) 
+    {
+        // --------------------------------------------------------------------
+        // If Pokey is enabled, we will only process 1 sample per scanline
+        // instead of the normal 2 as we also have to process the TIA within
+        // that handler and we're already pressed for emulation speed... 
+        // This is good enough to get about 16KHz sample rate and on the 
+        // DS handheld, it sounds plenty good enough...
+        // --------------------------------------------------------------------
+        pokey_Process(1);
+        pokey_Scanline();
+    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
+  }
+    
+  // ------------------------------------------------------------
+  // Now handle the REST of the display area...
+  // ------------------------------------------------------------
+  for (; maria_scanline < 258; maria_scanline++) 
+  {
+    prosystem_cycles %= CYCLES_PER_SCANLINE;
+      
+    if (maria_scanline == 26) 
+    {
+       bRenderFrame = gTotalAtariFrames & frameSkipMask;
+    }
+    else if (maria_scanline == 247) 
+    {
+       bRenderFrame = 0;
+    }
+    sally_Execute(34);
+
+    maria_RenderScanline( );
     
     if(cartridge_steals_cycles) 
     {
-      prosystem_cycles += cycles;
-      if(riot_timing) riot_UpdateTimer( cycles >> 2 );
+      prosystem_cycles += maria_cycles;
+      if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
     }
  
     sally_Execute(CYCLES_PER_SCANLINE);
@@ -140,8 +169,32 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
         // --------------------------------------------------------------------
         pokey_Process(1);
         pokey_Scanline();
-    } else tia_Process(isDS_LITE ? 1:2); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
-  }  
+    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
+  }
+    
+  memory_ram[MSTAT] = 128;
+  
+  for (; maria_scanline < 262; maria_scanline++) 
+  {
+    prosystem_cycles %= CYCLES_PER_SCANLINE;
+      
+    sally_Execute(34);
+
+    sally_Execute(CYCLES_PER_SCANLINE);
+    if(cartridge_pokey) 
+    {
+        // --------------------------------------------------------------------
+        // If Pokey is enabled, we will only process 1 sample per scanline
+        // instead of the normal 2 as we also have to process the TIA within
+        // that handler and we're already pressed for emulation speed... 
+        // This is good enough to get about 16KHz sample rate and on the 
+        // DS handheld, it sounds plenty good enough...
+        // --------------------------------------------------------------------
+        pokey_Process(1);
+        pokey_Scanline();
+    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
+  }    
+    
 }
 
 // ----------------------------------------------------------------------------

@@ -54,7 +54,7 @@ extern void tia_Reset( );
 extern void tia_SetRegister(word address, byte data);
 extern void tia_MemoryChannel(byte channel);
 extern void tia_Clear( );
-extern void tia_Process(uint length);
+extern void tia_Process(void);
 extern byte tia_buffer[];
 
 #endif

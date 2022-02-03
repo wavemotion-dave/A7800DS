@@ -44,7 +44,7 @@ void memory_Reset( )
   }
 }
 
-extern u8 isDS_LITE;
+
 // ----------------------------------------------------------------------------
 // Read
 // ----------------------------------------------------------------------------
@@ -85,6 +85,7 @@ ITCM_CODE byte memory_Read(word address)
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_Write(word address, byte data) 
 {
+    extern u32 bg32;
   if (cartridge_pokey)
   {
       if (cartridge_pokey == POKEY_AT_4000)
@@ -129,6 +130,10 @@ ITCM_CODE void memory_Write(word address, byte data)
       case INPT4:
         break;
       case INPT5:
+        break;
+      case BACKGRND:
+        memory_ram[BACKGRND] = data;
+        bg32 =  data | (data<<8) | (data<<16) | (data<<24);
         break;
       case AUDC0:
         tia_audc[0] = data & 15;

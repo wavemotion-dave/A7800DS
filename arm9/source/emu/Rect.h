@@ -30,6 +30,8 @@ typedef struct {
   uint top;
   uint right;
   uint bottom;
+  uint vis_top;
+  uint vis_bottom;
 
   uint GetArea;
   uint GetLength;

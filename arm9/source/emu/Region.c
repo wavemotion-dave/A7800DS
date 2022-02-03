@@ -26,8 +26,8 @@
 
 byte region_type = REGION_AUTO;
 
-static const rect REGION_DISPLAY_AREA_NTSC = {0, 16, 319, 258};
-static const rect REGION_VISIBLE_AREA_NTSC = {0, 26, 319, 250};
+static const rect REGION_DISPLAY_AREA_NTSC = {0, 16, 319, 258, 26, 247};
+static const rect REGION_VISIBLE_AREA_NTSC = {0, 26, 319, 250, 26, 220};
 
 static const byte REGION_FREQUENCY_NTSC = 60;
 static const word REGION_SCANLINES_NTSC = 262;
