@@ -43,13 +43,14 @@ int bg3;             // BG pointers
 int bg0s, bg1s, bg2s, bg3s;         // sub BG pointers 
 
 u16 full_speed __attribute__((section(".dtcm")))= 0;
-int etatEmu;
+short int etatEmu __attribute__((section(".dtcm")));
 u16 fpsDisplay=0;
 
 #define MAX_DEBUG 5
 int debug[MAX_DEBUG]={0};
 //#define DEBUG_DUMP
 //#define CART_INFO
+//#define WRITE_TWEAKS
 
 #define SOUND_FREQ  (31440/2)           // Be careful if you change this - this matches the frequency of the POKEY update and if we are TIA-only, we will double it.
 
@@ -101,6 +102,25 @@ static void DumpDebugData(void)
     }
 #endif
 }
+
+void dsWriteTweaks(void)
+{
+#ifdef WRITE_TWEAKS
+    FILE *fp;
+    dsPrintValue(22,0,0, (char*)"CFG");
+    fp = fopen("../A7800.txt", "a+");
+    if (fp != NULL)
+    {
+        fprintf(fp, "%-32s CT=%d PK=%d RE=%d SY=%d ST=%d HS=%d   %3d  %3d  %3d  %3d  %s\n", (char*)cartridge_digest, cartridge_type, cartridge_pokey, 
+                cartridge_region, cartridge_uses_wsync, cartridge_steals_cycles, cartridge_hsc_enabled, cartridge_xOffset, cartridge_yOffset+9,cartridge_xScale,cartridge_yScale,cartridge_filename);
+        fflush(fp);
+        fclose(fp);
+    }
+    WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
+    dsPrintValue(22,0,0, (char*)"   ");
+#endif    
+}
+
 
 u16 myTiaBufIdx __attribute__((section(".dtcm"))) = 0;
 u8* snd_ptr __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
@@ -205,11 +225,6 @@ void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr,
 #define tchepres(a) \
    keyboard_data[GameConf.DS_Pad[a]] = 1;
 
-u8 jitter[] __attribute__((section(".dtcm"))) = 
-{
-  0x48, 0x22, 
-  0x40, 0x44
-};
 void vblankIntr() 
 {
   static u8 xx=0;
@@ -232,16 +247,20 @@ void vblankIntr()
     REG_BG3PD = ydyBG; 
 
     bRefreshXY = false;
+    debug[0] = cartridge_xOffset;
+    debug[1] = cartridge_yOffset;
+    debug[2] = cartridge_xScale;
+    debug[3] = cartridge_yScale;
   }
   if (xx++ & 1)
   {
-    REG_BG2X = cxBG+jitter[0]; 
-    REG_BG2Y = cyBG+jitter[1]; 
+    REG_BG2X = cxBG+0x48; 
+    REG_BG2Y = cyBG+0x22; 
   }
   else
   {
-    REG_BG2X = cxBG+jitter[2]; 
-    REG_BG2Y = cyBG+jitter[3]; 
+    REG_BG2X = cxBG+0x40; 
+    REG_BG2Y = cyBG+0x44; 
   }
 }
 
@@ -1003,6 +1022,7 @@ void dsMainLoop(void)
               if (++lcd_swap_counter == 30)
               {
                   if (keys_pressed & KEY_A)   lcdSwap();
+                  dsWriteTweaks();
               }
           } 
           if (scale_screen_dampen > 5)

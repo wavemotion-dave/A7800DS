@@ -7,7 +7,7 @@
 #define A7800_PLAYGAME 0x04 
 #define A7800_QUITSTDS 0x05
 
-extern int etatEmu;
+extern short int etatEmu;
 
 typedef enum {
   EMUARM7_INIT_SND = 0x123C,
