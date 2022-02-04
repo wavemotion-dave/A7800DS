@@ -14,8 +14,8 @@ Features :
  not great on the older DS-LITE. For the DS-LITE you can expect full speed only on a
  handful of games: Asteroids, Asteroids Deluxe, Astro Blaster, Joust, Robotron, 
  Food Fight, Astro Fighter, Centipede, Galaga, Moon Cresta, Pole Position II,
- Space Duel, Space Invaders, Ms Pac-Man.  Games that are a little slow but still 
- playable include Meteor Shower and Time Salvo.
+ Space Duel, Space Invaders, Ms Pac-Man, Meteor Shower and Time Salvo. Pac-Man
+ Collection is close to full-speed as well.
  
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.
@@ -41,6 +41,12 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.3 : 4-Feb-2022 by wavemotion-dave
+  * Squeezed out another frame of performance.
+  * Super Skateboardin' graphics fixed.
+  * DSi eliminates frameskip on 80% of the library.
+  * Updated 50 entries in the internal database - more new homebrews run.
+  
 V3.2 : 1-Feb-2022 by wavemotion-dave
   * A 5-8% speedup across the board through a number of small optimizations in core areas.
   
