@@ -220,7 +220,6 @@ static bool _cartridge_Load(const byte* data, uint size)
   // -----------------------------------------------------------------------------
   u32 *fast_mem = (u32*)0x06860000;
   memcpy(fast_mem, &data[offset], (256 * 1024));
-  memset((u32*)0x068A0000, 0x00, 16*1024);
     
   // ----------------------------------------------------  
   // And copy the full ROM into the main cart area...
