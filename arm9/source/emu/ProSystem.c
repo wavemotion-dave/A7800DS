@@ -118,35 +118,20 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     
     sally_Execute(CYCLES_PER_SCANLINE);
       
-    if(cartridge_pokey) 
+    if(cartridge_pokey) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
-        // --------------------------------------------------------------------
-        // If Pokey is enabled, we will only process 1 sample per scanline
-        // instead of the normal 2 as we also have to process the TIA within
-        // that handler and we're already pressed for emulation speed... 
-        // This is good enough to get about 16KHz sample rate and on the 
-        // DS handheld, it sounds plenty good enough...
-        // --------------------------------------------------------------------
         pokey_Process(1);
         pokey_Scanline();
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
   }
     
   // ------------------------------------------------------------
-  // Now handle the REST of the display area...
+  // Up to line 26 is "off-screen" so we don't bother to render
   // ------------------------------------------------------------
-  for (; maria_scanline < 258; maria_scanline++) 
+  for (; maria_scanline < 26; maria_scanline++) 
   {
     prosystem_cycles %= CYCLES_PER_SCANLINE;
       
-    if (maria_scanline == 26) 
-    {
-       bRenderFrame = gTotalAtariFrames & frameSkipMask;
-    }
-    else if (maria_scanline == 247) 
-    {
-       bRenderFrame = 0;
-    }
     sally_Execute(34);
 
     maria_RenderScanline( );
@@ -158,19 +143,49 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     }
  
     sally_Execute(CYCLES_PER_SCANLINE);
-    if(cartridge_pokey) 
+      
+    if(cartridge_pokey) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
-        // --------------------------------------------------------------------
-        // If Pokey is enabled, we will only process 1 sample per scanline
-        // instead of the normal 2 as we also have to process the TIA within
-        // that handler and we're already pressed for emulation speed... 
-        // This is good enough to get about 16KHz sample rate and on the 
-        // DS handheld, it sounds plenty good enough...
-        // --------------------------------------------------------------------
         pokey_Process(1);
         pokey_Scanline();
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
   }
+    
+  // -----------------------------------------------------------------------------------
+  // At line 26 we can start to render the scanlines if we are not skipping this frame.
+  // -----------------------------------------------------------------------------------
+  bRenderFrame = gTotalAtariFrames & frameSkipMask;
+    
+  // ------------------------------------------------------------
+  // Now handle the REST of the display area...
+  // ------------------------------------------------------------
+  for (; maria_scanline < 258; maria_scanline++) 
+  {
+    prosystem_cycles %= CYCLES_PER_SCANLINE;
+      
+    if (maria_scanline == 247) 
+    {
+       bRenderFrame = 0;
+    }
+      
+    sally_Execute(34);
+
+    maria_RenderScanline( );
+    
+    if(cartridge_steals_cycles) 
+    {
+      prosystem_cycles += maria_cycles;
+      if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
+    }
+ 
+    sally_Execute(CYCLES_PER_SCANLINE);
+      
+    if(cartridge_pokey) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
+    {
+        pokey_Process(1);
+        pokey_Scanline();
+    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
+  }    
     
   memory_ram[MSTAT] = 128;
   
@@ -181,15 +196,8 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     sally_Execute(34);
 
     sally_Execute(CYCLES_PER_SCANLINE);
-    if(cartridge_pokey) 
+    if(cartridge_pokey) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
-        // --------------------------------------------------------------------
-        // If Pokey is enabled, we will only process 1 sample per scanline
-        // instead of the normal 2 as we also have to process the TIA within
-        // that handler and we're already pressed for emulation speed... 
-        // This is good enough to get about 16KHz sample rate and on the 
-        // DS handheld, it sounds plenty good enough...
-        // --------------------------------------------------------------------
         pokey_Process(1);
         pokey_Scanline();
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)

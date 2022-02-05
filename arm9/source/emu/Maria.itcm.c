@@ -366,7 +366,7 @@ static inline void maria_StoreLineRAM( )
 {
   uint index;
   u32 *ptr=(u32*)maria_lineRAM;
-    
+
   if (bRenderFrame)  // Skip every other frame...
   {
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
@@ -380,6 +380,7 @@ static inline void maria_StoreLineRAM( )
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr   = 0;
   }
+
   byte mode = memory_ram[maria_dp.w + 1];
   while(mode & 0x5f) 
   {
@@ -416,7 +417,7 @@ static inline void maria_StoreLineRAM( )
       for(index = 0; index < width; index++) 
       {
         maria_cycles += 3; // Maria cycles (Direct graphic read)
-        maria_StoreGraphic();
+        if (bRenderFrame) maria_StoreGraphic();
       }
     }
     else {
@@ -428,10 +429,10 @@ static inline void maria_StoreLineRAM( )
         maria_pp.b.h = memory_ram[CHARBASE] + maria_offset;
         
         maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
-        maria_StoreGraphic( );
+        if (bRenderFrame) maria_StoreGraphic( );
         if(cwidth) {
           maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
-          maria_StoreGraphic( );
+          if (bRenderFrame) maria_StoreGraphic( );
         }
       }
     }
@@ -534,13 +535,13 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
 ITCM_CODE void maria_RenderScanline(void) 
 {
   extern u32 bg32;
-  maria_cycles = 0;
     
   //
   // Displays the background color when Maria is disabled (if applicable)
   //
   if ((memory_ram[CTRL] & 96) != 64)
   {
+      maria_cycles = 0;
       u32 *bgstart = (u32*)framePtr;
       for(uint index = 0; index < MARIA_LINERAM_SIZE/4; index++ ) 
       {
@@ -549,7 +550,7 @@ ITCM_CODE void maria_RenderScanline(void)
   }
   else
   {
-    maria_cycles += 5; // Maria cycles (DMA Startup)
+    maria_cycles = 9; // Maria cycles (DMA Startup)
     // This is where we render the video memory... 
     if (bRenderFrame)  // Skip every other frame...
     {
@@ -557,35 +558,24 @@ ITCM_CODE void maria_RenderScanline(void)
         framePtr += 256;
     }
     
-    //if(maria_scanline != maria_displayArea.bottom) 
+    maria_dp.b.l = memory_ram[maria_dpp.w + 2];
+    maria_dp.b.h = memory_ram[maria_dpp.w + 1];
+    maria_StoreLineRAM( );
+    if(--maria_offset < 0) 
     {
-      maria_dp.b.l = memory_ram[maria_dpp.w + 2];
-      maria_dp.b.h = memory_ram[maria_dpp.w + 1];
-      maria_StoreLineRAM( );
-      maria_offset--;
-      if(maria_offset < 0) 
+      maria_dpp.w += 3;
+      maria_h08 = memory_ram[maria_dpp.w] & 32;
+      maria_h16 = memory_ram[maria_dpp.w] & 64;
+      maria_offset = memory_ram[maria_dpp.w] & 15;
+      if(memory_ram[maria_dpp.w] & 128) 
       {
-        maria_cycles += 10; // Maria cycles (Last line of zone) ( /*20*/ 
-        maria_dpp.w += 3;
-        maria_h08 = memory_ram[maria_dpp.w] & 32;
-        maria_h16 = memory_ram[maria_dpp.w] & 64;
-        maria_offset = memory_ram[maria_dpp.w] & 15;
-        if(memory_ram[maria_dpp.w] & 128) 
-        {
-          maria_cycles += 20; // Maria cycles (NMI) /*29, 16, 20*/
-          //ALEK Fst6502_Cause_Interrupt(IRQ_NMI);
-          sally_ExecuteNMI( );
-        }
+        maria_cycles += 26; // Maria cycles (NMI) /*29, 16, 20*/
+        sally_ExecuteNMI( );
       }
-      else
-      {
-         maria_cycles += 4; // Maria cycles (Other lines of zone)
-      }
+      else maria_cycles += 6; // Maria cycles (Last line of zone) ( /*20*/ 
     }
   }
-  //return maria_cycles;
 }
-
 // ----------------------------------------------------------------------------
 // Clear
 // ----------------------------------------------------------------------------
