@@ -275,6 +275,8 @@ bool database_Load(byte *digest)
     bForceFrameskip = false;
   }
     
+  if (!isDSiMode())  cartridge_steals_cycles = STEAL_CYCLE;     // DS-LITE can't handle anything else anyway... this at least makes those games playable
+    
   cartridge_yOffset -= 9;  // To compensate for a smaller scren rendering in Region.c
   
   return true;
