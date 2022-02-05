@@ -37,6 +37,11 @@ int main(int argc, char **argv)
     dsLoadGame(argv[1]);
     etatEmu = A7800_PLAYINIT;
   }
+  else
+  {
+      chdir("/roms");    // Try to start in roms area... doesn't matter if it fails
+      chdir("a7800");    // And try to start in the subdir /a7800... doesn't matter if it fails.
+  }
   
   // Main loop of emulation
   dsMainLoop();

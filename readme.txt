@@ -11,36 +11,32 @@ help you.
 Features :
 ----------
  Most things you should expect from an emulator. Speed is excellent on the DSi and 
- not great on the older DS-LITE. For the DS-LITE you can expect full speed only on a
- handful of games: Asteroids, Asteroids Deluxe, Astro Blaster, Joust, Robotron, 
- Food Fight, Astro Fighter, Centipede, Galaga, Moon Cresta, Pole Position II,
- Space Duel, Space Invaders, Ms Pac-Man, Meteor Shower and Time Salvo. Pac-Man
- Collection is close to full-speed as well.
- 
+ less great on the older DS-LITE. For the DS-LITE you can expect full speed only on
+ about half of the 7800 library. The more traditional games (think: Asteroids,
+ Astro Blaster, Robotron, Food Fight, Centipede, Pac-Man Collection, etc) will
+ all run great. The really big bankswitched games will struggle on the older 
+ DS-LITE/PHAT hardware.
+  
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.
 
 Philosophy :
 ----------
- For this particular emulator, I'm not striving for emulation accuracy - the goal is to 
- get as many games as close to perfectly playable as possible. Nothing else matters if
- the game won't run at near full speed with all the gameplay in-tact. Minor screen 
+ For this particular emulator, I'm not striving for perfect emulation accuracy - the goal 
+ is to get as many games as close to perfectly playable as possible. Nothing else matters 
+ if the game won't run at near full speed with all the gameplay in-tact. Minor screen 
  glitches or minor sound issues are secondary to making sure the game will actually run. 
  If you're looking for a highly accurate emulator for the 7800 ProSystem, this isn't 
  it - try MAME/MESS. But if you're looking to enjoy some classic 7800 console goodness 
  on your DS/DSi then you've come to the right place!
  
- Be warned, the emulation of the ProSystem is tricky as there are several CPU-like
- elements that need to be emulated (6502, TIA, RIOT, Pokey Chip) and the DS-LITE
- just doesn't have the horsepower to do it properly so only the smallest non-Pokey 
- games will run (Asteroids, Centipede, Joust, Meteor Shower, Moon Cresta, Ms Pac Man).
- The DSi will run most games at near full speed or beyond - with much higher emulation
- compatibility. 
-
-
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.4 : 5-Feb-2022 by wavemotion-dave
+  * Frameskip rendering improved by more than 10% - making more DS-LITE games playable!
+  * Minor improvements to touch-screen key handling and other code cleanups.
+  
 V3.3 : 4-Feb-2022 by wavemotion-dave
   * Squeezed out another frame of performance.
   * Super Skateboardin' graphics fixed.
@@ -212,7 +208,7 @@ Compatibility Table (on the faster DSi)
 GAME                    MD5SUM                              HSC   FPS NOTES
 ========================================================================================================================
 Ace Of Aces             0be996d25144966d5541c9eb4919b289    NO    60  Minor graphical glitches. Very playable.
-Alien Brigade           877dcc97a775ed55081864b2dbf5f1e2    NO    56  A bit slow but playable
+Alien Brigade           877dcc97a775ed55081864b2dbf5f1e2    NO    60  Near perfect
 Arkanoid Demo           212ee2a6e66d8bb7fbf26f343cc8dc19    NO    60  Playable though paddles would be nice.
 Asteroids               07342c78619ba6ffcc61c10e907e3b50    YES   60  Near perfect
 Asteroids Deluxe        a65f79ad4a0bbdecd59d5f7eb3623fd7    YES   60  Near perfect
@@ -222,7 +218,7 @@ Baby Pac Man            7cdfbe37634e7dcd4dc67db7edbcd3ba    NO    60  Near perfe
 Ballblazer              8fc3a695eaea3984912d98ed4a543376    NO    60  Near perfect
 Barnyard Blaster        42682415906c21c6af80e4198403ffda    NO    60  Needs Lightgun Support (not implemented)
 Basketbrawl             f5f6b69c5eb4b55fc163158d1a6b423e    NO    60  Minor glitches. Mostly playable.
-Beef Drop (Final)       78b1061d651ef806becac1dd3fda29a0    YES   60  Near perfect.
+Beef Drop (Final)       78b1061d651ef806becac1dd3fda29a0    YES   60  Near perfect
 BonQ (Final)            9fa7743a016c9b7015ee1d386326f88e    YES   60  Graphical glitches on title screen. Play is near perfect.
 Centipede               5a09946e57dbe30408a8f253a28d07db    YES   60  Near perfect
 Choplifter              93e4387864b014c155d7c17877990d1e    NO    60  Near perfect
@@ -272,7 +268,7 @@ Pole Position II        584582bb09ee8122e7fc09dc7d1ed813    NO    60  Near perfe
 Popeye Demo 2.9         640c7827fe63082efbaffc13f7983744    YES   60  Near perfect.
 Spire of the Ancients   19844117863cd38d4e1e4cbc867ae599    NO    60  Near perfect
 Rampage                 ac03806cef2558fc795a7d5d8dba7bc0    NO    60  Near perfect
-Realsports Baseball     bfad016d6e77eaccec74c0340aded8b9    NO    53  A bit slow but playable
+Realsports Baseball     383ed9bd1efb9b6cb3388a777678c928    NO    60  Any voice rendering is slow.
 Robotron                66ecaafe1b82ae68ffc96267aaf7a4d7    YES   60  Near perfect
 Scramble                a3a85e507d6f718972b1464ce1aaf8a4    YES   60  Near perfect
 Scrapyard Dog           980c35ae9625773a450aa7ef51751c04    NO    60  Near perfect
@@ -280,9 +276,10 @@ Serpentine              9bd70c06d3386f76f8162881699a777a    YES   60  Near perfe
 Space Duel              771cb4609347657f63e6f0eb26036e35    YES   60  Near perfect
 Space Invaders          6adf79558a3d7f5beca1bb8d34337417    YES   60  Near perfect
 Summer Games            cbb0746192540a13b4c7775c7ce2021f    NO    60  Plays fine - font hard to read on small screen.
-Super Skatebordin       59b5793bece1c80f77b55d60fb39cb94    NO    60  Near perfect.
+Super Skatebordin       59b5793bece1c80f77b55d60fb39cb94    NO    60  Near perfect
 Super Circus Atariage   81cee326b99d6831de10a566e338bd25    YES   60  Near perfect 
 Time Salvo              a60e4b608505d1fb201703b266f754a7    YES   60  Near perfect 
+UniWarS                 79df20ee86a989e669158bcb9d113e8a    YES   60  Near perfect 
 Winter Games            3799d72f78dda2ee87b0ef8bf7b91186    NO    60  Plays fine - font hard to read on small screen.
 Xenophobe               05fb699db9eef564e2fe45c568746dbc    NO    60  Near perfect
 Xevious                 d7dc17379aa25e5ae3c14b9e780c6f6d    YES   60  Near perfect

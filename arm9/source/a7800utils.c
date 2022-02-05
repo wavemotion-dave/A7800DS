@@ -935,7 +935,7 @@ void dsMainLoop(void)
               else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper corner...
                  full_speed = 1-full_speed; 
                  if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");
-                 dampen=120;
+                 dampen=60;
               }
               else if ((iTx>63) && (iTx<105) && (iTy>154) && (iTy<171))  { // 72,160  -> 105,168   PAUSE
                 if (keys_touch == 0) soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
@@ -958,7 +958,7 @@ void dsMainLoop(void)
                 WAITVBL;WAITVBL;
                 cartridge_SaveHighScoreSram();
                 dsPrintValue(13,0,0, "      ");
-                dampen=120;
+                dampen=60;
                 continue;
               }
               else if ((iTx>79) && (iTx<180) && (iTy>31) && (iTy<62)) {     // 80,32 -> 179,61 cartridge slot
@@ -990,7 +990,7 @@ void dsMainLoop(void)
                   if ( (keys_pressed & KEY_R) )  { cartridge_xOffset +=28; bRefreshXY = true; }
                   if ( (keys_pressed & KEY_L) )  { cartridge_xOffset -=28; bRefreshXY = true; }  
               }
-              dampen = 6;
+              if (dampen < 6) dampen = 6;
           }
         } else dampen--;
         
