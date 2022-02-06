@@ -33,7 +33,7 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V3.4 : 5-Feb-2022 by wavemotion-dave
+V3.4 : 6-Feb-2022 by wavemotion-dave
   * Frameskip rendering improved by more than 10% - making more DS-LITE games playable!
   * Minor improvements to touch-screen key handling and other code cleanups.
   
