@@ -47,6 +47,8 @@ History :
 --------------------------------------------------------------------------------
 V3.5 : 12-Feb-2022 by wavemotion-dave
   * Across the board cleanup of code. Copyright notice added.
+  * Fixed High-Score save on Time Salvo
+  * Slight memory optmization for reduced memory footprint.
   
 V3.4 : 6-Feb-2022 by wavemotion-dave
   * Frameskip rendering improved by more than 10% - making more DS-LITE games playable!
