@@ -1,12 +1,13 @@
-a7800DS
---------------------------------------------------------------------------------
-a7800DS is an Atari ProSystem 7800 console emulator.
+# a7800DS
+
+a7800DS is an Atari ProSystem 7800 console emulator for the DS/DSi.
+
 To use this emulator, you must use compatibles rom with a78/bin format. 
 Strongly recommend you use NTSC roms... PAL ones have more scanlines and will render
 more slowly and since the sound core is tied to scanlines, the sound will be wrong. 
 All the debug on this port to the DS has been done with NTSC roms - seek them out!
 Do not ask me about such files, I don't have them. A search with Google will certainly 
-help you. 
+help you. The emulator was developed using Trebor's "7800 ProPack" of well-curated games.
 
 Features :
 ----------
@@ -169,7 +170,7 @@ V1.0 : 24/05/2011
   * Compiled with last version of Devkitpro/libnds, so DSi compatible \o/
   
 --------------------------------------------------------------------------------
-How tu use a7800DS :
+How to use a7800DS :
 --------------------------------------------------------------------------------
 Place .NDS on your SD card and launch with Twilight Menu++ or Unlaunch.
 If you want to run on a flash cart, it might work... recommend HBMENU to launch.
