@@ -32,22 +32,25 @@ char cartridge_year[128];
 char cartridge_maker[128];
 byte cartridge_digest[128];
 char cartridge_filename[128];
-byte cartridge_type __attribute__((section(".dtcm")));
-byte cartridge_region __attribute__((section(".dtcm")));
-byte cartridge_pokey __attribute__((section(".dtcm")));
-bool cartridge_hsc_enabled;
-byte cartridge_controller[2];
-byte cartridge_bank __attribute__((section(".dtcm")));
-u8 cartridge_steals_cycles __attribute__((section(".dtcm")));
-u8 cartridge_uses_wsync __attribute__((section(".dtcm")));
+byte cartridge_type         __attribute__((section(".dtcm")));
+byte cartridge_region       __attribute__((section(".dtcm")));
+byte cartridge_pokey        __attribute__((section(".dtcm")));
+byte cartridge_bank         __attribute__((section(".dtcm")));
+u8 cartridge_steals_cycles  __attribute__((section(".dtcm")));
+u8 cartridge_uses_wsync     __attribute__((section(".dtcm")));
+bool cartridge_hsc_enabled  __attribute__((section(".dtcm")));
+byte cartridge_controller[2] __attribute__((section(".dtcm")));
+
 short cartridge_xOffset = 0;
 short cartridge_yOffset = 22;
 short cartridge_xScale  = 256;
 short cartridge_yScale  = 220;
-uint cartridge_diff1 = DIFF_A;
-uint cartridge_diff2 = DIFF_A;
-  
-extern int debug[];  
+u8 cartridge_diff1 = DIFF_A;
+u8 cartridge_diff2 = DIFF_A;
+
+// -------------------------------------------------------------------------------------------------
+// We allow cart sizes up to 512K which is pretty huge - I've not seen any ROMs bigger than this.
+// -------------------------------------------------------------------------------------------------
 static byte cartridge_buffer[512 * 1024] ALIGN(32);
 uint cartridge_size __attribute__((section(".dtcm"))) = 0;
 static uint maxbank = 9;

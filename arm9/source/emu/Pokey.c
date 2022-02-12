@@ -70,7 +70,6 @@
 #define SK_RESET	0x03
 
 byte pokey_buffer[SNDLENGTH] = {0};
-uint pokey_size = SNDLENGTH;
 
 u16 pokeyBufIdx __attribute__((section(".dtcm"))) = 0;
 

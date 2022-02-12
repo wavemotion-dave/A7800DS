@@ -110,9 +110,7 @@ extern short cartridge_xScale;
 extern short cartridge_yScale;
 extern u8 cartridge_steals_cycles;
 extern u8 cartridge_uses_wsync;
-extern uint cartridge_diff1;
-extern uint cartridge_diff2;
-
-
+extern u8 cartridge_diff1;
+extern u8 cartridge_diff2;
 
 #endif

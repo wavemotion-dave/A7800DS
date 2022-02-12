@@ -59,9 +59,7 @@ extern void prosystem_Pause(bool pause);
 extern void prosystem_Close( );
 extern bool prosystem_active;
 extern bool prosystem_paused;
-extern word prosystem_frequency;
 extern byte prosystem_frame;
-extern word prosystem_scanlines;
 extern uint prosystem_cycles;
 
 #endif

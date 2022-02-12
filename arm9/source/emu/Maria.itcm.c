@@ -47,9 +47,6 @@ union ColorUnion colors __attribute__((section(".dtcm")));
 
 #define MARIA_LINERAM_SIZE 160
 
-rect maria_displayArea __attribute__((section(".dtcm"))) = {0, 16, 319, 258, 26, 247};
-rect maria_visibleArea __attribute__((section(".dtcm"))) = {0, 26, 319, 248, 228};
-
 word* maria_surface __attribute__((section(".dtcm"))) = 0;
 word  maria_scanline __attribute__((section(".dtcm"))) = 1;
 
@@ -485,9 +482,6 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
   }
   else
   {
-    //maria_cycles += 5; // Maria cycles (DMA Startup)
-    //if(maria_scanline == maria_displayArea.top) 
-    {
       maria_cycles += 15; // Maria cycles (DMA Startup + End of VBLANK)
       maria_dpp.b.l = memory_ram[DPPL];
       maria_dpp.b.h = memory_ram[DPPH];
@@ -501,10 +495,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
         maria_cycles += 20; // Maria cycles (NMI)  /*29, 16, 20*/
         sally_ExecuteNMI( );
       }
-    }
     
-    //if(maria_scanline != maria_displayArea.bottom) 
-    {
       maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       maria_dp.b.h = memory_ram[maria_dpp.w + 1];
       maria_StoreLineRAM( );
@@ -527,7 +518,6 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       {
          maria_cycles += 4; // Maria cycles (Other lines of zone)
       }
-    }
   }
   //return maria_cycles;
 }

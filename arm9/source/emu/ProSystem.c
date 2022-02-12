@@ -26,22 +26,17 @@
 #include <malloc.h>
 #include "ProSystem.h"
 #include "Sound.h"
-#define PRO_SYSTEM_SOURCE "ProSystem.cpp"
-#define PRO_SYSTEM_STATE_HEADER "PRO-SYSTEM STATE"
 
-#define CYCLES_PER_SCANLINE 454
+#define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system
 
 extern u8 isDS_LITE;
 extern u8 frameSkipMask;
 
 bool prosystem_active __attribute__((section(".dtcm"))) = false;
 bool prosystem_paused __attribute__((section(".dtcm"))) = false;
-word prosystem_frequency __attribute__((section(".dtcm"))) = 60;
-word prosystem_scanlines __attribute__((section(".dtcm"))) = 262;
 uint prosystem_cycles __attribute__((section(".dtcm"))) = 0;
-uint32 bg32 __attribute__((section(".dtcm"))) = 0;
-
-u8 bRenderFrame __attribute__((section(".dtcm"))) = 0;
+uint32 bg32           __attribute__((section(".dtcm"))) = 0;
+u8 bRenderFrame       __attribute__((section(".dtcm"))) = 0;
 
 
 // ----------------------------------------------------------------------------
@@ -77,9 +72,9 @@ void prosystem_Reset( )
   }
 }
 
-byte last_background __attribute__((section(".dtcm"))) = 254;
 // ----------------------------------------------------------------------------
-// ExecuteFrame
+// ExecuteFrame - this is hand-tuned for NTSC output with hard-coded
+// NTSC frame values ... this will not work properly if a PAL ROM is used.
 // ----------------------------------------------------------------------------
 ITCM_CODE void prosystem_ExecuteFrame(const byte* input) 
 {
@@ -99,10 +94,10 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles %= CYCLES_PER_SCANLINE;
       
-    if (maria_scanline == maria_displayArea.top) 
+    if (maria_scanline == 16) 
     {
       memory_ram[MSTAT] = 0;
-      framePtr = (word*)(maria_surface + ((maria_scanline - maria_displayArea.top) * 256));
+      framePtr = (word*)(maria_surface);
       sally_Execute(34);
       maria_RenderScanlineTOP( );
       if(cartridge_steals_cycles) 

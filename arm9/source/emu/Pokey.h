@@ -82,6 +82,5 @@ extern void pokey_Process(uint length);
 extern void pokey_Scanline();
 extern void pokey_Clear( );
 extern byte pokey_buffer[];
-extern uint pokey_size;
 
 #endif

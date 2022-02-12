@@ -19,6 +19,16 @@ Features :
   
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.
+ 
+Copyright :
+----------
+A7800DS is Copyright 2022 by Dave Bernazzani (wavemotion-dave).
+
+Copying and distribution of this emulator, it's source code and associated 
+readme files, with or without modification, are permitted in any medium without 
+royalty provided this copyright notice is used and wavemotion-dave (Phoenix-Edition),
+Alekmaul (original port) and Greg Stanton (ProSystem Emulator) are thanked profusely.
+ 
 
 Philosophy :
 ----------
@@ -33,6 +43,9 @@ Philosophy :
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.5 : 12-Feb-2022 by wavemotion-dave
+  * Across the board cleanup of code. Copyright notice added.
+  
 V3.4 : 6-Feb-2022 by wavemotion-dave
   * Frameskip rendering improved by more than 10% - making more DS-LITE games playable!
   * Minor improvements to touch-screen key handling and other code cleanups.

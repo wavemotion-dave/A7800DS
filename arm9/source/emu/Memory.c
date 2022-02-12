@@ -85,7 +85,7 @@ ITCM_CODE byte memory_Read(word address)
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_Write(word address, byte data) 
 {
-    extern u32 bg32;
+  extern u32 bg32;
   if (cartridge_pokey)
   {
       if (cartridge_pokey == POKEY_AT_4000)
@@ -110,6 +110,11 @@ ITCM_CODE void memory_Write(word address, byte data)
     
   if(!memory_rom[address]) 
   {
+    if (address & 0xF800)     // Base RAM is at 0x1800 so this will find anything that is normal memory... 
+    {
+        memory_ram[address] = data;
+        return;
+    }
     switch(address) {
       case INPTCTRL:
         if(data == 22 && cartridge_IsLoaded( )) { 
@@ -192,6 +197,7 @@ ITCM_CODE void memory_Write(word address, byte data)
         break;
       default:
         memory_ram[address] = data;
+#if 0  // Technically the RAM mirrors are here but we don't really care... we assume anyone using a mirror will read back from that same mirror location.
         if (address >= 8256)
         {
           // 0x2040 -> 0x20ff    (0x2000)
@@ -218,6 +224,7 @@ ITCM_CODE void memory_Write(word address, byte data)
             memory_ram[address + 8192] = data;
           }
         }
+#endif            
         break;
     }
   }

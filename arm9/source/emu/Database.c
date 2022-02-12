@@ -25,29 +25,26 @@
 #include "Database.h"
 #include "ProSystem.h"
 
-#define DATABASE_SOURCE "Database.cpp"
-
 extern u8 bForceFrameskip;
 
-bool database_enabled = true;
 typedef struct {
   char digest[33];
   char header_name[33];
-  uint cardtype;
+  byte cardtype;
   byte pokeyType;
-  uint cardctrl1;
-  uint cardctrl2;
-  uint diff1;
-  uint diff2;
-  uint cardregion;
-  bool steals_cycles;
-  bool uses_wsync;
-  bool hsc;
-  int  xOffset;
-  int  yOffset;
-  int  xScale;
-  int  yScale;
-  int  forceFrameskip;
+  byte cardctrl1;
+  byte cardctrl2;
+  byte diff1;
+  byte diff2;
+  byte cardregion;
+  u8  steals_cycles;
+  u8  uses_wsync;
+  u8  hsc;
+  short xOffset;
+  short yOffset;
+  short xScale;
+  short yScale;
+  u8   forceFrameskip;
 } Database_Entry;
 
 
@@ -138,7 +135,8 @@ Database_Entry game_list[] = {
   {"60982f430b762343d53e48f70acfa6d0",  "Pac-Man 320",                      CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 6,  25, 264,  233, 0}, // title=Pac-Man 320
   {"5013b69cb05b21a1194ce48517df7bfc",  "Pac-Man Collection",               CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 10, 19, 281,  231, 0}, // title=Pac-Man Collection (homebrew)    
   {"a59d362e3a391ff1482131aa0818ad3e",  "Pac-Man 40th Anniversary",         CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 9,  18, 278,  221, 0}, // title=Pac-Man Collection 40th Anniversary Edition (homebrew)
-  {"d0bf3b841ad4bbd356e9588874749a13",  "Pac-Man Plus 320",                 CT_NORMAL, POKEY_AT_450,  JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 10, 22, 274,  233, 0}, // title=Pac-Man Plus 320
+  {"1330d23ebad9b5ded92ebeacdf305abd",  "Pac-Man 40th Anniversary",         CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 9,  18, 278,  221, 0}, // title=Pac-Man Collection 40th Anniversary Edition (homebrew)
+  {"d0bf3b841ad4bbd356e9588874749a13",  "Pac-Man Plus 320",                 CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 10, 22, 274,  233, 0}, // title=Pac-Man Plus 320
   {"1a5207870dec6fae9111cb747e20d8e3",  "Pete Rose Baseball",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220, 0}, // title=Pete Rose Baseball
   {"ec206c8db4316eb1ebce9fc960da7d8f",  "Pit Fighter",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220, 0}, // title=Pit Fighter                     
   {"33aea1e2b6634a1dec8c7006d9afda22",  "Planet Smashers",                  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  226, 0}, // title=Planet Smashers
@@ -172,7 +170,7 @@ Database_Entry game_list[] = {
   {"59b5793bece1c80f77b55d60fb39cb94",  "Super Skatebordin'",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22, 256,  220, 0}, // title=Super Skatebordin'
   {"44f862bca77d68b56b32534eda5c198d",  "Tank Command",                     CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220, 0}, // title=Tank Command
   {"1af475ff6429a160752b592f0f92b287",  "Title Match Pro Wrestling",        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220, 0}, // title=Title Match Pro Wrestling
-  {"a60e4b608505d1fb201703b266f754a7",  "Time Salvo",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  24, 256,  230, 0}, // title=Time Salvo
+  {"a60e4b608505d1fb201703b266f754a7",  "Time Salvo",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  24, 256,  230, 0}, // title=Time Salvo
   {"c3903ab01a51222a52197dbfe6538ecf",  "Tomcat F-14 Simulator",            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220, 0}, // title=Tomcat F-14 Simulator
   {"208ef955fa90a29815eb097bce89bace",  "Touchdown Football",               CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22, 256,  220, 0}, // title=Touchdown Football
   {"8d64763db3100aadc552db5e6868506a",  "Tower Toppler",                    CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  16, 256,  230, 0}, // title=Tower Toppler
@@ -194,14 +192,13 @@ bool database_Load(byte *digest)
   bool bFound = false;
   uint i;
   
-  // -------------------------------------------------------------------------
-  // This happens AFTER The rom is loaded and the header info (if any) has
-  // been read out. Here we can adjust based on the hash table above... which
-  // is mainly used for headerless roms and a few special cases were we want 
-  // to correct the Y-offsets to make the game well centered/scaled on screen.
-  // -------------------------------------------------------------------------
-  if(database_enabled) 
-  {
+    // -------------------------------------------------------------------------
+    // This happens AFTER The rom is loaded and the header info (if any) has
+    // been read out. Here we can adjust based on the hash table above... which
+    // is mainly used for headerless roms and a few special cases were we want 
+    // to correct the Y-offsets to make the game well centered/scaled on screen.
+    // -------------------------------------------------------------------------
+    
     /* Look up mapper in game list by md5sum */
     for(i = 0; strlen(game_list[i].digest); i++)
     {
@@ -261,25 +258,23 @@ bool database_Load(byte *digest)
       }
     }
     
-  }
-  
-  // Default scaling options below if not found... these are close enough...
-  if (!bFound) 
-  {
-    cartridge_xOffset = 0;
-    cartridge_yOffset = 22;
-    cartridge_xScale  = 256;
-    cartridge_yScale  = 220;
-    cartridge_diff1 = DIFF_A;
-    cartridge_diff2 = DIFF_A;
-    bForceFrameskip = false;
-  }
-    
-  if (!isDSiMode())  cartridge_steals_cycles = STEAL_CYCLE;     // DS-LITE can't handle anything else anyway... this at least makes those games playable
-    
-  cartridge_yOffset -= 9;  // To compensate for a smaller scren rendering in Region.c
-  
-  return true;
+    // Default scaling options below if not found... these are close enough...
+    if (!bFound) 
+    {
+        cartridge_xOffset = 0;
+        cartridge_yOffset = 22;
+        cartridge_xScale  = 256;
+        cartridge_yScale  = 220;
+        cartridge_diff1 = DIFF_A;
+        cartridge_diff2 = DIFF_A;
+        bForceFrameskip = false;
+    }
+
+    if (!isDSiMode())  cartridge_steals_cycles = STEAL_CYCLE;     // DS-LITE can't handle anything else anyway... this at least makes those games playable
+
+    cartridge_yOffset -= 9;  // To compensate for a smaller screen rendering in Region.c
+
+    return true;
 }
 
 

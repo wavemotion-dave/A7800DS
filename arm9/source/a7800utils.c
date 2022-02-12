@@ -1,3 +1,13 @@
+// =====================================================================================
+// Copyright (c) 2022 Dave Bernazzani (wavemotion-dave)
+//
+// Copying and distribution of this emulator, it's source code and associated 
+// readme files, with or without modification, are permitted in any medium without 
+// royalty provided this copyright notice is used and wavemotion-dave (Phoenix-Edition),
+// Alekmaul (original port) and Greg Stanton (ProSystem Emulator) are thanked profusely.
+//
+// A7800DS emulator is offered as-is, without any warranty.
+// =====================================================================================
 #include <nds.h>
 #include <nds/fifomessages.h>
 
@@ -27,11 +37,15 @@ static unsigned char lastSample         __attribute__((section(".dtcm"))) = 0;
 u16 gTotalAtariFrames                   __attribute__((section(".dtcm"))) = 0;
 int atari_frames                        __attribute__((section(".dtcm"))) = 0;
 u8 bRefreshXY                           __attribute__((section(".dtcm"))) = false;
-
-u16 dampen __attribute__((section(".dtcm"))) = 0;
-
+u16 dampen                              __attribute__((section(".dtcm"))) = 0;
 unsigned char keyboard_data[20]         __attribute__((section(".dtcm"))) ALIGN(32);
+u16 full_speed                          __attribute__((section(".dtcm"))) = 0;
+short int etatEmu                       __attribute__((section(".dtcm"))) = 0;
+u16 fpsDisplay                          __attribute__((section(".dtcm"))) = 0;
 
+// -----------------------------------------------------------------
+// Some vars for listing filenames of ROMs... 1K of ROMs is plenty
+// -----------------------------------------------------------------
 FICA7800 proromlist[1024];  
 unsigned int countpro=0, countfiles=0, ucFicAct=0;
 
@@ -40,11 +54,7 @@ int bg1;
 int bg0b,bg1b;
 int bg2;
 int bg3;             // BG pointers 
-int bg0s, bg1s, bg2s, bg3s;         // sub BG pointers 
-
-u16 full_speed __attribute__((section(".dtcm")))= 0;
-short int etatEmu __attribute__((section(".dtcm")));
-u16 fpsDisplay=0;
+int bg0s, bg1s;      // sub BG pointers 
 
 #define MAX_DEBUG 5
 int debug[MAX_DEBUG]={0};
@@ -122,10 +132,11 @@ void dsWriteTweaks(void)
 }
 
 
-u16 myTiaBufIdx __attribute__((section(".dtcm"))) = 0;
-u8* snd_ptr __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
-u8* snd_sta __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
-u8* snd_end __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
+u16 myTiaBufIdx     __attribute__((section(".dtcm"))) = 0;
+u16 myPokeyBufIdx   __attribute__((section(".dtcm"))) = 0;
+u8* snd_ptr         __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
+u8* snd_sta         __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
+u8* snd_end         __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
 ITCM_CODE void VsoundHandler(void) 
 {
   extern unsigned char tia_buffer[];
@@ -169,7 +180,6 @@ ITCM_CODE void VsoundHandler_Lite(void)
   }
 }
 
-u16 myPokeyBufIdx __attribute__((section(".dtcm"))) = 0;
 ITCM_CODE void VsoundHandler_Pokey(void)
  {
   extern unsigned char pokey_buffer[];
@@ -751,7 +761,7 @@ unsigned int dsWaitOnMenu(unsigned int actState) {
         bDone=dsWaitOnQuit();
         if (bDone) uState=A7800_QUITSTDS;
       }
-      if ((iTx>79) && (iTx<180) && (iTy>10) && (iTy<65)) {     // 80,32 -> 179,61 cartridge slot
+      if ((iTx>69) && (iTx<180) && (iTy>10) && (iTy<65)) {     // 80,32 -> 179,61 cartridge slot
         bDone=true; 
         // Find files in current directory and show it 
         proFindFiles();
@@ -961,13 +971,15 @@ void dsMainLoop(void)
                 dampen=60;
                 continue;
               }
-              else if ((iTx>79) && (iTx<180) && (iTy>31) && (iTy<62)) {     // 80,32 -> 179,61 cartridge slot
+              else if ((iTx>69) && (iTx<180) && (iTy>22) && (iTy<62))   // Cartridge slot
+              {     
                 irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
                 // Find files in current directory and show it 
                 proFindFiles();
                 romSel=dsWaitForRom();
                 if (romSel) { etatEmu=A7800_PLAYINIT; dsLoadGame(proromlist[ucFicAct].filename); if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}
-                else { 
+                else 
+                { 
                     irqEnable(IRQ_TIMER2); 
                 }
                 fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
@@ -1138,6 +1150,7 @@ void proFindFiles(void) {
     proromlist[countpro].directory = true;
     strcpy(proromlist[countpro].filename,"..");
     countpro = 1;
-  }
-    
+  }    
 }
+
+// End of file
