@@ -33,13 +33,14 @@ Alekmaul (original port) and Greg Stanton (ProSystem Emulator) are thanked profu
 
 Philosophy :
 ----------
- For this particular emulator, I'm not striving for perfect emulation accuracy - the goal 
- is to get as many games as close to perfectly playable as possible. Nothing else matters 
- if the game won't run at near full speed with all the gameplay in-tact. Minor screen 
- glitches or minor sound issues are secondary to making sure the game will actually run. 
- If you're looking for a highly accurate emulator for the 7800 ProSystem, this isn't 
- it - try MAME/MESS. But if you're looking to enjoy some classic 7800 console goodness 
- on your DS/DSi then you've come to the right place!
+For this particular emulator, I'm not striving for perfect emulation accuracy - the goal 
+is to get as many games as close to perfectly playable as possible. Nothing else matters 
+if the game won't run at near full speed with all the gameplay in-tact. The original
+baseline emulator (ProSystem) had some issues that were made more exaggerated with the
+port to the DS/DSi. Minor screen glitches or minor sound issues are secondary to making
+sure the game will actually run.  If you're looking for a highly accurate emulator for 
+the 7800 ProSystem, this isn't it - try MAME/MESS. But if you're looking to enjoy some 
+classic 7800 console goodness on your DS/DSi then you've come to the right place!
  
 --------------------------------------------------------------------------------
 History :
