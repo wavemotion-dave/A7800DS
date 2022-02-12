@@ -218,7 +218,7 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 
 Compatibility Table (on the faster DSi)
-
+```
 GAME                    MD5SUM                              HSC   FPS NOTES
 ========================================================================================================================
 Ace Of Aces             0be996d25144966d5541c9eb4919b289    NO    60  Minor graphical glitches. Very playable.
@@ -297,5 +297,5 @@ UniWarS                 79df20ee86a989e669158bcb9d113e8a    YES   60  Near perfe
 Winter Games            3799d72f78dda2ee87b0ef8bf7b91186    NO    60  Plays fine - font hard to read on small screen.
 Xenophobe               05fb699db9eef564e2fe45c568746dbc    NO    60  Near perfect
 Xevious                 d7dc17379aa25e5ae3c14b9e780c6f6d    YES   60  Near perfect
-  
+```
  
