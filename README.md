@@ -14,16 +14,16 @@ Features :
  Most things you should expect from an emulator. Speed is excellent on the DSi and 
  less great on the older DS-LITE. For the DS-LITE you can expect full speed only on
  about half of the 7800 library. The more traditional games (think: Asteroids,
- Astro Blaster, Robotron, Food Fight, Centipede, Pac-Man Collection, etc) will
+ Astro Blaster, Robotron, Food Fight, Centipede, Pac-Man Collection, etc) should
  all run great. The really big bankswitched games will struggle on the older 
  DS-LITE/PHAT hardware.
   
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
- or in the same directory as the emulator.
+ or in the same directory as the emulator.  It's worth the effort!
  
 Copyright :
 ----------
-A7800DS is Copyright 2022 by Dave Bernazzani (wavemotion-dave).
+A7800DS is Copyright 2021-2022 by Dave Bernazzani (wavemotion-dave).
 
 Copying and distribution of this emulator, it's source code and associated 
 readme files, with or without modification, are permitted in any medium without 
@@ -34,17 +34,21 @@ Alekmaul (original port) and Greg Stanton (ProSystem Emulator) are thanked profu
 Philosophy :
 ----------
 For this particular emulator, I'm not striving for perfect emulation accuracy - the goal 
-is to get as many games as close to perfectly playable as possible. Nothing else matters 
-if the game won't run at near full speed with all the gameplay in-tact. The original
+is to get as many games as close to playable as possible. Nothing else matters if
+the game won't run at near full speed with all the gameplay in-tact. The original
 baseline emulator (ProSystem) had some issues that were made more exaggerated with the
 port to the DS/DSi. Minor screen glitches or minor sound issues are secondary to making
 sure the game will actually run.  If you're looking for a highly accurate emulator for 
-the 7800 ProSystem, this isn't it - try MAME/MESS. But if you're looking to enjoy some 
-classic 7800 console goodness on your DS/DSi then you've come to the right place!
+the 7800 ProSystem, this isn't it - try MAME/MESS or A7800. But if you're looking to enjoy 
+some classic 7800 console goodness on your DS/DSi then you've come to the right place!
  
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.6 : 04-Jun-2022 by wavemotion-dave
+  * Fix for XM detection so the newest Pac-Man Collecion (PMC-XM) works!
+  * Minor database cleanups so all the more recent games run.
+  
 V3.5 : 12-Feb-2022 by wavemotion-dave
   * Across the board cleanup of code. Copyright notice added.
   * Fixed High-Score save on Time Salvo
@@ -278,7 +282,7 @@ Ms. Pac-Man             fc0ea52a9fac557251b65ee680d951e5    YES   60  Near perfe
 Ninja Golf              220121f771fc4b98cef97dc040e8d378    NO    60  Near perfect
 One On One              74569571a208f8b0b1ccfb22d7c914e1    NO    60  Near perfect
 Pac-Man Collection      5013b69cb05b21a1194ce48517df7bfc    YES   60  Near perfect
-Pac-Man Collection 40th 044657294450c869c45e7ef61f4870de    YES   60  Near perfect - use the "Forced TIA" version only (not XM/YM)
+Pac-Man Collection 40th 1330d23ebad9b5ded92ebeacdf305abd    YES   60  Near perfect - Damn this is one fine collection!
 Planet Smashers         33aea1e2b6634a1dec8c7006d9afda22    NO    60  Near perfect
 Plutos                  86546808dc60961cdb1b20e761c50ab1    NO    60  Near perfect
 Pole Position II        584582bb09ee8122e7fc09dc7d1ed813    NO    60  Near perfect

@@ -110,11 +110,14 @@ ITCM_CODE void memory_Write(word address, byte data)
     
   if(!memory_rom[address]) 
   {
-    if (address & 0xF800)     // Base RAM is at 0x1800 so this will find anything that is normal memory... 
+    if ((address & 0xF800))     // Base RAM is at 0x1800 so this will find anything that is RAM... 
     {
         memory_ram[address] = data;
         return;
     }
+    
+    if (address >= 0x460 && address < 0x480) return;    // XM/Yamaha is mapped into this area... do not respond to it as we are not XM capable (yet)
+      
     switch(address) {
       case INPTCTRL:
         if(data == 22 && cartridge_IsLoaded( )) { 
