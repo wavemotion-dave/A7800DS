@@ -46,7 +46,7 @@ some classic 7800 console goodness on your DS/DSi then you've come to the right 
 History :
 --------------------------------------------------------------------------------
 V3.6 : 04-Jun-2022 by wavemotion-dave
-  * Fix for XM detection so the newest Pac-Man Collecion (PMC-XM) works!
+  * Fix for XM detection so the newest Pac-Man Collection (PMC-XM) works!
   * Minor database cleanups so all the more recent games run.
   
 V3.5 : 12-Feb-2022 by wavemotion-dave
