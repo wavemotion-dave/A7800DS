@@ -24,8 +24,8 @@
 // ----------------------------------------------------------------------------
 #include "Riot.h"
 
-u8 riot_timing __attribute__((section(".dtcm"))) = false;
-word riot_timer __attribute__((section(".dtcm"))) = TIM64T;
+uint riot_timing __attribute__((section(".dtcm"))) = false;
+int  riot_timer __attribute__((section(".dtcm"))) = TIM64T;
 byte riot_intervals __attribute__((section(".dtcm")));
 
 byte riot_dra __attribute__((section(".dtcm"))) = 0;

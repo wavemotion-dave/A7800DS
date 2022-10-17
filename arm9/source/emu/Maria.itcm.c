@@ -48,7 +48,7 @@ union ColorUnion colors __attribute__((section(".dtcm")));
 #define MARIA_LINERAM_SIZE 160
 
 word* maria_surface __attribute__((section(".dtcm"))) = 0;
-word  maria_scanline __attribute__((section(".dtcm"))) = 1;
+uint  maria_scanline __attribute__((section(".dtcm"))) = 1;
 
 static byte maria_lineRAM[MARIA_LINERAM_SIZE+4] __attribute__((section(".dtcm")));
 uint maria_cycles __attribute__((section(".dtcm")));
@@ -57,12 +57,14 @@ static pair maria_dp __attribute__((section(".dtcm")));
 static pair maria_pp __attribute__((section(".dtcm")));
 static byte maria_horizontal __attribute__((section(".dtcm")));
 static byte maria_palette __attribute__((section(".dtcm")));
-static char maria_offset __attribute__((section(".dtcm"))); 
+static int maria_offset __attribute__((section(".dtcm"))); 
 static byte maria_h08 __attribute__((section(".dtcm")));
 static byte maria_h16 __attribute__((section(".dtcm")));
 static byte maria_wmode __attribute__((section(".dtcm")));
 
 word *framePtr __attribute__((section(".dtcm"))) = (word *)0;
+
+extern u32 bg32;
 
 // ----------------------------------------------------------------------------
 //ClearCells - 4 bytes at a time
@@ -73,9 +75,7 @@ static inline void _maria_ClearCells4(void)
   {
       if (memory_ram[CTRL] & 4) 
       {
-          {
-             *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
-          }
+          *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
       }
   }
   maria_horizontal += 4;
@@ -140,7 +140,7 @@ static inline void maria_StoreCellWide(byte data)
               *ptr++ = 0x0000;
           }  
       }
-  } 
+  }
   maria_horizontal += 2;
 }
 
@@ -209,7 +209,7 @@ static inline void maria_StoreGraphic( )
   }
   else 
   {
-#if KANGAROO_MODE_SUPPORTED      
+#ifdef KANGAROO_MODE_SUPPORTED      
     if(maria_IsHolyDMA()) 
     {
         maria_horizontal += 4;
@@ -279,12 +279,12 @@ static u8 wide_lookup_mode2B[] __attribute__((section(".dtcm"))) =
 static inline void maria_WriteLineRAM(word* buffer) 
 {
   extern uint32 bg32;
-  u8 index;
+  uint index;
   register unsigned int *pix=(unsigned int *) buffer;
   register uint32 *ptr = (uint32 *)&maria_lineRAM[0];
   byte rmode = memory_ram[CTRL] & 3;
     
-  if(rmode == 0) 
+  if(rmode == 0) // 160A/B
   {
     for(index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
     {
@@ -306,7 +306,7 @@ static inline void maria_WriteLineRAM(word* buffer)
       }
     }
   }
-  else if(rmode == 2) 
+  else if(rmode == 2)  // 320B/D
   {    
     for(index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
     {
@@ -330,7 +330,7 @@ static inline void maria_WriteLineRAM(word* buffer)
       }
     }
   }
-  else if(rmode == 3) 
+  else if(rmode == 3) // 320A/C
   {
     for(index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
     {
@@ -465,7 +465,6 @@ void maria_Reset( ) {
 // ----------------------------------------------------------------------------
 ITCM_CODE void maria_RenderScanlineTOP(void) 
 {
-  extern u32 bg32;
   maria_cycles = 0;
     
   //
@@ -510,7 +509,6 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
         if(memory_ram[maria_dpp.w] & 128) 
         {
           maria_cycles += 20; // Maria cycles (NMI) /*29, 16, 20*/
-          //ALEK Fst6502_Cause_Interrupt(IRQ_NMI);
           sally_ExecuteNMI( );
         }
       }
@@ -524,8 +522,6 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
 
 ITCM_CODE void maria_RenderScanline(void) 
 {
-  extern u32 bg32;
-    
   //
   // Displays the background color when Maria is disabled (if applicable)
   //

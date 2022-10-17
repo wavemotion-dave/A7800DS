@@ -38,10 +38,9 @@ extern void memory_Reset( );
 extern ITCM_CODE byte memory_Read(word address);
 extern ITCM_CODE void memory_Write(word address, byte data);
 
-extern void memory_WriteROM(word address, word size, const byte* data);
-extern void memory_WriteROMFast(word address, word size, const byte* data);
+extern void memory_WriteROM(word address, u32 size, const byte* data);
+extern void memory_WriteROMFast(word address, u32 size, const byte* data);
 extern void memory_WriteROM_DMA(u32 *dest, u32 *src, u32 size);
-extern void memory_WriteROM32(word address, word size, const byte* data);
 extern void memory_ClearROM(word address, word size);
 extern byte memory_ram[MEMORY_SIZE];
 extern byte memory_rom[MEMORY_SIZE];

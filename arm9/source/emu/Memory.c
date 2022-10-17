@@ -240,12 +240,12 @@ ITCM_CODE void memory_Write(word address, byte data)
 // ----------------------------------------------------------------------------
 // WriteROM
 // ----------------------------------------------------------------------------
-ITCM_CODE void memory_WriteROM(word address, word size, const byte* data) 
+ITCM_CODE void memory_WriteROM(word address, u32 size, const byte* data) 
 {
   u32* ramPtr = (u32*)&memory_ram[address];
   u32* romPtr = (u32*)&memory_rom[address];
   u32* dataPtr = (u32*)data;
-  for (word i=0; i<(size>>2); i++)
+  for (u32 i=0; i<(size>>2); i++)
   {
       *ramPtr++ = *dataPtr++;
       *romPtr++ = 0x01010101;
@@ -256,11 +256,11 @@ ITCM_CODE void memory_WriteROM(word address, word size, const byte* data)
 // WriteROMFast (assumes memory_rom[] already set properly)
 // size is already in multiples of u32 dwords
 // ----------------------------------------------------------------------------
-ITCM_CODE void memory_WriteROMFast(word address, word size, const byte* data) 
+ITCM_CODE void memory_WriteROMFast(word address, u32 size, const byte* data) 
 {
   u32* ramPtr = (u32*)&memory_ram[address];
   u32* dataPtr = (u32*)data;
-  for (word i=0; i<size; i++)
+  for (u32 i=0; i<size; i++)
   {
       *ramPtr++ = *dataPtr++;
   }

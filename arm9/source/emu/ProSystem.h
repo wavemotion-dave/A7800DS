@@ -42,7 +42,7 @@
 
 #include "shared.h"
 
-//#define KANGAROO_MODE_SUPPORTED YES   // Uncomment this for KANGAROO support. Slightly slower and virtually no game uses it... but more accurate
+//#define KANGAROO_MODE_SUPPORTED 1   // Uncomment this for KANGAROO support. Slightly slower and virtually no game uses it... but more accurate
 
 extern int debug[];
 
