@@ -20,8 +20,6 @@
 
 unsigned char sound_buffer[SNDLENGTH];    // Sound buffer
 
-u8 is_mute __attribute__((section(".dtcm"))) = false;
-
 void processSound(register unsigned char *buffer) 
 {
     // Handled directly in sound interrupt routine in a7800utils.c

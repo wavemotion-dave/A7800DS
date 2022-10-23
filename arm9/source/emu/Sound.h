@@ -30,7 +30,6 @@
 #define SNDLENGTH (4096)
 
 extern unsigned char sound_buffer[SNDLENGTH];    // Sound buffer
-extern u8 is_mute;
 extern bool sound_Store();
 extern void processSound(register unsigned char *buffer);
 

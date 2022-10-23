@@ -60,9 +60,12 @@ static byte maria_palette __attribute__((section(".dtcm")));
 static int maria_offset __attribute__((section(".dtcm"))); 
 static byte maria_h08 __attribute__((section(".dtcm")));
 static byte maria_h16 __attribute__((section(".dtcm")));
+static uint16 maria_h8_h16 __attribute__((section(".dtcm")));
 static byte maria_wmode __attribute__((section(".dtcm")));
 
 word *framePtr __attribute__((section(".dtcm"))) = (word *)0;
+
+u32 color_lookup_160AB[256][256];
 
 extern u32 bg32;
 
@@ -113,25 +116,26 @@ static inline void _maria_StoreCells4(byte data)
 }
 
 // ----------------------------------------------------------------------------
-// StoreCell - wide mode
+// StoreCell - write mode
 // ----------------------------------------------------------------------------
 static inline void maria_StoreCellWide(byte data) 
 {
-  if((maria_horizontal) < MARIA_LINERAM_SIZE) 
+  if(maria_horizontal < MARIA_LINERAM_SIZE) 
   {
       if (data)
       {
           byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
           if (data & 0xF0)  // high
           {
-              *ptr = (maria_palette & 16) | (data >> 4);
+              *ptr = (maria_palette & 0x10) | (data >> 4);
           }
           if (data & 0x0F)  // low
           {
             ptr++;
-            *ptr = (maria_palette & 16) | (data & 0x0F);
+            *ptr = (maria_palette & 0x10) | (data & 0x0F);
           }
       }
+#ifdef KANGAROO_MODE_SUPPORTED
       else
       {
           if ((memory_ram[CTRL] & 4))
@@ -140,6 +144,7 @@ static inline void maria_StoreCellWide(byte data)
               *ptr++ = 0x0000;
           }  
       }
+#endif      
   }
   maria_horizontal += 2;
 }
@@ -150,16 +155,11 @@ static inline void maria_StoreCellWide(byte data)
 // ----------------------------------------------------------------------------
 static inline bool maria_IsHolyDMA( ) 
 {
-  if(maria_pp.w & 0x8000) 
-  {
-    if(maria_h16 && (maria_pp.w & 4096)) {
-      return true;
+    if(maria_pp.w & 0x8000)
+    {
+        if (maria_pp.w & maria_h8_h16) return true;
     }
-    if(maria_h08 && (maria_pp.w & 2048)) {
-      return true;
-    }
-  }
-  return false;
+    return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -167,7 +167,7 @@ static inline bool maria_IsHolyDMA( )
 // ----------------------------------------------------------------------------
 static inline byte maria_GetColor(byte data) 
 {
-  return (data & 3) ? memory_ram[BACKGRND + data] : memory_ram[BACKGRND];
+  return (data & 3) ? memory_ram[BACKGRND | data] : memory_ram[BACKGRND];
 }
 
 static u8 wide_lookup[256] __attribute__((section(".dtcm"))) =
@@ -297,12 +297,28 @@ static inline void maria_WriteLineRAM(word* buffer)
       else
       {
           register word color, color1;
-          color = maria_GetColor(colors.by.color0);
-          color1 = maria_GetColor(colors.by.color1);
-          *pix++ = color | (color<<8) | (color1<<16) | (color1<<24);
-          color = maria_GetColor(colors.by.color2);
-          color1 = maria_GetColor(colors.by.color3);
-          *pix++ = color | (color<<8) | (color1<<16) | (color1<<24);      
+          
+          if ((colors.wo.color0 == 0))
+          {
+              *pix++ = bg32;
+          }
+          else
+          {
+              color = maria_GetColor(colors.by.color0);
+              color1 = maria_GetColor(colors.by.color1);
+              *pix++ = color_lookup_160AB[color][color1];
+          }
+          
+          if ((colors.wo.color1 == 0))
+          {
+              *pix++ = bg32;
+          }
+          else
+          {
+              color = maria_GetColor(colors.by.color2);
+              color1 = maria_GetColor(colors.by.color3);
+              *pix++ = color_lookup_160AB[color][color1];
+          }
       }
     }
   }
@@ -390,7 +406,7 @@ static inline void maria_StoreLineRAM( )
     if(mode & 31) 
     { 
       maria_cycles += 8; // Maria cycles (Header 4 byte)
-      maria_palette = (memory_ram[maria_dp.w + 1] & 224) >> 3;
+      maria_palette = (memory_ram[maria_dp.w + 1] & 0xE0) >> 3;
       maria_horizontal = memory_ram[maria_dp.w + 3];
       width = memory_ram[maria_dp.w + 1] & 31;
       width = ((~width) & 31) + 1;
@@ -399,7 +415,7 @@ static inline void maria_StoreLineRAM( )
     else 
     {
       maria_cycles += 12; // Maria cycles (Header 5 byte)
-      maria_palette = (memory_ram[maria_dp.w + 3] & 224) >> 3;
+      maria_palette = (memory_ram[maria_dp.w + 3] & 0xE0) >> 3;
       maria_horizontal = memory_ram[maria_dp.w + 4];
       indirect = memory_ram[maria_dp.w + 1] & 32;
       maria_wmode = memory_ram[maria_dp.w + 1] & 128;
@@ -458,6 +474,14 @@ void maria_Reset( ) {
    maria_h08 = 0;
    maria_h16 = 0;
    maria_wmode = 0;
+    
+   for (uint color=0; color<256; color++)
+   {
+       for (uint color1=0; color1<256; color1++)
+       {
+          color_lookup_160AB[color][color1] = color | (color<<8) | (color1<<16) | (color1<<24);
+       }
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -486,6 +510,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       maria_dpp.b.h = memory_ram[DPPH];
       maria_h08 = memory_ram[maria_dpp.w] & 32;
       maria_h16 = memory_ram[maria_dpp.w] & 64;
+      maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
       maria_offset = memory_ram[maria_dpp.w] & 15;
       maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       maria_dp.b.h = memory_ram[maria_dpp.w + 1];
@@ -505,6 +530,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
         maria_dpp.w += 3;
         maria_h08 = memory_ram[maria_dpp.w] & 32;
         maria_h16 = memory_ram[maria_dpp.w] & 64;
+        maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
         maria_offset = memory_ram[maria_dpp.w] & 15;
         if(memory_ram[maria_dpp.w] & 128) 
         {
@@ -552,6 +578,7 @@ ITCM_CODE void maria_RenderScanline(void)
       maria_dpp.w += 3;
       maria_h08 = memory_ram[maria_dpp.w] & 32;
       maria_h16 = memory_ram[maria_dpp.w] & 64;
+      maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
       maria_offset = memory_ram[maria_dpp.w] & 15;
       if(memory_ram[maria_dpp.w] & 128) 
       {

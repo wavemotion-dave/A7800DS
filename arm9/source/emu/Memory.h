@@ -34,9 +34,17 @@
 
 #include "shared.h"
 
+extern byte memory_ram[];
 extern void memory_Reset( );
-extern ITCM_CODE byte memory_Read(word address);
+
+extern ITCM_CODE byte memory_Read_Slower(word address);
 extern ITCM_CODE void memory_Write(word address, byte data);
+
+inline byte memory_Read(word address)
+{
+    if (address < 0x284) return memory_ram[address];    // This happens a lot... so it speeds up emulation
+    return memory_Read_Slower(address);
+}
 
 extern void memory_WriteROM(word address, u32 size, const byte* data);
 extern void memory_WriteROMFast(word address, u32 size, const byte* data);

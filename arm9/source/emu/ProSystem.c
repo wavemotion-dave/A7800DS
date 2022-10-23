@@ -26,6 +26,7 @@
 #include <malloc.h>
 #include "ProSystem.h"
 #include "Sound.h"
+#include "Database.h"
 
 #define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system
 
@@ -100,7 +101,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       framePtr = (word*)(maria_surface);
       sally_Execute(34);
       maria_RenderScanlineTOP( );
-      if(cartridge_steals_cycles) 
+      if(myCartInfo.steals_cycles) 
       {
         prosystem_cycles += maria_cycles;
         if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
@@ -113,7 +114,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     
     sally_Execute(CYCLES_PER_SCANLINE);
       
-    if(cartridge_pokey) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
+    if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
         pokey_Process(1);
         pokey_Scanline();
@@ -131,7 +132,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 
     maria_RenderScanline( );
     
-    if(cartridge_steals_cycles) 
+    if(myCartInfo.steals_cycles) 
     {
       prosystem_cycles += maria_cycles;
       if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
@@ -139,7 +140,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
  
     sally_Execute(CYCLES_PER_SCANLINE);
       
-    if(cartridge_pokey) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
+    if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
         pokey_Process(1);
         pokey_Scanline();
@@ -167,7 +168,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 
     maria_RenderScanline( );
     
-    if(cartridge_steals_cycles) 
+    if(myCartInfo.steals_cycles) 
     {
       prosystem_cycles += maria_cycles;
       if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
@@ -175,7 +176,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
  
     sally_Execute(CYCLES_PER_SCANLINE);
       
-    if(cartridge_pokey) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
+    if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
         pokey_Process(1);
         pokey_Scanline();
@@ -191,7 +192,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     sally_Execute(34);
 
     sally_Execute(CYCLES_PER_SCANLINE);
-    if(cartridge_pokey) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
+    if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
         pokey_Process(1);
         pokey_Scanline();

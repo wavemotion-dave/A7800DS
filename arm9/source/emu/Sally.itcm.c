@@ -86,7 +86,7 @@ static inline byte memory_Read_Fast(word addr)
 static inline void sally_Push(byte data) 
 {
   //memory_Write(sally_s + 256, data);
-  memory_ram[sally_s + 256] = data;
+  memory_ram[sally_s | 256] = data;
   sally_s--;
 }
 
@@ -96,7 +96,7 @@ static inline void sally_Push(byte data)
 static inline byte sally_Pop( ) 
 {
   sally_s++;
-  return memory_ram[sally_s + 256];
+  return memory_ram[sally_s | 256];
 }
 
 // ----------------------------------------------------------------------------

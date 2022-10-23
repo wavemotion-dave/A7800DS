@@ -25,6 +25,7 @@
 #include "ProSystem.h"
 #include "Memory.h"
 #include "Maria.h"
+#include "Database.h"
 
 byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
 byte memory_rom[MEMORY_SIZE] ALIGN(32) = {0};
@@ -48,7 +49,7 @@ void memory_Reset( )
 // ----------------------------------------------------------------------------
 // Read
 // ----------------------------------------------------------------------------
-ITCM_CODE byte memory_Read(word address) 
+ITCM_CODE byte memory_Read_Slower(word address) 
 { 
   if ((address & 0xFFFC) == 0x284)
   {
@@ -64,9 +65,9 @@ ITCM_CODE byte memory_Read(word address)
         return memory_ram[INTIM];
       }
   }
-  else if (cartridge_pokey)
+  else if (myCartInfo.pokeyType)
   {
-      if (cartridge_pokey == POKEY_AT_4000)
+      if (myCartInfo.pokeyType == POKEY_AT_4000)
       {
         if ((address & 0xFFF0) == 0x4000) return pokey_GetRegister(address);            
       }
@@ -86,9 +87,9 @@ ITCM_CODE byte memory_Read(word address)
 ITCM_CODE void memory_Write(word address, byte data) 
 {
   extern u32 bg32;
-  if (cartridge_pokey)
+  if (myCartInfo.pokeyType)
   {
-      if (cartridge_pokey == POKEY_AT_4000)
+      if (myCartInfo.pokeyType == POKEY_AT_4000)
       {
         if ((address & 0xFFF0) == 0x4000)
         {
@@ -168,7 +169,7 @@ ITCM_CODE void memory_Write(word address, byte data)
         tia_MemoryChannel(1);
         break;
       case WSYNC:
-        if (cartridge_uses_wsync)
+        if (myCartInfo.uses_wsync)
         {
           memory_ram[WSYNC] = true;
           riot_timing |= 0x01;
@@ -267,7 +268,7 @@ ITCM_CODE void memory_WriteROMFast(word address, u32 size, const byte* data)
 }
 
 // ----------------------------------------------------------------------------
-// WriteROMFast (assumes memory_rom[] already set properly)
+// WriteROMFast using DMA (assumes memory_rom[] already set properly)
 // size is already in multiples of u32 dwords
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_WriteROM_DMA(u32 *dest, u32 *src, u32 size)

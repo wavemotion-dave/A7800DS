@@ -43,6 +43,12 @@
 #define CARTRIDGE_CONTROLLER_TWIN_STICKS 4
 #define CARTRIDGE_CONTROLLER_SOTA       5
 
+#define JOY             CARTRIDGE_CONTROLLER_JOYSTICK
+#define LGN             CARTRIDGE_CONTROLLER_LIGHTGUN
+#define PAD             CARTRIDGE_CONTROLLER_PADDLES
+#define TWIN            CARTRIDGE_CONTROLLER_TWIN_STICKS
+#define SOTA            CARTRIDGE_CONTROLLER_SOTA
+
 #define CARTRIDGE_CYCLE_STEALING_MASK   0x01
 #define CARTRIDGE_WSYNC_MASK            0x02
 
@@ -55,13 +61,6 @@
 
 #define NTSC            0  
 #define PAL             1
-
-#define JOY             CARTRIDGE_CONTROLLER_JOYSTICK
-#define LGN             CARTRIDGE_CONTROLLER_LIGHTGUN
-#define PAD             CARTRIDGE_CONTROLLER_PADDLES
-#define TWIN            CARTRIDGE_CONTROLLER_TWIN_STICKS
-#define SOTA            CARTRIDGE_CONTROLLER_SOTA
-
 
 #define CARTRIDGE_TYPE_NORMAL           0
 #define CARTRIDGE_TYPE_SUPERCART        1
@@ -99,19 +98,5 @@ extern char cartridge_year[128];
 extern char cartridge_maker[128];
 extern byte cartridge_digest[128];
 extern char cartridge_filename[128];
-extern byte cartridge_type;
-extern byte cartridge_region;
-extern byte cartridge_pokey;
-extern bool cartridge_hsc_enabled;
-extern byte cartridge_controller[2];
-extern byte cartridge_bank;
-extern short cartridge_xOffset;
-extern short cartridge_yOffset;
-extern short cartridge_xScale;
-extern short cartridge_yScale;
-extern u8 cartridge_steals_cycles;
-extern u8 cartridge_uses_wsync;
-extern u8 cartridge_diff1;
-extern u8 cartridge_diff2;
 
 #endif

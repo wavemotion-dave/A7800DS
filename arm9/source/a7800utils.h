@@ -45,7 +45,7 @@ extern void vblankIntr();
 extern void dsInitScreenMain(void);
 extern void dsInitTimer(void);
 extern void dsShowScreenEmu(void);
-extern void dsShowScreenMain(void);
+extern void dsShowScreenMain(bool);
 extern void dsFreeEmu(void);
 extern void VsoundHandler(void);
 extern void dsLoadGame(char *filename);

@@ -25,6 +25,7 @@
 #include "Cartridge.h"
 #include "HighScore.h"
 #include "ProSystem.h"
+#include "Database.h"
 
 char cartridge_title[128];
 char cartridge_description[128];
@@ -32,21 +33,7 @@ char cartridge_year[128];
 char cartridge_maker[128];
 byte cartridge_digest[128];
 char cartridge_filename[128];
-byte cartridge_type         __attribute__((section(".dtcm")));
-byte cartridge_region       __attribute__((section(".dtcm")));
-byte cartridge_pokey        __attribute__((section(".dtcm")));
-byte cartridge_bank         __attribute__((section(".dtcm")));
-u8 cartridge_steals_cycles  __attribute__((section(".dtcm")));
-u8 cartridge_uses_wsync     __attribute__((section(".dtcm")));
-bool cartridge_hsc_enabled  __attribute__((section(".dtcm")));
-byte cartridge_controller[2] __attribute__((section(".dtcm")));
 
-short cartridge_xOffset = 0;
-short cartridge_yOffset = 22;
-short cartridge_xScale  = 256;
-short cartridge_yScale  = 220;
-u8 cartridge_diff1 = DIFF_A;
-u8 cartridge_diff2 = DIFF_A;
 
 // -------------------------------------------------------------------------------------------------
 // We allow cart sizes up to 512K which is pretty huge - I've not seen any ROMs bigger than this.
@@ -71,7 +58,7 @@ static bool cartridge_HasHeader(const byte* header) {
 }
 
 inline static uint cartridge_GetBank(byte bank) {
-  if ((cartridge_type == CARTRIDGE_TYPE_SUPERCART || cartridge_type == CARTRIDGE_TYPE_SUPERCART_ROM || cartridge_type == CARTRIDGE_TYPE_SUPERCART_RAM) && cartridge_size <= 65536) {
+  if ((myCartInfo.cardtype == CARTRIDGE_TYPE_SUPERCART || myCartInfo.cardtype == CARTRIDGE_TYPE_SUPERCART_ROM || myCartInfo.cardtype == CARTRIDGE_TYPE_SUPERCART_RAM) && cartridge_size <= 65536) {
     // for some of these carts, there are only 4 banks. in this case we ignore bit 3
     // previously, games of this type had to be doubled. The first 4 banks needed to be duplicated at the end of the ROM
       return (bank & 3);
@@ -102,7 +89,6 @@ inline static void cartridge_WriteBank(word address, byte bank)
             memory_WriteROM_DMA((u32*)&memory_ram[address], (u32*)(0x06860000 + offset), 16384);
         else    // Normal memory
             memory_WriteROMFast(address, (16384/4), cartridge_buffer + offset);
-        cartridge_bank = bank;
     }
   }
 }
@@ -136,54 +122,54 @@ static void cartridge_ReadHeader(const byte* header) {
   {
     if (header[54] & 0x04)
     {
-      cartridge_type = CARTRIDGE_TYPE_SUPERCART_RAM;
+      myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART_RAM;
     }
     else if(header[54] & 0x08) 
     {
       if (cartridge_size > 131072)
-        cartridge_type = CARTRIDGE_TYPE_SUPERCART_LARGE;
+        myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART_LARGE;
       else
-        cartridge_type = CARTRIDGE_TYPE_SUPERCART_ROM;
+        myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART_ROM;
     }
     else if(header[54] & 0x02) 
     {
-      cartridge_type = CARTRIDGE_TYPE_SUPERCART;
+      myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART;
     }
     else if (cartridge_size > 131072)
     {
-      cartridge_type = CARTRIDGE_TYPE_SUPERCART_LARGE;
+      myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART_LARGE;
     }
     else 
     {
-      cartridge_type = CARTRIDGE_TYPE_NORMAL;
+      myCartInfo.cardtype = CARTRIDGE_TYPE_NORMAL;
     }
   }
   else 
   {
     if(header[53] == 2) 
     {
-      cartridge_type = CARTRIDGE_TYPE_ABSOLUTE;
+      myCartInfo.cardtype = CARTRIDGE_TYPE_ABSOLUTE;
     }
     else if(header[53] == 1) 
     {
-      cartridge_type = CARTRIDGE_TYPE_ACTIVISION;
+      myCartInfo.cardtype = CARTRIDGE_TYPE_ACTIVISION;
     }
     else 
     {
-      cartridge_type = CARTRIDGE_TYPE_NORMAL;
+      myCartInfo.cardtype = CARTRIDGE_TYPE_NORMAL;
     }
   }
   
   
-  if (header[54] & 0x01) cartridge_pokey = POKEY_AT_4000;
-  if (header[54] & 0x40) cartridge_pokey = POKEY_AT_450;
+  if (header[54] & 0x01) myCartInfo.pokeyType = POKEY_AT_4000;
+  if (header[54] & 0x40) myCartInfo.pokeyType = POKEY_AT_450;
   
-  cartridge_controller[0] = header[55];
-  cartridge_controller[1] = header[56];
-  cartridge_region = header[57];
-  cartridge_hsc_enabled = (header[0x3A]&1 ? HSC_YES:HSC_NO);
-  cartridge_steals_cycles = true;       // By default, assume the cart steals cycles
-  cartridge_uses_wsync = true;          // By default, assume the cart uses wsync
+  myCartInfo.cardctrl1 = header[55];
+  myCartInfo.cardctrl2 = header[56];
+  myCartInfo.region = header[57];
+  myCartInfo.hsc = (header[0x3A]&1 ? HSC_YES:HSC_NO);
+  myCartInfo.steals_cycles = true;       // By default, assume the cart steals cycles
+  myCartInfo.uses_wsync = true;          // By default, assume the cart uses wsync
   last_bank = 255;
 }
 
@@ -304,7 +290,7 @@ bool cartridge_Load_buffer(char* rom_buffer, int rom_size) {
 // Store
 // ----------------------------------------------------------------------------
 void cartridge_Store( ) {
-  switch(cartridge_type) {
+  switch(myCartInfo.cardtype) {
     case CARTRIDGE_TYPE_NORMAL:
       memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
       break;
@@ -356,7 +342,7 @@ void cartridge_Store( ) {
 // Write
 // ----------------------------------------------------------------------------
 void cartridge_Write(word address, byte data) {
-  switch(cartridge_type) 
+  switch(myCartInfo.cardtype) 
   {
     case CARTRIDGE_TYPE_SUPERCART:
     case CARTRIDGE_TYPE_SUPERCART_RAM:
@@ -389,7 +375,7 @@ void cartridge_Write(word address, byte data) {
 // StoreBank
 // ----------------------------------------------------------------------------
 void cartridge_StoreBank(byte bank) {
-  switch(cartridge_type) {
+  switch(myCartInfo.cardtype) {
     case CARTRIDGE_TYPE_SUPERCART:
     case CARTRIDGE_TYPE_SUPERCART_RAM:
     case CARTRIDGE_TYPE_SUPERCART_ROM:
@@ -427,14 +413,13 @@ void cartridge_Release( )
     // These values need to be reset so that moving between carts works
     // consistently. This seems to be a ProSystem emulator bug.
     //
-    cartridge_type = 0;
-    cartridge_region = 0;
-    cartridge_pokey = POKEY_NONE;
-    cartridge_hsc_enabled = false;
-   
-    memset( cartridge_controller, 0, sizeof( cartridge_controller ) );
-    cartridge_bank = 0;
-    cartridge_steals_cycles = false;
-    cartridge_uses_wsync = false;
+    myCartInfo.cardtype = CT_NORMAL;
+    myCartInfo.region = NTSC;
+    myCartInfo.pokeyType = POKEY_NONE;
+    myCartInfo.hsc = false;
+    myCartInfo.cardctrl1 = 0;
+    myCartInfo.cardctrl2 = 0;
+    myCartInfo.steals_cycles = false;
+    myCartInfo.uses_wsync = false;
   }
 }

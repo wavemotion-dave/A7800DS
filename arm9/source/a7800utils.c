@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include "main.h"
+#include "config.h"
 #include "a7800utils.h"
 #include "emu/Bios.h"
 #include "emu/Database.h"
@@ -29,7 +30,6 @@
 
 u8 isDS_LITE                            __attribute__((section(".dtcm"))) = 0;
 u8 frameSkipMask                        __attribute__((section(".dtcm"))) = 1;
-u8 bForceFrameskip                      __attribute__((section(".dtcm"))) = 0;
 
 static unsigned char lastPokeySample    __attribute__((section(".dtcm"))) = 0;
 static unsigned char lastTiaSample      __attribute__((section(".dtcm"))) = 0;
@@ -42,6 +42,7 @@ unsigned char keyboard_data[20]         __attribute__((section(".dtcm"))) ALIGN(
 u16 full_speed                          __attribute__((section(".dtcm"))) = 0;
 short int etatEmu                       __attribute__((section(".dtcm"))) = 0;
 u16 fpsDisplay                          __attribute__((section(".dtcm"))) = 0;
+u16 bEmulatorRun                        __attribute__((section(".dtcm"))) = 1;
 
 // -----------------------------------------------------------------
 // Some vars for listing filenames of ROMs... 1K of ROMs is plenty
@@ -58,7 +59,7 @@ int bg0s, bg1s;      // sub BG pointers
 
 #define MAX_DEBUG 5
 int debug[MAX_DEBUG]={0};
-//#define DEBUG_DUMP
+u8 DEBUG_DUMP = 0;
 //#define CART_INFO
 //#define WRITE_TWEAKS
 
@@ -79,38 +80,39 @@ unsigned char *filebuffer;
 
 static void DumpDebugData(void)
 {
-#ifdef DEBUG_DUMP
-    char dbgbuf[32];
-    for (int i=0; i<MAX_DEBUG; i++)
+    if (DEBUG_DUMP)
     {
-        int idx=0;
-        int val = debug[i];
-        if (val < 0)
+        char dbgbuf[32];
+        for (int i=0; i<MAX_DEBUG; i++)
         {
-            dbgbuf[idx++] = '-';
-            val = val * -1;
+            int idx=0;
+            int val = debug[i];
+            if (val < 0)
+            {
+                dbgbuf[idx++] = '-';
+                val = val * -1;
+            }
+            else
+            {
+                dbgbuf[idx++] = '0' + (int)val/10000000;
+            }
+            val = val % 10000000;
+            dbgbuf[idx++] = '0' + (int)val/1000000;
+            val = val % 1000000;
+            dbgbuf[idx++] = '0' + (int)val/100000;
+            val = val % 100000;
+            dbgbuf[idx++] = '0' + (int)val/10000;
+            val = val % 10000;
+            dbgbuf[idx++] = '0' + (int)val/1000;
+            val= val % 1000;
+            dbgbuf[idx++] = '0' + (int)val/100;
+            val = val % 100;
+            dbgbuf[idx++] = '0' + (int)val/10;
+            dbgbuf[idx++] = '0' + (int)val%10;
+            dbgbuf[idx++] = 0;
+            dsPrintValue(0,3+i,0, dbgbuf);
         }
-        else
-        {
-            dbgbuf[idx++] = '0' + (int)val/10000000;
-        }
-        val = val % 10000000;
-        dbgbuf[idx++] = '0' + (int)val/1000000;
-        val = val % 1000000;
-        dbgbuf[idx++] = '0' + (int)val/100000;
-        val = val % 100000;
-        dbgbuf[idx++] = '0' + (int)val/10000;
-        val = val % 10000;
-        dbgbuf[idx++] = '0' + (int)val/1000;
-        val= val % 1000;
-        dbgbuf[idx++] = '0' + (int)val/100;
-        val = val % 100;
-        dbgbuf[idx++] = '0' + (int)val/10;
-        dbgbuf[idx++] = '0' + (int)val%10;
-        dbgbuf[idx++] = 0;
-        dsPrintValue(0,3+i,0, dbgbuf);
     }
-#endif
 }
 
 void dsWriteTweaks(void)
@@ -132,15 +134,15 @@ void dsWriteTweaks(void)
 }
 
 
-u16 myTiaBufIdx     __attribute__((section(".dtcm"))) = 0;
-u16 myPokeyBufIdx   __attribute__((section(".dtcm"))) = 0;
+u32 myTiaBufIdx     __attribute__((section(".dtcm"))) = 0;
+u32 myPokeyBufIdx   __attribute__((section(".dtcm"))) = 0;
 u8* snd_ptr         __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
 u8* snd_sta         __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
 u8* snd_end         __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
 ITCM_CODE void VsoundHandler(void) 
 {
   extern unsigned char tia_buffer[];
-  extern u16 tiaBufIdx;
+  extern u32 tiaBufIdx;
 
   for (u8 i=0; i<4; i++)
   {
@@ -158,32 +160,11 @@ ITCM_CODE void VsoundHandler(void)
   }
 }
 
-ITCM_CODE void VsoundHandler_Lite(void) 
-{
-  extern unsigned char tia_buffer[];
-  extern u16 tiaBufIdx;
-
-  for (u8 i=0; i<2; i++)
-  {
-      // If there is a fresh sample... 
-      if (myTiaBufIdx != tiaBufIdx)
-      {
-          lastSample = tia_buffer[myTiaBufIdx];
-          myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
-      }
-      *snd_ptr++ = lastSample;
-  }
-    
-  if (snd_ptr == snd_end)
-  {
-      snd_ptr = snd_sta;
-  }
-}
 
 ITCM_CODE void VsoundHandler_Pokey(void)
  {
   extern unsigned char pokey_buffer[];
-  extern u16 pokeyBufIdx;
+  extern u32 pokeyBufIdx;
 
   for (u8 i=0; i<2; i++)
   {
@@ -241,10 +222,10 @@ void vblankIntr()
 
   if (bRefreshXY)
   {
-    cxBG = (cartridge_xOffset << 8); 
-    cyBG = (cartridge_yOffset << 8);
-    xdxBG = ((320 / cartridge_xScale) << 8) | (320 % cartridge_xScale) ;
-    ydyBG = ((video_height / cartridge_yScale) << 8) | (video_height % cartridge_yScale);
+    cxBG = (myCartInfo.xOffset << 8); 
+    cyBG = (myCartInfo.yOffset << 8);
+    xdxBG = ((320 / myCartInfo.xScale) << 8) | (320 % myCartInfo.xScale) ;
+    ydyBG = ((video_height / myCartInfo.yScale) << 8) | (video_height % myCartInfo.yScale);
 
     REG_BG2X = cxBG; 
     REG_BG2Y = cyBG; 
@@ -257,10 +238,6 @@ void vblankIntr()
     REG_BG3PD = ydyBG; 
 
     bRefreshXY = false;
-    debug[0] = cartridge_xOffset;
-    debug[1] = cartridge_yOffset;
-    debug[2] = cartridge_xScale;
-    debug[3] = cartridge_yScale;
   }
   if (xx++ & 1)
   {
@@ -319,10 +296,10 @@ void dsShowScreenEmu(void)
 
     // Setup video scaling...
     bufVideo = BG_GFX;   
-    cxBG = (cartridge_xOffset << 8); 
-    cyBG = (cartridge_yOffset << 8);
-    xdxBG = ((320 / cartridge_xScale) << 8) | (320 % cartridge_xScale) ;
-    ydyBG = ((video_height / cartridge_yScale) << 8) | (video_height % cartridge_yScale);
+    cxBG = (myCartInfo.xOffset << 8); 
+    cyBG = (myCartInfo.yOffset << 8);
+    xdxBG = ((320 / myCartInfo.xScale) << 8) | (320 % myCartInfo.xScale) ;
+    ydyBG = ((video_height / myCartInfo.yScale) << 8) | (video_height % myCartInfo.yScale);
 
     REG_BG2PB = 0;
     REG_BG2PC = 0;
@@ -340,21 +317,24 @@ void dsShowScreenEmu(void)
     REG_BG3PD = ydyBG;  
 }
 
-void dsShowScreenMain(void) 
+void dsShowScreenMain(bool full) 
 {
-    // Init BG mode for 16 bits colors
-    videoSetMode(MODE_0_2D | DISPLAY_BG0_ACTIVE );
-    videoSetModeSub(MODE_0_2D | DISPLAY_BG0_ACTIVE | DISPLAY_BG1_ACTIVE);
-    vramSetBankA(VRAM_A_MAIN_BG); vramSetBankC(VRAM_C_SUB_BG);
-    bg0 = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
-    bg0b = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
-    bg1b = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 30,0);
-    bgSetPriority(bg0b,1);bgSetPriority(bg1b,0);
+    if (full)
+    {
+        // Init BG mode for 16 bits colors
+        videoSetMode(MODE_0_2D | DISPLAY_BG0_ACTIVE );
+        videoSetModeSub(MODE_0_2D | DISPLAY_BG0_ACTIVE | DISPLAY_BG1_ACTIVE);
+        vramSetBankA(VRAM_A_MAIN_BG); vramSetBankC(VRAM_C_SUB_BG);
+        bg0 = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
+        bg0b = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 31,0);
+        bg1b = bgInitSub(1, BgType_Text8bpp, BgSize_T_256x256, 30,0);
+        bgSetPriority(bg0b,1);bgSetPriority(bg1b,0);
 
-    decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
-    decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
-    dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
-
+        decompress(bgTopTiles, bgGetGfxPtr(bg0), LZ77Vram);
+        decompress(bgTopMap, (void*) bgGetMapPtr(bg0), LZ77Vram);
+        dmaCopy((void *) bgTopPal,(u16*) BG_PALETTE,256*2);
+    }
+    
     decompress(bgBottomTiles, bgGetGfxPtr(bg0b), LZ77Vram);
     decompress(bgBottomMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
     dmaCopy((void *) bgBottomPal,(u16*) BG_PALETTE_SUB,256*2);
@@ -374,7 +354,6 @@ void dsFreeEmu(void)
 
 void dsLoadGame(char *filename) 
 {
-  extern uint cartridge_size;
   unsigned int index;
   
   // Free buffer if needed
@@ -398,13 +377,9 @@ void dsLoadGame(char *filename)
     {
       bios_enabled = true;
     }
-      
-    frameSkipMask = 1;  // Default to skip every other frame
-    if (isDSiMode())    // DSi can handle many games in full framerate
-    {
-        if (cartridge_size < 135000)  frameSkipMask=0xFF;    // For smaller cart sizes, don't frameskip
-    }
-    if (bForceFrameskip) frameSkipMask=1;   // A few games force it on - e.g. Ninja Golf which is just barely keeping up the framerate
+
+    // Enable or disbale frameskip... 0xFF means display every frame and 0x01 means every-other frame
+    frameSkipMask = (myCartInfo.frameSkip ? 0x01 : 0xFF);
       
     dsShowScreenEmu();
     prosystem_Reset();
@@ -422,7 +397,7 @@ void dsLoadGame(char *filename)
     dsPrintValue(0,19,0,cartridge_filename);      
 #endif          
       
-    if (cartridge_region != NTSC)
+    if (myCartInfo.region != NTSC)
     {
         dsPrintValue(0,22,0,"PAL ROM NOT SUPPORTED. SEEK NTSC");
     }
@@ -440,8 +415,8 @@ void dsLoadGame(char *filename)
 
     // Left difficulty switch defaults to DIFF_A
     // Right difficulty swtich defaults to DIFF_A
-    keyboard_data[15] = cartridge_diff1;
-    keyboard_data[16] = cartridge_diff2;
+    keyboard_data[15] = myCartInfo.diff1;
+    keyboard_data[16] = myCartInfo.diff2;
     GameConf.DS_Pad[ 0] = 3;   GameConf.DS_Pad[ 1] = 2;
     GameConf.DS_Pad[ 2] = 1;   GameConf.DS_Pad[ 3] = 0;
     GameConf.DS_Pad[ 4] = 4;   GameConf.DS_Pad[ 5] = 5;
@@ -539,7 +514,7 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   dsPrintValue(16-strlen(szName)/2,3,0,szName);
   dsPrintValue(31,5,0,(char *) (NoDebGame>0 ? "<" : " "));
   dsPrintValue(31,22,0,(char *) (NoDebGame+14<countpro ? ">" : " "));
-  sprintf(szName,"%s","A=SELECT, X=NO SOUND, B=BACK");
+  sprintf(szName,"%s","A=SELECT, Y=HALT EMU, B=BACK");
   dsPrintValue(16-strlen(szName)/2,23,0,szName);
   for (ucBcl=0;ucBcl<17; ucBcl++) 
   {
@@ -682,11 +657,12 @@ unsigned int dsWaitForRom(void)
       while (keysCurrent() & KEY_B);
     }
 
-    if (keysCurrent() & (KEY_A | KEY_X)) 
+    if (keysCurrent() & (KEY_A | KEY_Y)) 
     {
       if (!proromlist[ucFicAct].directory) 
       {
-        if (keysCurrent() & KEY_X) is_mute = true; else is_mute=false;
+        if (keysCurrent() & KEY_Y) bEmulatorRun = false; else bEmulatorRun=true;
+        if (keysCurrent() & KEY_X) DEBUG_DUMP = 1; else DEBUG_DUMP=0;
         bRet=true;
         bDone=true;
       }
@@ -811,14 +787,9 @@ void dsInstallSoundEmuFIFO(void)
     memset(sound_buffer, 0x00, SNDLENGTH);
     irqDisable(IRQ_TIMER2);  
     
-    if (is_mute) 
-    {
-        return;    // We've been asked to not install sound... 
-    }
-
     FifoMessage msg;
     msg.SoundPlay.data = &sound_buffer;
-    msg.SoundPlay.freq = (cartridge_pokey ? SOUND_FREQ+21:(SOUND_FREQ*(isDS_LITE ? 1:2))+21);
+    msg.SoundPlay.freq = (myCartInfo.pokeyType ? SOUND_FREQ+21:(SOUND_FREQ*2)+21);
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
@@ -843,14 +814,11 @@ void dsInstallSoundEmuFIFO(void)
     
     TIMER2_DATA = TIMER_FREQ(SOUND_FREQ/2);
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
-    if (cartridge_pokey)
+    if (myCartInfo.pokeyType)
         irqSet(IRQ_TIMER2, VsoundHandler_Pokey);  
     else
     {
-        if (isDS_LITE)
-            irqSet(IRQ_TIMER2, VsoundHandler_Lite);
-        else
-            irqSet(IRQ_TIMER2, VsoundHandler);
+        irqSet(IRQ_TIMER2, VsoundHandler);
     }
     irqEnable(IRQ_TIMER2);  
 }
@@ -876,7 +844,7 @@ void dsMainLoop(void)
   while(etatEmu != A7800_QUITSTDS) {
     switch (etatEmu) {
       case A7800_MENUINIT:
-        dsShowScreenMain();
+        dsShowScreenMain(true);
         etatEmu = A7800_MENUSHOW;
         break;
         
@@ -899,28 +867,32 @@ void dsMainLoop(void)
                 ;
         }
 
-        // Execute one frame
-        prosystem_ExecuteFrame(keyboard_data);
-        if (++atari_frames == 60)
+        if (bEmulatorRun)
         {
-            TIMER0_CR=0;
-            TIMER0_DATA=0;
-            TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
-            atari_frames=0;
-        }        
-
-        // Read keys
-        if (special_hsc_entry > 0)
-        {
-            special_hsc_entry--; 
-            tchepres(10);
-            if (special_hsc_entry < 10)
+            // Execute one frame
+            prosystem_ExecuteFrame(keyboard_data);
+            if (++atari_frames == 60)
             {
-                tchepres(11);
+                TIMER0_CR=0;
+                TIMER0_DATA=0;
+                TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+                atari_frames=0;
+            }        
+
+            // Read keys
+            if (special_hsc_entry > 0)
+            {
+                special_hsc_entry--; 
+                tchepres(10);
+                if (special_hsc_entry < 10)
+                {
+                    tchepres(11);
+                }
+                continue;
             }
-            continue;
+            memset(keyboard_data, 0x00, 15); // Not the difficulty switches which are the two bytes after this...
         }
-        memset(keyboard_data, 0x00, 15); // Not the difficulty switches which are the two bytes after this...
+            
         scanKeys();
         keys_pressed = keysCurrent();
 
@@ -984,6 +956,13 @@ void dsMainLoop(void)
                 }
                 fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
               }
+              else if ((iTx>190) && (iTx<230) && (iTy>22) && (iTy<62))   // Gear Icon (Settings)
+              {     
+                irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+                ShowConfig();
+                irqEnable(IRQ_TIMER2); 
+                fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+              }
               
               keys_touch=1;
           } else keys_touch=0;
@@ -992,15 +971,15 @@ void dsMainLoop(void)
           {
               last_keys_pressed = keys_pressed;
               if ( (keys_pressed & KEY_SELECT) ) { tchepres(11); } // BUTTON SELECT
-              if (cartridge_controller[0] != TWIN)
+              if (myCartInfo.cardctrl1 != TWIN)
               {
                 if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
                 if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
               }
-              if (cartridge_controller[0] == SOTA)
+              if (myCartInfo.cardctrl1 == SOTA)
               {
-                  if ( (keys_pressed & KEY_R) )  { cartridge_xOffset +=28; bRefreshXY = true; }
-                  if ( (keys_pressed & KEY_L) )  { cartridge_xOffset -=28; bRefreshXY = true; }  
+                  if ( (keys_pressed & KEY_R) )  { myCartInfo.xOffset +=28; bRefreshXY = true; }
+                  if ( (keys_pressed & KEY_L) )  { myCartInfo.xOffset -=28; bRefreshXY = true; }  
               }
               if (dampen < 6) dampen = 6;
           }
@@ -1012,7 +991,7 @@ void dsMainLoop(void)
         if ( (keys_pressed & KEY_RIGHT) ) { tchepres(3); } // RIGHT
         if ( (keys_pressed & KEY_LEFT) ) { tchepres(2); } // LEFT
             
-        if (cartridge_controller[0] == TWIN)
+        if (myCartInfo.cardctrl1 == TWIN)
         {
             if ( (keys_pressed & KEY_A) ) { tchepres(12); }  // Left Joystick Right
             if ( (keys_pressed & KEY_B) ) { tchepres(13); }  // Left Joystick Down
@@ -1039,15 +1018,15 @@ void dsMainLoop(void)
           } 
           if (scale_screen_dampen > 5)
           {
-              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { cartridge_yOffset++; bRefreshXY = true; }
-              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { cartridge_yOffset--; bRefreshXY = true; }
-              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { cartridge_xOffset++; bRefreshXY = true; }
-              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { cartridge_xOffset--; bRefreshXY = true; }
+              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { myCartInfo.yOffset++; bRefreshXY = true; }
+              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { myCartInfo.yOffset--; bRefreshXY = true; }
+              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { myCartInfo.xOffset++; bRefreshXY = true; }
+              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { myCartInfo.xOffset--; bRefreshXY = true; }
 
-              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (cartridge_yScale <= 256) { cartridge_yScale++; bRefreshXY = true; }
-              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (cartridge_yScale > 192) { cartridge_yScale--; bRefreshXY = true; }
-              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT))  if (cartridge_xScale < 320) { cartridge_xScale++; bRefreshXY = true; }
-              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (cartridge_xScale > 192)  { cartridge_xScale--; bRefreshXY = true; }                  
+              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (myCartInfo.yScale <= 256) { myCartInfo.yScale++; bRefreshXY = true; }
+              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (myCartInfo.yScale > 192) { myCartInfo.yScale--; bRefreshXY = true; }
+              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT))  if (myCartInfo.xScale < 320) { myCartInfo.xScale++; bRefreshXY = true; }
+              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (myCartInfo.xScale > 192)  { myCartInfo.xScale--; bRefreshXY = true; }                  
               scale_screen_dampen=0;
           } else scale_screen_dampen++;
         }  else lcd_swap_counter=0;

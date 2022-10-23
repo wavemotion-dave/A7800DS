@@ -4,6 +4,7 @@
 
 #include "main.h"
 #include "intro.h"
+#include "config.h"
 #include "a7800utils.h"
 
 // Program entry point
@@ -29,11 +30,13 @@ int main(int argc, char **argv)
   intro_logo();  
   dsInitScreenMain();
   etatEmu = A7800_MENUINIT;
+    
+  LoadConfig();
   
     //load rom file via args if a rom path is supplied
   if(argc > 1) 
   {
-    dsShowScreenMain();
+    dsShowScreenMain(true);
     dsLoadGame(argv[1]);
     etatEmu = A7800_PLAYINIT;
   }

@@ -24,6 +24,7 @@
 // ----------------------------------------------------------------------------
 #include "HighScore.h"
 #include "Cartridge.h"
+#include "Database.h"
 
 // The memory location of the high score cartridge SRAM
 #define HS_SRAM_START 0x1000
@@ -43,7 +44,7 @@ bool cartridge_SaveHighScoreSram(void)
     bool status = false;
     byte sram[HS_SRAM_SIZE];
     word retries = 3;
-    if(!high_score_cart_loaded || !cartridge_hsc_enabled)
+    if(!high_score_cart_loaded || !myCartInfo.hsc)
     {
         // If we didn't load the high score cartridge, or don't have an HSC enabled cart: don't save.
         return false;
@@ -139,7 +140,7 @@ static bool cartridge_LoadHighScoreSram(void)
 byte high_score_buffer[HSC_CART_ROM_SIZE];
 bool cartridge_LoadHighScoreCart(void) 
 {
-    if( !cartridge_hsc_enabled || cartridge_region != 0 ) 
+    if( !myCartInfo.hsc || myCartInfo.region != 0 ) 
     {
         // Only load the cart if it is enabled and the region is NTSC
         return false;

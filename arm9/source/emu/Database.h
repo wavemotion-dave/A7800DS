@@ -27,9 +27,35 @@
 
 #include "Cartridge.h"
 
+typedef struct {
+  char  digest[33];
+  char  header_name[33];
+  u8    cardtype;
+  u8    pokeyType;
+  u8    cardctrl1;
+  u8    cardctrl2;
+  u8    diff1;
+  u8    diff2;
+  u8    region;
+  u8    steals_cycles;
+  u8    uses_wsync;
+  u8    hsc;
+  short xOffset;
+  short yOffset;
+  short xScale;
+  short yScale;
+  u8    frameSkip;
+  u8    spare1;
+  u8    spare2;
+  u8    spare3;
+} Database_Entry;
+
+
+extern Database_Entry myCartInfo;
+
+
 extern void database_Initialize( );
 extern bool database_Load(byte *digest);
 extern bool database_enabled;
-//extern std::string database_filename;
 
 #endif

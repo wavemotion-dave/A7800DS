@@ -164,39 +164,6 @@ byte palette_data[PALETTE_SIZE] = {
 };
 #endif
 
-
-// ----------------------------------------------------------------------------
-// Load
-// ----------------------------------------------------------------------------
-#if 0
-bool palette_Load(char * filename) {
-#if 0
-  if(strlen(filename ) == 0) {
-    logger_LogError("Palette filename is invalid.", PALETTE_SOURCE);
-    return false;
-  }
-  
-  logger_LogInfo("Opening palette file " + filename + ".");
-#endif
-
-  FILE* file = fopen(filename.c_str( ), "rb");
-  if(file == NULL) {
-    logger_LogError("Failed to open the palette file " + filename + " for reading.", PALETTE_SOURCE);
-    return false;
-  }  
-  
-  if(fread(palette_data, 1, PALETTE_SIZE, file) != PALETTE_SIZE) {
-    fclose(file);
-    logger_LogError("Failed to read the palette data.", PALETTE_SOURCE);
-    return false;
-  }
-  
-  fclose(file);
-  palette_filename = filename;
-  return true;
-}
-#endif
-
 // ----------------------------------------------------------------------------
 // Load
 // ----------------------------------------------------------------------------
