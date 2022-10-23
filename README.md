@@ -45,6 +45,15 @@ some classic 7800 console goodness on your DS/DSi then you've come to the right 
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.7 : 23-Oct-2022 by wavemotion-dave
+  * Optmization across the board for faster and smoother performance.
+  * Gained enough speed that we have restored full HQ sound for the DS-Lite.
+  * bonQ fixed graphical glitches.
+  * Keystone Koppers fixed graphical glitches.
+  * Latest homebrews added to the internal database.
+  * New configuration menu so you can tweak settings - new homebrews won't need a new A7800DS.
+  * Better A78 v3 header support so more games run right.
+
 V3.6 : 04-Jun-2022 by wavemotion-dave
   * Fix for XM detection so the newest Pac-Man Collection (PMC-XM) works!
   * Minor database cleanups so all the more recent games run.
