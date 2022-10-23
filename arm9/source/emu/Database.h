@@ -45,9 +45,11 @@ typedef struct {
   short xScale;
   short yScale;
   u8    frameSkip;
+  u8    hasHeader;
   u8    spare1;
   u8    spare2;
   u8    spare3;
+  u8    spare4;
 } Database_Entry;
 
 

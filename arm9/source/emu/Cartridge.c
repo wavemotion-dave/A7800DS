@@ -108,66 +108,45 @@ static void cartridge_ReadHeader(const byte* header) {
   cartridge_size |= header[50] << 16;
   cartridge_size |= header[51] << 8;
   cartridge_size |= header[52];
+
+  // -------------------------------------------------------
+  // A78 Card Type is a 16-bit word at header offset 53+54
+  // -------------------------------------------------------
+  //  bit 0     = pokey at $4000
+  //  bit 1     = supergame bank switched
+  //  bit 2     = supergame ram at $4000
+  //  bit 3     = rom at $4000
+    
+  //  bit 4     = bank 6 at $4000
+  //  bit 5     = banked ram
+  //  bit 6     = pokey at $450
+  //  bit 7     = mirror ram at $4000
+  //
+  //  bit 8     = activision banking
+  //  bit 9     = absolute banking
+  //  bit 10    = pokey at $440
+  //  bit 11    = ym2151 at $460/$461
+  //  bit 12    = souper
+  //  bit 13    = banksets
+  //  bit 14    = halt banked ram
+  //  bit 15    = pokey@800
   
-//  bit 0    = pokey at $4000
-//  bit 1    = supergame bank switched
-//  bit 2    = supergame ram at $4000
-//  bit 3    = rom at $4000
-//  bit 4    = bank 6 at $4000
-//  bit 5    = supergame banked ram
-//  bit 6    = pokey at $450
-//  bit 7    = mirror ram at $4000  
+  word cardtype = (header[53] << 8) | header[54];
   
-  if(header[53] == 0) 
-  {
-    if (header[54] & 0x04)
-    {
-      myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART_RAM;
-    }
-    else if(header[54] & 0x08) 
-    {
-      if (cartridge_size > 131072)
-        myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART_LARGE;
-      else
-        myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART_ROM;
-    }
-    else if(header[54] & 0x02) 
-    {
-      myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART;
-    }
-    else if (cartridge_size > 131072)
-    {
-      myCartInfo.cardtype = CARTRIDGE_TYPE_SUPERCART_LARGE;
-    }
-    else 
-    {
-      myCartInfo.cardtype = CARTRIDGE_TYPE_NORMAL;
-    }
-  }
-  else 
-  {
-    if(header[53] == 2) 
-    {
-      myCartInfo.cardtype = CARTRIDGE_TYPE_ABSOLUTE;
-    }
-    else if(header[53] == 1) 
-    {
-      myCartInfo.cardtype = CARTRIDGE_TYPE_ACTIVISION;
-    }
-    else 
-    {
-      myCartInfo.cardtype = CARTRIDGE_TYPE_NORMAL;
-    }
-  }
-  
-  
-  if (header[54] & 0x01) myCartInfo.pokeyType = POKEY_AT_4000;
-  if (header[54] & 0x40) myCartInfo.pokeyType = POKEY_AT_450;
+  myCartInfo.cardtype = (cartridge_size > 131072) ? CARTRIDGE_TYPE_SUPERCART_LARGE : CARTRIDGE_TYPE_NORMAL;    // Default guess... may be overridden below
+    
+  if (cardtype & 0x0001) myCartInfo.pokeyType = POKEY_AT_4000;
+  if (cardtype & 0x0002) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART;
+  if (cardtype & 0x0004) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_RAM;
+  if (cardtype & 0x0008) myCartInfo.cardtype  = (cartridge_size > 131072) ? CARTRIDGE_TYPE_SUPERCART_LARGE : CARTRIDGE_TYPE_SUPERCART_ROM;
+  if (cardtype & 0x0040) myCartInfo.pokeyType = POKEY_AT_450;
+  if (cardtype & 0x0100) myCartInfo.cardtype  = CARTRIDGE_TYPE_ACTIVISION;
+  if (cardtype & 0x0200) myCartInfo.cardtype  = CARTRIDGE_TYPE_ABSOLUTE;
   
   myCartInfo.cardctrl1 = header[55];
   myCartInfo.cardctrl2 = header[56];
   myCartInfo.region = header[57];
-  myCartInfo.hsc = (header[0x3A]&1 ? HSC_YES:HSC_NO);
+  myCartInfo.hsc = (header[58]&1 ? HSC_YES:HSC_NO);
   myCartInfo.steals_cycles = true;       // By default, assume the cart steals cycles
   myCartInfo.uses_wsync = true;          // By default, assume the cart uses wsync
   last_bank = 255;
@@ -197,11 +176,13 @@ static bool _cartridge_Load(const byte* data, uint size)
     cartridge_ReadHeader(header);   // cartridge_size will get filled in from this
     size -= 128;
     offset = 128;
+    myCartInfo.hasHeader = true;
   }
   else 
   {
     strcpy(cartridge_title, "NoTitle*#!.)_");
     cartridge_size = size;
+    myCartInfo.hasHeader = false;
   }
 
   // -----------------------------------------------------------------------------
@@ -421,5 +402,6 @@ void cartridge_Release( )
     myCartInfo.cardctrl2 = 0;
     myCartInfo.steals_cycles = false;
     myCartInfo.uses_wsync = false;
+    myCartInfo.hasHeader = false;
   }
 }

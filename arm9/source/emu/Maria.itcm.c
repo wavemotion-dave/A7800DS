@@ -61,7 +61,7 @@ static int maria_offset __attribute__((section(".dtcm")));
 static byte maria_h08 __attribute__((section(".dtcm")));
 static byte maria_h16 __attribute__((section(".dtcm")));
 static uint16 maria_h8_h16 __attribute__((section(".dtcm")));
-static byte maria_wmode __attribute__((section(".dtcm")));
+static u32 maria_wmode __attribute__((section(".dtcm")));
 
 word *framePtr __attribute__((section(".dtcm"))) = (word *)0;
 
@@ -125,11 +125,11 @@ static inline void maria_StoreCellWide(byte data)
       if (data)
       {
           byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
-          if (data & 0xF0)  // high
+          if (data & 0x30)  // high
           {
               *ptr = (maria_palette & 0x10) | (data >> 4);
           }
-          if (data & 0x0F)  // low
+          if (data & 0x03)  // low
           {
             ptr++;
             *ptr = (maria_palette & 0x10) | (data & 0x0F);
@@ -289,6 +289,7 @@ static inline void maria_WriteLineRAM(word* buffer)
     for(index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
     {
       colors.color32 = *ptr++;
+        
       if (colors.color32 == 0)
       {
           *pix++ = bg32;
@@ -475,6 +476,9 @@ void maria_Reset( ) {
    maria_h16 = 0;
    maria_wmode = 0;
     
+   // ----------------------------------------------------------------------------------
+   // Build the 160 A/B color lookup table for a few frames of increased performance
+   // ----------------------------------------------------------------------------------
    for (uint color=0; color<256; color++)
    {
        for (uint color1=0; color1<256; color1++)

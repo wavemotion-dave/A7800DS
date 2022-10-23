@@ -48,14 +48,14 @@ Database_Entry game_list[] = {
   {"78b1061d651ef806becac1dd3fda29a0",  "Beef Drop",                        CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    SKIP_WSYNC, HSC_YES, 0,  16-9, 256,  220, 0}, // title=Beef Drop (Final Atariage)
   {"34483432b92f565f4ced82a141119164",  "Bentley Bear",                     CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  3,  22-9, 256,  220, 0}, // title=Bentley Bear's Crystal Quest
   {"4e325918a8b3bbcf2f9405040abcfc6d",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  26-9, 256,  220, 0}, // title=BonQ (found on Atairage Age site)
-  {"9fa7743a016c9b7015ee1d386326f88e",  "b*nQ",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    SKIP_WSYNC, HSC_YES, 0,  26-9, 256,  220, 0}, // title=BonQ (final Atariage)
+  {"9fa7743a016c9b7015ee1d386326f88e",  "b*nQ",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  26-9, 256,  220, 0}, // title=BonQ (final Atariage)
   {"4a8a22cff154f479f1ddaa386f21fc39",  "Boom",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  15-9, 256,  220, 0}, // title=Boom!
   {"000b5888d2489f7e256d80a0848ecd14",  "Cannon in D for Defense",          CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  223, 0}, // title=Cannon in D for Defense (demo 03)
   {"5a09946e57dbe30408a8f253a28d07db",  "Centipede",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 24, 24-9, 300,  230, 0}, // title=Centipede
   {"20660b667df538ec32a8e1b998438604",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 24, 24-9, 300,  230, 0}, // title=Centipede - Frameless Hack
   {"a4b5d742860beb25c29def4530194c1e",  "Chase",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  8,  27-9, 269,  233, 0}, // title=Chase
   {"93e4387864b014c155d7c17877990d1e",  "Choplifter",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Choplifter
-  {"2e8e28f6ad8b9b9267d518d880c73ebb",  "Commando",                         CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  20-9, 256,  220, 0}, // title=Commando
+  {"2e8e28f6ad8b9b9267d518d880c73ebb",  "Commando",                         CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  20-9, 256,  220, 1}, // title=Commando
   {"db691469128d9a4217ec7e315930b646",  "Crack'ed",                         CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  25-9, 256,  229, 0}, // title=Crack'ed
   {"2d2fe4da9f1bae102fa8ca2d8830a626",  "Crazy Otto",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  17-9, 256,  232, 0}, // title=Crazy Otto
   {"a94e4560b6ad053a1c24e096f1262ebf",  "Crossbow",                         CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  5,  22-9, 267,  231, 0}, // title=Crossbow
@@ -74,7 +74,7 @@ Database_Entry game_list[] = {
   {"b3143adbbb7d7d189e918e5b29d55a72",  "Dungeon Stalker",                  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  23-9, 256,  220, 0}, // title=Dungeon Stalker (homebrew)  
   {"7099cc31cbc492d525d218efe88b8685",  "xxxxx",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25-9, 256,  230, 0}, // title=E.X.O. (Alpha)
   {"faea27017447dd8bae677d91125a8135",  "xxxxx",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25-9, 256,  230, 0}, // title=E.X.O. (Beta)
-  {"a44e8b7b7881beb0fe3c71a1a04441c8",  "EXO",                              CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  24-9, 256,  234, 0}, // title=E.X.O. (RC Demo)
+  {"a44e8b7b7881beb0fe3c71a1a04441c8",  "EXO",                              CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  24-9, 256,  234, 0}, // title=E.X.O. (RC Demo)
   {"2251a6a0f3aec84cc0aff66fc9fa91e8",  "F-18 Hornet",                      CT_ABSOLU,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=F-18 Hornet
   {"6287727ab36391a62f728bbdee88675c",  "Failsafe",                         CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  22-9, 257,  220, 0}, // title=Failsafe (homebrew)
   {"d25d5d19188e9f149977c49eb0367cd1",  "Fatal Run",                        CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Fatal Run
@@ -255,17 +255,25 @@ bool database_Load(byte *digest)
         myCartInfo.yScale        = 220;
         myCartInfo.diff1         = DIFF_A;
         myCartInfo.diff2         = DIFF_A;
-        myCartInfo.cardtype      = (cartridge_size <= (48*1024)) ? CT_NORMAL:CT_SUPROM;
-        myCartInfo.pokeyType     = POKEY_NONE;
-        myCartInfo.cardctrl1     = JOY;
-        myCartInfo.cardctrl2     = JOY;
         myCartInfo.region        = NTSC;
         myCartInfo.steals_cycles = STEAL_CYCLE;
         myCartInfo.uses_wsync    = false;
-        myCartInfo.hsc           = false;
         myCartInfo.spare1        = 0;
         myCartInfo.spare2        = 0;
-        myCartInfo.spare3        = 1;
+        myCartInfo.spare3        = 0;
+        myCartInfo.spare4        = 1;        
+        
+        // -------------------------------------------------------------------
+        // If the game has no .a78 header, do our best to guess these...
+        // -------------------------------------------------------------------
+        if (myCartInfo.hasHeader == false)
+        {
+            myCartInfo.cardtype      = (cartridge_size <= (48*1024)) ? CT_NORMAL:CT_SUPROM;
+            myCartInfo.pokeyType     = POKEY_NONE;
+            myCartInfo.cardctrl1     = JOY;
+            myCartInfo.cardctrl2     = JOY;
+            myCartInfo.hsc           = false;            
+        }
         
         // --------------------------------------------------------
         // Do our best guess as to whether we should frameskip...
@@ -281,7 +289,10 @@ bool database_Load(byte *digest)
         }
     }
 
-    if (!isDSiMode())  myCartInfo.steals_cycles = STEAL_CYCLE;     // DS-LITE can't handle anything else anyway... this at least makes those games playable
+    if (!isDSiMode())  
+    {
+        myCartInfo.steals_cycles = STEAL_CYCLE;     // DS-LITE can't handle anything else anyway... this at least makes those games playable
+    }
     
     return true;
 }
