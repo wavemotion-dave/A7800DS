@@ -247,9 +247,9 @@ Astro Fighter           a51e5df28a0fe8c52e9d28fb5f8e44a6    YES   60  Near perfe
 Baby Pac Man            7cdfbe37634e7dcd4dc67db7edbcd3ba    NO    60  Near perfect
 Ballblazer              8fc3a695eaea3984912d98ed4a543376    NO    60  Near perfect
 Barnyard Blaster        42682415906c21c6af80e4198403ffda    NO    60  Needs Lightgun Support (not implemented)
-Basketbrawl             f5f6b69c5eb4b55fc163158d1a6b423e    NO    60  Minor glitches. Mostly playable.
+Basketbrawl             f5f6b69c5eb4b55fc163158d1a6b423e    NO    60  Near perfect
 Beef Drop (Final)       78b1061d651ef806becac1dd3fda29a0    YES   60  Near perfect
-BonQ (Final)            9fa7743a016c9b7015ee1d386326f88e    YES   60  Graphical glitches on title screen. Play is near perfect.
+BonQ (Final)            9fa7743a016c9b7015ee1d386326f88e    YES   60  Near perfect
 Centipede               5a09946e57dbe30408a8f253a28d07db    YES   60  Near perfect
 Choplifter              93e4387864b014c155d7c17877990d1e    NO    60  Near perfect
 Commando                2e8e28f6ad8b9b9267d518d880c73ebb    NO    60  Near perfect
@@ -261,7 +261,7 @@ Dig Dug                 731879ea82fc0ca245e39e036fe293e6    YES   60  Near perfe
 Donkey Kong             19f1ee292a23636bd57d408b62de79c7    NO    60  Near perfect
 Donkey Kong Jr          5e332fbfc1e0fc74223d2e73271ce650    NO    60  Near perfect
 Donkey Kong XM Demo     c3107d3e3e17d67e3a11d47a5946a4f3    NO    60  Near perfect
-Double Dragon           543484c00ba233736bcaba2da20eeea9    NO    60  Glitchy top graphics... but playable.
+Double Dragon           543484c00ba233736bcaba2da20eeea9    NO    60  Near perfect
 Dragon's Descent        94009ccfdcd4f55d24033ca06269ba6a    NO    60  Near perfect
 Drakers Quest I         fab1290f9a4c4f2b4d831c8a57f969f5    NO    60  Near perfect
 Drakers Quest II        a9f29004412621f20ad9f5c51cc11486    NO    60  Near perfect
@@ -306,7 +306,7 @@ Serpentine              9bd70c06d3386f76f8162881699a777a    YES   60  Near perfe
 Space Duel              771cb4609347657f63e6f0eb26036e35    YES   60  Near perfect
 Space Invaders          6adf79558a3d7f5beca1bb8d34337417    YES   60  Near perfect
 Summer Games            cbb0746192540a13b4c7775c7ce2021f    NO    60  Plays fine - font hard to read on small screen.
-Super Skatebordin       59b5793bece1c80f77b55d60fb39cb94    NO    60  Near perfect on DSi. DS has graphical issues.
+Super Skatebordin       59b5793bece1c80f77b55d60fb39cb94    NO    60  Near perfect
 Super Circus Atariage   81cee326b99d6831de10a566e338bd25    YES   60  Near perfect 
 Time Salvo              a60e4b608505d1fb201703b266f754a7    YES   60  Near perfect 
 UniWarS                 79df20ee86a989e669158bcb9d113e8a    YES   60  Near perfect 
