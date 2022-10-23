@@ -49,6 +49,8 @@ union ColorUnion colors __attribute__((section(".dtcm")));
 
 word* maria_surface __attribute__((section(".dtcm"))) = 0;
 uint  maria_scanline __attribute__((section(".dtcm"))) = 1;
+uint wide_mask_low __attribute__((section(".dtcm")));
+uint wide_mask_high __attribute__((section(".dtcm")));
 
 static byte maria_lineRAM[MARIA_LINERAM_SIZE+4] __attribute__((section(".dtcm")));
 uint maria_cycles __attribute__((section(".dtcm")));
@@ -125,11 +127,11 @@ static inline void maria_StoreCellWide(byte data)
       if (data)
       {
           byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
-          if (data & 0x30)  // high
+          if (data & wide_mask_high)  // high
           {
               *ptr = (maria_palette & 0x10) | (data >> 4);
           }
-          if (data & 0x03)  // low
+          if (data & wide_mask_low)  // low
           {
             ptr++;
             *ptr = (maria_palette & 0x10) | (data & 0x0F);
@@ -394,6 +396,9 @@ static inline void maria_StoreLineRAM( )
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr   = 0;
   }
+    
+  wide_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
+  wide_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;
 
   byte mode = memory_ram[maria_dp.w + 1];
   while(mode & 0x5f) 
@@ -474,6 +479,7 @@ void maria_Reset( ) {
    maria_offset = 0;
    maria_h08 = 0;
    maria_h16 = 0;
+   maria_h8_h16 = 0x0000;
    maria_wmode = 0;
     
    // ----------------------------------------------------------------------------------
