@@ -1949,6 +1949,7 @@ next_inst:
     }
     else if (riot_timing & 2) 
     {
+      debug[0]++;
       riot_UpdateTimer(sally_cyclesX4 >> 2);
     }
   }

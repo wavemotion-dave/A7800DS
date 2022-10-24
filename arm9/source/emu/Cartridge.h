@@ -94,8 +94,6 @@ extern bool cartridge_IsLoaded( );
 extern void cartridge_Release( );
 extern char cartridge_title[128];
 extern char cartridge_description[128];
-extern char cartridge_year[128];
-extern char cartridge_maker[128];
 extern byte cartridge_digest[128];
 extern char cartridge_filename[128];
 

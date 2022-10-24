@@ -29,16 +29,14 @@
 
 char cartridge_title[128];
 char cartridge_description[128];
-char cartridge_year[128];
-char cartridge_maker[128];
 byte cartridge_digest[128];
 char cartridge_filename[128];
 
 
 // -------------------------------------------------------------------------------------------------
-// We allow cart sizes up to 512K which is pretty huge - I've not seen any ROMs bigger than this.
+// We allow cart sizes up to 1024K which is pretty huge - I've not seen any ROMs bigger than this.
 // -------------------------------------------------------------------------------------------------
-static byte cartridge_buffer[512 * 1024] ALIGN(32);
+static byte cartridge_buffer[1024 * 1024] ALIGN(32);
 uint cartridge_size __attribute__((section(".dtcm"))) = 0;
 static uint maxbank = 9;
 
@@ -214,7 +212,7 @@ bool cartridge_Load(char *filename) {
   cartridge_Release();
  
   byte* data = NULL;
-  uint size = archive_GetUncompressedFileSize(filename);
+  uint size = 0;
   if(size == 0) {
     FILE *file = fopen(filename, "rb");
     if(file == NULL) {
