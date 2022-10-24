@@ -38,7 +38,7 @@ extern byte memory_ram[];
 extern void memory_Reset( );
 
 extern ITCM_CODE byte memory_Read_Slower(word address);
-extern ITCM_CODE void memory_Write(word address, byte data);
+extern void memory_Write(word address, byte data);
 
 inline byte memory_Read(word address)
 {

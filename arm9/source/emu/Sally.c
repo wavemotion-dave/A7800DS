@@ -969,7 +969,7 @@ uint sally_ExecuteIRQ( ) {
 
 extern uint prosystem_cycles;
 
-void sally_Execute(unsigned int cycles )  
+ITCM_CODE void sally_Execute(unsigned int cycles )  
 {
       __label__ 
     l_0x00, l_0x01, l_0x02, l_0x03, l_0x04, l_0x05, l_0x06, l_0x07, l_0x08,
@@ -1038,7 +1038,7 @@ void sally_Execute(unsigned int cycles )
 
   while (prosystem_cycles<cycles) 
   {
-      register byte sally_opcode;
+    register byte sally_opcode;
     sally_opcode = memory_ram[sally_pc.w++];
     sally_cyclesX4 = SALLY_CYCLESX4[sally_opcode];
   
@@ -1940,17 +1940,20 @@ l_0x02:
 
 next_inst:
     prosystem_cycles += sally_cyclesX4;
-    if (riot_timing & 1)   // Will only write true here if cartridge_uses_wsync is true in Memory.c
+    if (riot_timing)
     {
-      prosystem_cycles = 456;
-      memory_ram[WSYNC] = false;
-      riot_timing &= 0xFE;
-      break;
-    }
-    else if (riot_timing & 2) 
-    {
-      debug[0]++;
-      riot_UpdateTimer(sally_cyclesX4 >> 2);
+        if (riot_timing & 1)   // Will only write true here if cartridge_uses_wsync is true in Memory.c
+        {
+          prosystem_cycles = 456;
+          memory_ram[WSYNC] = false;
+          riot_timing &= 0xFE;
+          break;
+        }
+        else
+        {
+          riot_UpdateTimer(sally_cyclesX4 >> 2);
+        }
     }
   }
 }
+

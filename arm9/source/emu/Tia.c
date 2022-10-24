@@ -64,7 +64,7 @@ static u16 tia_poly9Cntr[2] __attribute__((section(".dtcm"))) = {0};
 // ----------------------------------------------------------------------------
 // ProcessChannel
 // ----------------------------------------------------------------------------
-static void tia_ProcessChannel0(void)
+static ITCM_CODE void tia_ProcessChannel0(void)
 {
   tia_poly5Cntr[0] = (tia_poly5Cntr[0] + 1) % TIA_POLY5_SIZE;
   if(((tia_audc[0] & 2) == 0) || (((tia_audc[0] & 1) == 0) && TIA_DIV31[tia_poly5Cntr[0]]) || (((tia_audc[0] & 1) == 1) && TIA_POLY5[tia_poly5Cntr[0]])) 
@@ -93,7 +93,7 @@ static void tia_ProcessChannel0(void)
   }
 }
 
-static void tia_ProcessChannel1(void)
+static ITCM_CODE void tia_ProcessChannel1(void)
 {
   tia_poly5Cntr[1] = (tia_poly5Cntr[1] + 1) % TIA_POLY5_SIZE;
   if(((tia_audc[1] & 2) == 0) || (((tia_audc[1] & 1) == 0) && TIA_DIV31[tia_poly5Cntr[1]]) || (((tia_audc[1] & 1) == 1) && TIA_POLY5[tia_poly5Cntr[1]])) 
@@ -265,7 +265,7 @@ int TIA_Sample(void)
 // Process
 // --------------------------------------------------------------------------------------
 u8 tia_sample __attribute__((section(".dtcm"))) = 0;
-void tia_Process(void) 
+ITCM_CODE void tia_Process(void) 
 {
   for(u8 index = 0; index < 2; index++) 
   {

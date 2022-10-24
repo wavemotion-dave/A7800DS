@@ -23,7 +23,6 @@
 // ProSystem.cpp
 // ----------------------------------------------------------------------------
 
-#include <malloc.h>
 #include "ProSystem.h"
 #include "Sound.h"
 #include "Database.h"

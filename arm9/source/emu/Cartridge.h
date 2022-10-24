@@ -36,6 +36,8 @@
 
 #include "shared.h"
 
+#define MAX_CART_SIZE (1024 * 1024) // 1MB Cart is HUGE!
+
 #define CARTRIDGE_CONTROLLER_NONE       0
 #define CARTRIDGE_CONTROLLER_JOYSTICK   1
 #define CARTRIDGE_CONTROLLER_LIGHTGUN   2
@@ -86,7 +88,6 @@
 
 
 extern bool cartridge_Load(char* filename);
-extern bool cartridge_Load_buffer(char* rom_buffer, int rom_size);
 extern void cartridge_Store( );
 extern void cartridge_StoreBank(byte bank);
 extern void cartridge_Write(word address, byte data);

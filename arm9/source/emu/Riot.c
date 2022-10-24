@@ -26,15 +26,15 @@
 
 uint riot_timing __attribute__((section(".dtcm"))) = false;
 int  riot_timer __attribute__((section(".dtcm"))) = TIM64T;
-byte riot_intervals __attribute__((section(".dtcm")));
+int  riot_intervals __attribute__((section(".dtcm")));
 
 byte riot_dra __attribute__((section(".dtcm"))) = 0;
 byte riot_drb __attribute__((section(".dtcm"))) = 0;
 
-u8 riot_elapsed __attribute__((section(".dtcm")));
+uint riot_elapsed __attribute__((section(".dtcm")));
 int riot_currentTime __attribute__((section(".dtcm")));
-word riot_clocks __attribute__((section(".dtcm")));
-word riot_shift __attribute__((section(".dtcm")))=0;
+uint riot_clocks __attribute__((section(".dtcm")));
+uint riot_shift __attribute__((section(".dtcm")))=0;
 
 void riot_Reset(void) {
     riot_SetDRA(0);
@@ -73,7 +73,7 @@ void riot_Reset(void) {
 // | 15       | Console      | Left Difficulty
 // | 16       | Console      | Right Difficulty
 // +----------+--------------+-------------------------------------------------
-void riot_SetInput(const byte* input) {
+ITCM_CODE void riot_SetInput(const byte* input) {
   /*gdement: 	Comments are messy, but wanted to document how this all works.
   Changed this routine to support 1 vs 2 button modes.
   Also added the interaction of CTLSWA and DRA on the SWCHA output, and same for SWCHB.
@@ -266,7 +266,7 @@ void riot_SetDRB(byte data) {
 // ----------------------------------------------------------------------------
 // SetTimer
 // ----------------------------------------------------------------------------
-void riot_SetTimer(word timer, byte intervals) 
+ITCM_CODE void riot_SetTimer(word timer, byte intervals) 
 {
   riot_timer = timer;
   riot_intervals = intervals;
@@ -301,7 +301,7 @@ void riot_SetTimer(word timer, byte intervals)
 // ----------------------------------------------------------------------------
 // UpdateTimer
 // ----------------------------------------------------------------------------
-void inline riot_UpdateTimer(byte cycles) 
+ITCM_CODE void inline riot_UpdateTimer(byte cycles) 
 {
   riot_currentTime -= cycles;
   if(!riot_elapsed && riot_currentTime > 0) 

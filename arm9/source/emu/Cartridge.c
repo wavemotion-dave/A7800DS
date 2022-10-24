@@ -36,7 +36,7 @@ char cartridge_filename[128];
 // -------------------------------------------------------------------------------------------------
 // We allow cart sizes up to 1024K which is pretty huge - I've not seen any ROMs bigger than this.
 // -------------------------------------------------------------------------------------------------
-static byte cartridge_buffer[1024 * 1024] ALIGN(32);
+static byte cartridge_buffer[MAX_CART_SIZE+128] ALIGN(32); // The extra 128 bytes is for the possible .a78 header
 uint cartridge_size __attribute__((section(".dtcm"))) = 0;
 static uint maxbank = 9;
 
@@ -85,7 +85,7 @@ inline static void cartridge_WriteBank(word address, byte bank)
     {
         if (offset < (256*1024))    // If we are in fast VRAM memory
             memory_WriteROM_DMA((u32*)&memory_ram[address], (u32*)(0x06860000 + offset), 16384);
-        else    // Normal memory
+        else    // Normal memory - a little slower but that's the best we can do...
             memory_WriteROMFast(address, (16384/4), cartridge_buffer + offset);
     }
   }
@@ -153,7 +153,7 @@ static void cartridge_ReadHeader(const byte* header) {
 // ----------------------------------------------------------------------------
 // Load
 // ----------------------------------------------------------------------------
-static bool _cartridge_Load(const byte* data, uint size) 
+static bool _cartridge_Load(uint size) 
 {
   uint index;
   if(size <= 128) {
@@ -165,7 +165,7 @@ static bool _cartridge_Load(const byte* data, uint size)
   byte header[128] = {0};
   for(index = 0; index < 128; index++) 
   {
-    header[index] = data[index];
+    header[index] = cartridge_buffer[index];
   }
 
   uint offset = 0;
@@ -187,16 +187,16 @@ static bool _cartridge_Load(const byte* data, uint size)
   // Copy up to 256K bytes of cart into the fast memory - used for bank swap only
   // -----------------------------------------------------------------------------
   u32 *fast_mem = (u32*)0x06860000;
-  memcpy(fast_mem, &data[offset], (256 * 1024));
+  memcpy(fast_mem, &cartridge_buffer[offset], (256 * 1024));
     
   // ----------------------------------------------------  
   // And copy the full ROM into the main cart area...
   // ----------------------------------------------------  
   for(index = 0; index < cartridge_size; index++) {
-    cartridge_buffer[index] = data[index + offset];
+    cartridge_buffer[index] = cartridge_buffer[index + offset];
   }
   
-  hash_Compute(cartridge_buffer, cartridge_size,cartridge_digest);
+  hash_Compute(cartridge_buffer, cartridge_size, cartridge_digest);
   return true;
 }
 extern unsigned long crc32 (unsigned int crc, const unsigned char *buf, unsigned int len);
@@ -204,66 +204,35 @@ extern unsigned long crc32 (unsigned int crc, const unsigned char *buf, unsigned
 // ----------------------------------------------------------------------------
 // Load
 // ----------------------------------------------------------------------------
-bool cartridge_Load(char *filename) {
-  if(strlen(filename) == 0) {
-    return false;
-  }
-  
-  cartridge_Release();
+bool cartridge_Load(char *filename) 
+{
+    if(strlen(filename) == 0) return false;  
+    uint size = 0;
+    cartridge_Release();
  
-  byte* data = NULL;
-  uint size = 0;
-  if(size == 0) {
     FILE *file = fopen(filename, "rb");
-    if(file == NULL) {
-      return false;  
-    }
+    if(file == NULL)  return false;  
 
-    if(fseek(file, 0L, SEEK_END)) {
-    }
+    if(fseek(file, 0L, SEEK_END)) { }
     size = ftell(file);
-    if(fseek(file, 0L, SEEK_SET)) {
-    }
+    if(fseek(file, 0L, SEEK_SET)) { }
+    
+    if (size > (MAX_CART_SIZE+128)) return false;   // Cart is too big... can't handle it
 
-    data = (byte *) malloc(size);
-    if(fread(data, 1, size, file) != size && ferror(file)) {
+    if(fread(cartridge_buffer, 1, size, file) != size && ferror(file)) 
+    {
       fclose(file);
-      cartridge_Release( );
-      free(data);
       return false;
     }    
 
     fclose(file);    
-  }
-  else {
-    data = (byte *) malloc(size);
-    archive_Uncompress(filename, data, size);
-  }
 
-  if(!_cartridge_Load(data, size)) {
-    free(data);
-    return false;
-  }
-  if(data != NULL) {
-    free(data);
-  }
-  
-  
-  strcpy(cartridge_filename, filename);
-  return true;
+    if(!_cartridge_Load(size)) return false;
+
+    strcpy(cartridge_filename, filename);
+    return true;
 }
 
-bool cartridge_Load_buffer(char* rom_buffer, int rom_size) {
-  cartridge_Release();
-  byte* data = (byte *)rom_buffer;
-  uint size = rom_size;
-
-  if(!_cartridge_Load(data, size)) {
-    return false;
-  }
-  strcpy(cartridge_filename ,"");
-  return true;
-}
 
 // ----------------------------------------------------------------------------
 // Store
@@ -383,8 +352,6 @@ bool cartridge_IsLoaded( ) {
 // ----------------------------------------------------------------------------
 void cartridge_Release( ) 
 {
-  if(cartridge_buffer != NULL) 
-  {
     // Snap out the High Score SRAM (if used)
     cartridge_SaveHighScoreSram();
     cartridge_size = 0;
@@ -401,5 +368,4 @@ void cartridge_Release( )
     myCartInfo.steals_cycles = false;
     myCartInfo.uses_wsync = false;
     myCartInfo.hasHeader = false;
-  }
 }

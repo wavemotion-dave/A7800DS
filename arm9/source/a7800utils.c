@@ -74,7 +74,6 @@ short cyBG __attribute__((section(".dtcm")));
 short xdxBG  __attribute__((section(".dtcm")));
 short ydyBG  __attribute__((section(".dtcm")));
 
-unsigned char *filebuffer;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
@@ -358,8 +357,6 @@ void dsLoadGame(char *filename)
   
   // Free buffer if needed
   TIMER2_CR=0; irqDisable(IRQ_TIMER2); 
-	if (filebuffer != 0)
-		free(filebuffer);
   
   // Clear out debug info...
   for (int i=0; i<MAX_DEBUG; i++)

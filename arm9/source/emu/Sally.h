@@ -44,5 +44,6 @@ extern byte sally_s;
 extern pair sally_pc;
 
 extern void sally_Execute(unsigned int cycles );
+extern void sally_Execute_Fast(unsigned int cycles );
 
 #endif
