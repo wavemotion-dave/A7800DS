@@ -73,13 +73,10 @@ inline static void cartridge_WriteBank(word address, byte bank)
   {
     last_bank = bank;
     uint offset = bank * 16384;
-    if(offset < cartridge_size) 
-    {
-        if (offset < (256*1024))    // If we are in fast VRAM memory
-            memory_WriteROM_DMA((u32*)&memory_ram[address], (u32*)(0x06860000 + offset), 16384);
-        else    // Normal memory - a little slower but that's the best we can do...
-            memory_WriteROMFast(address, (16384/4), cartridge_buffer + offset);
-    }
+    if (offset < (256*1024))    // If we are in fast VRAM memory
+        memory_WriteROM_DMA((u32*)&memory_ram[address], (u32*)(0x06860000 + offset), 16384);
+    else    // Normal memory - a little slower but that's the best we can do...
+        memory_WriteROMFast(address, (16384/4), cartridge_buffer + offset);
   }
 }
 

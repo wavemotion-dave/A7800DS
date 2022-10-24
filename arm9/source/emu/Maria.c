@@ -97,18 +97,15 @@ static inline void _maria_StoreCells4(byte data)
 #ifdef KANGAROO_MODE_SUPPORTED
     if (memory_ram[CTRL] & 4)
     {
-        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else *ptr-- = 0;
-        data = data >> 2;
-        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else *ptr-- = 0;
-        data = data >> 2;
-        if (data & 0x03) *ptr-- = maria_palette | (data & 0x03); else *ptr-- = 0;
-        data = data >> 2;
-        if (data) *ptr = maria_palette | (data); else *ptr = 0;
+        if (data & 0xC0) *ptr++ = maria_palette | ((data       ) >> 6); else *ptr++ = 0;
+        if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else *ptr++ = 0;
+        if (data & 0x0C) *ptr++ = maria_palette | ((data & 0x0C) >> 2); else *ptr++ = 0;
+        if (data & 0x03) *ptr++ = maria_palette | (data & 0x03);        else *ptr++ = 0;
     }
     else
 #endif        
     {
-        if (data & 0xC0) *ptr++ = maria_palette | ((data & 0xC0) >> 6); else ptr++;
+        if (data & 0xC0) *ptr++ = maria_palette | ((data       ) >> 6); else ptr++;
         if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else ptr++;
         if (data & 0x0C) *ptr++ = maria_palette | ((data & 0x0C) >> 2); else ptr++;
         if (data & 0x03) *ptr++ = maria_palette | (data & 0x03); 
