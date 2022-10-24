@@ -53,8 +53,8 @@ Known Issues :
 How to use a7800DS :
 --------------------------------------------------------------------------------
 Place .NDS on your SD card and launch with Twilight Menu++ or Unlaunch.
-If you want to run on a flash cart, it might work... recommend HBMENU to launch.
-Strongly recommend you run on a DSi or 3DS to get full speed. DS-LITE/PHAT is slow.
+If you want to run on a flash cart place it as you would any homebrew pretty
+much anywhere on your flashcart SD card.
 
 When the emulator starts, click on the cartridge slot to choose a file. Use Up/Down 
 to select a file, then use A to load it.
