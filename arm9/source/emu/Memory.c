@@ -84,7 +84,7 @@ ITCM_CODE byte memory_Read_Slower(word address)
 // ----------------------------------------------------------------------------
 // Write
 // ----------------------------------------------------------------------------
-void memory_Write(word address, byte data) 
+ITCM_CODE void memory_Write(word address, byte data) 
 {
   extern u32 bg32;
   if (myCartInfo.pokeyType)

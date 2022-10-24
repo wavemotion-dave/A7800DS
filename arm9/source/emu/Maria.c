@@ -27,7 +27,7 @@
 
 #include "ProSystem.h"
 
-extern u8 bRenderFrame;
+extern bool bRenderFrame;
 
 union ColorUnion
 {

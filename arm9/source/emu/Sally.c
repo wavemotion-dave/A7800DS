@@ -28,11 +28,12 @@
 byte sally_a __attribute__((section(".dtcm"))) = 0;
 byte sally_x __attribute__((section(".dtcm"))) = 0;
 byte sally_y __attribute__((section(".dtcm"))) = 0;
-byte sally_p __attribute__((section(".dtcm"))) = 0;
-byte sally_s __attribute__((section(".dtcm"))) = 0;
-pair sally_pc  __attribute__((section(".dtcm"))) = {0};
+uint sally_p __attribute__((section(".dtcm"))) = 0;
+uint sally_s __attribute__((section(".dtcm"))) = 0;
 
-static pair sally_address __attribute__((section(".dtcm")));
+PCUnion sally_pc  __attribute__((section(".dtcm"))) = {0};
+
+static PCUnion sally_address __attribute__((section(".dtcm")));
 static uint sally_cyclesX4 __attribute__((section(".dtcm")));
 
 #define _fC 0x01
@@ -53,7 +54,7 @@ static const Vector SALLY_RES = {65533, 65532};
 static const Vector SALLY_NMI = {65531, 65530};
 static const Vector SALLY_IRQ = {65535, 65534}; 
 
-static byte SALLY_CYCLESX4[256] __attribute__((section(".dtcm"))) = 
+static uint SALLY_CYCLESX4[256] __attribute__((section(".dtcm"))) = 
 {
 	7*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,0*4,4*4,6*4,0*4,
 	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
@@ -85,7 +86,6 @@ static inline byte memory_Read_Fast(word addr)
 // ----------------------------------------------------------------------------
 static inline void sally_Push(byte data) 
 {
-  //memory_Write(sally_s + 256, data);
   memory_ram[sally_s | 256] = data;
   sally_s--;
 }
@@ -113,7 +113,7 @@ static inline void sally_Flags(byte data)
 // ----------------------------------------------------------------------------
 static inline void sally_Branch(byte branch) {
   if(branch) {
-    pair temp = sally_pc;
+    PCUnion temp = sally_pc;
     sally_pc.w += (signed char)sally_address.b.l;
        
     if(temp.b.h != sally_pc.b.h) {

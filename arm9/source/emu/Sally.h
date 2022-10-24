@@ -31,6 +31,17 @@
 #include "shared.h"
 
 
+typedef union
+{
+    int32 w;
+    struct {
+        byte l;
+        byte h;
+        byte b2;
+        byte b3;
+    } b;
+} PCUnion;
+
 extern void sally_Reset( );
 extern uint sally_ExecuteInstruction( );
 extern uint sally_ExecuteRES( );
@@ -39,9 +50,9 @@ extern uint sally_ExecuteIRQ( );
 extern byte sally_a;
 extern byte sally_x;
 extern byte sally_y;
-extern byte sally_p;
-extern byte sally_s;
-extern pair sally_pc;
+extern uint sally_p;
+extern uint sally_s;
+extern PCUnion sally_pc;
 
 extern void sally_Execute(unsigned int cycles );
 extern void sally_Execute_Fast(unsigned int cycles );
