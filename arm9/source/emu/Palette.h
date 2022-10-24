@@ -27,7 +27,6 @@
 #define PALETTE_SIZE 768
 
 #include <string.h>
-#include "Logger.h"
 
 #include "shared.h"
 

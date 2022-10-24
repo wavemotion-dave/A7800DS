@@ -41,7 +41,7 @@ bool bios_Load(char* filename) {
   
   bios_Release( );
 
-  bios_size = archive_GetUncompressedFileSize(filename);
+  bios_size = 0;
   if(bios_size == 0) {
     FILE* file = fopen(filename, "rb");
     if(file == NULL) {
@@ -53,10 +53,6 @@ bool bios_Load(char* filename) {
     bios_data = (byte *) malloc(bios_size);
     fread(bios_data, 1, bios_size, file);
     fclose(file);
-  }
-  else {
-    bios_data = (byte *) malloc(bios_size);
-    archive_Uncompress(filename, bios_data, bios_size);
   }
 
   strcpy(bios_filename,filename);

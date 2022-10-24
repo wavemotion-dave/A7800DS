@@ -55,20 +55,12 @@ static bool cartridge_HasHeader(const byte* header) {
   return true;
 }
 
-inline static uint cartridge_GetBank(byte bank) {
-  if ((myCartInfo.cardtype == CARTRIDGE_TYPE_SUPERCART || myCartInfo.cardtype == CARTRIDGE_TYPE_SUPERCART_ROM || myCartInfo.cardtype == CARTRIDGE_TYPE_SUPERCART_RAM) && cartridge_size <= 65536) {
-    // for some of these carts, there are only 4 banks. in this case we ignore bit 3
-    // previously, games of this type had to be doubled. The first 4 banks needed to be duplicated at the end of the ROM
-      return (bank & 3);
-  }
-  return bank;
-}
-
 // ----------------------------------------------------------------------------
 // GetBankOffset
 // ----------------------------------------------------------------------------
-inline static uint cartridge_GetBankOffset(byte bank) {
-  return cartridge_GetBank(bank) * 16384;
+inline static uint cartridge_GetBankOffset(byte bank) 
+{
+  return (bank * 16384);
 }
 
 byte last_bank = 255;
@@ -80,7 +72,7 @@ inline static void cartridge_WriteBank(word address, byte bank)
   if (bank != last_bank)
   {
     last_bank = bank;
-    uint offset = cartridge_GetBank(bank) * 16384;
+    uint offset = bank * 16384;
     if(offset < cartridge_size) 
     {
         if (offset < (256*1024))    // If we are in fast VRAM memory
@@ -182,19 +174,38 @@ static bool _cartridge_Load(uint size)
     cartridge_size = size;
     myCartInfo.hasHeader = false;
   }
+    
+
+  // --------------------------------------------------------------------
+  // If there was a header... shift the entire cart down to remove it...
+  // --------------------------------------------------------------------
+  if (offset > 0)
+  {
+      // ----------------------------------------------------  
+      // And copy the full ROM into the main cart area...
+      // ----------------------------------------------------  
+      for(index = 0; index < cartridge_size; index++) 
+      {
+        cartridge_buffer[index] = cartridge_buffer[index + offset];
+      }
+      
+  }
+    
+  // For small carts, double the size to avoid having to check banks
+  if (cartridge_size <= 65536)
+  {
+      for(index = 0; index < cartridge_size; index++) 
+      {
+        cartridge_buffer[index + 65536] = cartridge_buffer[index];
+      }
+  }
+    
 
   // -----------------------------------------------------------------------------
   // Copy up to 256K bytes of cart into the fast memory - used for bank swap only
   // -----------------------------------------------------------------------------
   u32 *fast_mem = (u32*)0x06860000;
-  memcpy(fast_mem, &cartridge_buffer[offset], (256 * 1024));
-    
-  // ----------------------------------------------------  
-  // And copy the full ROM into the main cart area...
-  // ----------------------------------------------------  
-  for(index = 0; index < cartridge_size; index++) {
-    cartridge_buffer[index] = cartridge_buffer[index + offset];
-  }
+  memcpy(fast_mem, cartridge_buffer, (256 * 1024));
   
   hash_Compute(cartridge_buffer, cartridge_size, cartridge_digest);
   return true;

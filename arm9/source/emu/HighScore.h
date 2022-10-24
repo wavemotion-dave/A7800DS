@@ -30,9 +30,7 @@
 #include "Equates.h"
 #include "Memory.h"
 #include "Hash.h"
-#include "Logger.h"
 #include "Pokey.h"
-#include "Archive.h"
 
 #include "shared.h"
 
