@@ -12,9 +12,9 @@ help you. The emulator was developed using Trebor's "7800 ProPack" of well-curat
 Features :
 ----------
  Most things you should expect from an emulator. Speed is excellent on the DSi and 
- less great on the older DS-LITE. For the DS-LITE you can expect full speed only on
- about half of the 7800 library. The more traditional games (think: Asteroids,
- Astro Blaster, Robotron, Food Fight, Centipede, Pac-Man Collection, etc) should
+ less great on the older DS-LITE. For the DS-LITE you can expect full speed on
+ about three-quarters of the 7800 library. The more traditional games (think: Asteroids,
+ Astro Blaster, Robotron, Food Fight, Centipede, Pac-Man Collection, etc) will 
  all run great. The really big bankswitched games will struggle on the older 
  DS-LITE/PHAT hardware.
   
@@ -33,15 +33,70 @@ Alekmaul (original port) and Greg Stanton (ProSystem Emulator) are thanked profu
 
 Philosophy :
 ----------
-For this particular emulator, I'm not striving for perfect emulation accuracy - the goal 
-is to get as many games as close to playable as possible. Nothing else matters if
-the game won't run at near full speed with all the gameplay in-tact. The original
-baseline emulator (ProSystem) had some issues that were made more exaggerated with the
-port to the DS/DSi. Minor screen glitches or minor sound issues are secondary to making
-sure the game will actually run.  If you're looking for a highly accurate emulator for 
-the 7800 ProSystem, this isn't it - try MAME/MESS or A7800. But if you're looking to enjoy 
+For this particular emulator, we use ProSystem as the base. That's always been a bit
+problematic in terms of accuracy - often resulting in small graphical glitches and
+other artifacts on screen. However, in the past year I've worked out many of those
+issues and most of the games look, sound and play great now. However, do not expect
+perfect emulation - if you're looking for a highly accurate emulator for the 7800
+7800 ProSystem, this isn't it - try MAME/MESS or A7800. But if you're looking to enjoy 
 some classic 7800 console goodness on your DS/DSi then you've come to the right place!
+
+Known Issues :
+----------
+- Lightgun is not supported.
+- Paddles are not supported.
+- Games greater than 1MB (1024K + 128b header) are not supported.
+- Pokey is only supported at 4000h and 450h.
+- XM is not supported (beyond HSC and Pokey)
+   
+--------------------------------------------------------------------------------
+How to use a7800DS :
+--------------------------------------------------------------------------------
+Place .NDS on your SD card and launch with Twilight Menu++ or Unlaunch.
+If you want to run on a flash cart, it might work... recommend HBMENU to launch.
+Strongly recommend you run on a DSi or 3DS to get full speed. DS-LITE/PHAT is slow.
+
+When the emulator starts, click on the cartridge slot to choose a file. Use Up/Down 
+to select a file, then use A to load it.
+
+Controls :
+ * Direction pad : the joystick ...
+ * A             : Fire button 1
+ * B             : Fire button 2
+ * SELECT        : SELECT Button
+ * START         : PAUSE Button
+ * X             : FPS Display
+ * Y             : Fire Button 1 (for those that prefer not using A)
+ * L/R + DPAD    : Used to Shift Offsets and Scale Screen to desired ratio
  
+ Use stylus on buttons for other actions on bottom screen.  
+ 
+ High Score Saving works if you have highscore.rom (exact name and case) in your
+ roms directory where you load your games... also, you MUST press the HSC button
+ if you want to snap the Saved Scores out to the flash card. It's not something 
+ I want to do as the game runs... so you must do it... the high scores will also
+ auto-save if you quit the emulator or select a new game.
+ 
+--------------------------------------------------------------------------------
+Credits:
+--------------------------------------------------------------------------------
+Thanks Wintermute for devkitpro and libnds (http://www.devkitpro.org).
+  Greg Stanton for ProSystem source code (https://home.comcast.net/~gscottstanton/)
+   an Atari 7800 emulator.
+  zx81 (http://zx81.zx81.free.fr/serendipity_fr/) for PSP A7800 version (that helped
+   me a lot to understand ProSystem).
+  raz0red (http://www.twitchasylum.com/forum/viewtopic.php?t=519) for WII7800  (that
+  helped me a lot to fix some timing problem).
+
+--------------------------------------------------------------------------------
+Original Author:
+Alekmaul
+alekmaul@portabledev.com
+http://www.portabledev.com
+
+Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
+--------------------------------------------------------------------------------
+
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
@@ -184,54 +239,6 @@ V1.1 : 09-Dec-2020 by wavemotion-dave
 V1.0 : 24/05/2011
   * Initial release based on my a320 version (which is based on Prosystem 1.0.3)
   * Compiled with last version of Devkitpro/libnds, so DSi compatible \o/
-  
---------------------------------------------------------------------------------
-How to use a7800DS :
---------------------------------------------------------------------------------
-Place .NDS on your SD card and launch with Twilight Menu++ or Unlaunch.
-If you want to run on a flash cart, it might work... recommend HBMENU to launch.
-Strongly recommend you run on a DSi or 3DS to get full speed. DS-LITE/PHAT is slow.
-
-When the emulator starts, click on the cartridge slot to choose a file. Use Up/Down 
-to select a file, then use A to load it.
-
-Controls :
- * Direction pad : the joystick ...
- * A             : Fire button 1
- * B             : Fire button 2
- * SELECT        : SELECT Button
- * START         : PAUSE Button
- * X             : FPS Display
- * Y             : Fire Button 1 (for those that prefer not using A)
- * L/R + DPAD    : Used to Shift Offsets and Scale Screen to desired ratio
- 
- Use stylus on buttons for other actions on bottom screen.  
- 
- High Score Saving works if you have highscore.rom (exact name and case) in your
- roms directory where you load your games... also, you MUST press the HSC button
- if you want to snap the Saved Scores out to the flash card. It's not something 
- I want to do as the game runs... so you must do it... the high scores will also
- auto-save if you quit the emulator or select a new game.
- 
---------------------------------------------------------------------------------
-Credits:
---------------------------------------------------------------------------------
-Thanks Wintermute for devkitpro and libnds (http://www.devkitpro.org).
-  Greg Stanton for ProSystem source code (https://home.comcast.net/~gscottstanton/)
-   an Atari 7800 emulator.
-  zx81 (http://zx81.zx81.free.fr/serendipity_fr/) for PSP A7800 version (that helped
-   me a lot to understand ProSystem).
-  raz0red (http://www.twitchasylum.com/forum/viewtopic.php?t=519) for WII7800  (that
-  helped me a lot to fix some timing problem).
-
---------------------------------------------------------------------------------
-Original Author:
-Alekmaul
-alekmaul@portabledev.com
-http://www.portabledev.com
-
-Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
---------------------------------------------------------------------------------
 
 Compatibility Table (on the faster DSi)
 ```
