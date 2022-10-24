@@ -36,7 +36,7 @@ bool prosystem_active __attribute__((section(".dtcm"))) = false;
 bool prosystem_paused __attribute__((section(".dtcm"))) = false;
 uint prosystem_cycles __attribute__((section(".dtcm"))) = 0;
 uint32 bg32           __attribute__((section(".dtcm"))) = 0;
-bool bRenderFrame     __attribute__((section(".dtcm"))) = 0;
+uint bRenderFrame     __attribute__((section(".dtcm"))) = 0;
 
 
 // ----------------------------------------------------------------------------

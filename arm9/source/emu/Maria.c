@@ -27,7 +27,7 @@
 
 #include "ProSystem.h"
 
-extern bool bRenderFrame;
+extern uint bRenderFrame;
 
 union ColorUnion
 {
@@ -57,7 +57,7 @@ uint maria_cycles __attribute__((section(".dtcm")));
 static pair maria_dpp __attribute__((section(".dtcm")));
 static pair maria_dp __attribute__((section(".dtcm")));
 static pair maria_pp __attribute__((section(".dtcm")));
-static uint maria_horizontal __attribute__((section(".dtcm")));
+static byte maria_horizontal __attribute__((section(".dtcm")));
 static byte maria_palette __attribute__((section(".dtcm")));
 static int maria_offset __attribute__((section(".dtcm"))); 
 static byte maria_h08 __attribute__((section(".dtcm")));
