@@ -60,7 +60,6 @@ int bg0s, bg1s;      // sub BG pointers
 #define MAX_DEBUG 5
 int debug[MAX_DEBUG]={0};
 u8 DEBUG_DUMP = 0;
-//#define CART_INFO
 //#define WRITE_TWEAKS
 
 #define SOUND_FREQ  (31440/2)           // Be careful if you change this - this matches the frequency of the POKEY update and if we are TIA-only, we will double it.
@@ -385,14 +384,10 @@ void dsLoadGame(char *filename)
     lastTiaSample = 0;
     lastSample = 0;
       
-#ifdef CART_INFO
-    char cart_info_buf[64];
-    dsPrintValue(0,22,0, (char*)cartridge_digest);
-    snprintf(cart_info_buf, 63, "CT=%d PK=%d RE=%d SY=%d ST=%d HS=%d ", cartridge_type, cartridge_pokey, cartridge_region, cartridge_uses_wsync, cartridge_steals_cycles, cartridge_hsc_enabled);
-    cart_info_buf[32] = 0;
-    dsPrintValue(0,21,0,cart_info_buf);
-    dsPrintValue(0,19,0,cartridge_filename);      
-#endif          
+    if (DEBUG_DUMP)
+    {
+        dsPrintValue(0,22,0, (char*)cartridge_digest);
+    }
       
     if (myCartInfo.region != NTSC)
     {
