@@ -49,15 +49,15 @@ union ColorUnion colors __attribute__((section(".dtcm")));
 
 word* maria_surface __attribute__((section(".dtcm"))) = 0;
 uint  maria_scanline __attribute__((section(".dtcm"))) = 1;
-uint wide_mask_low __attribute__((section(".dtcm")));
-uint wide_mask_high __attribute__((section(".dtcm")));
+u8 wide_mask_low __attribute__((section(".dtcm")));
+u8 wide_mask_high __attribute__((section(".dtcm")));
 
 static byte maria_lineRAM[MARIA_LINERAM_SIZE+4] __attribute__((section(".dtcm")));
 uint maria_cycles __attribute__((section(".dtcm")));
 static pair maria_dpp __attribute__((section(".dtcm")));
 static pair maria_dp __attribute__((section(".dtcm")));
 static pair maria_pp __attribute__((section(".dtcm")));
-static byte maria_horizontal __attribute__((section(".dtcm")));
+static uint maria_horizontal __attribute__((section(".dtcm")));
 static byte maria_palette __attribute__((section(".dtcm")));
 static int maria_offset __attribute__((section(".dtcm"))); 
 static byte maria_h08 __attribute__((section(".dtcm")));
