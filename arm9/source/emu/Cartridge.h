@@ -56,6 +56,10 @@
 #define POKEY_AT_4000   1
 #define POKEY_AT_450    2
 
+#define FRAMESKIP_DISABLE       0
+#define FRAMESKIP_MEDIUM        1
+#define FRAMESKIP_AGGRESSIVE    2
+
 #define HSC_YES         true
 #define HSC_NO          false
 

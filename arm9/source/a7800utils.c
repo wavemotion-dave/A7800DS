@@ -374,8 +374,12 @@ void dsLoadGame(char *filename)
       bios_enabled = true;
     }
 
+    // ------------------------------------------------------------------------------------------------
     // Enable or disbale frameskip... 0xFF means display every frame and 0x01 means every-other frame
-    frameSkipMask = (myCartInfo.frameSkip ? 0x01 : 0xFF);
+    // ------------------------------------------------------------------------------------------------
+    frameSkipMask = 0xFF;   // Assume frameskip disabled until proven otherwise directly below
+    if (myCartInfo.frameSkip == FRAMESKIP_MEDIUM)     frameSkipMask = 0x03;
+    if (myCartInfo.frameSkip == FRAMESKIP_AGGRESSIVE) frameSkipMask = 0x01;
       
     dsShowScreenEmu();
     prosystem_Reset();

@@ -101,7 +101,9 @@ static void ApplyOptions(void)
     keyboard_data[15] = myCartInfo.diff1;
     keyboard_data[16] = myCartInfo.diff2;
     
-    frameSkipMask = (myCartInfo.frameSkip ? 0x01 : 0xFF);
+    frameSkipMask = 0xFF;   // Assume frameskip disabled until proven otherwise directly below
+    if (myCartInfo.frameSkip == FRAMESKIP_MEDIUM)     frameSkipMask = 0x03;
+    if (myCartInfo.frameSkip == FRAMESKIP_AGGRESSIVE) frameSkipMask = 0x01;
 }
 
 
@@ -170,7 +172,7 @@ const struct options_t Game_Option_Table[] =
 {
     {"CART TYPE",   0, {"NORMAL", "SUPERCART", "SUPER LARGE", "SUPER RAM", "SUPER ROM", "ABSOLUTE", "ACTIVISION", "FRACTALUS"},&myCartInfo.cardtype,           8},
     {"HIGHSCORE",   0, {"DISABLED", "ENABLED"},                                                                               &myCartInfo.hsc,                 2},
-    {"FRAMESKIP",   0, {"DISABLED", "ENABLED"},                                                                               &myCartInfo.frameSkip,           2},
+    {"FRAMESKIP",   0, {"DISABLED", "MEDIUM 3/4", "HIGH 1/2"},                                                                &myCartInfo.frameSkip,           3},
     {"POKEY",       0, {"NONE", "AT 4000", "AT 450"},                                                                         &myCartInfo.pokeyType,           3},
     {"STEALS CYC",  0, {"NO", "YES"},                                                                                         &myCartInfo.steals_cycles,       2},
     {"USES WSYNC",  0, {"NO", "YES"},                                                                                         &myCartInfo.uses_wsync,          2},

@@ -65,7 +65,7 @@ Database_Entry game_list[] = {
   {"5e332fbfc1e0fc74223d2e73271ce650",  "Donkey Kong Jr",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Donkey Kong Jr
   {"19f1ee292a23636bd57d408b62de79c7",  "Donkey Kong",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Donkey Kong
   {"c3107d3e3e17d67e3a11d47a5946a4f3",  "DONKEY KONG XM",                   CT_SUPLRG, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  20-9, 256,  210, 0}, // title=Donkey Kong XM Demo (purposely set HSC to false - game HSC is buggy)
-  {"543484c00ba233736bcaba2da20eeea9",  "Double Dragon",                    CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 1}, // title=Double Dragon
+  {"543484c00ba233736bcaba2da20eeea9",  "Double Dragon",                    CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 1}, // title=Double Dragon
   {"94009ccfdcd4f55d24033ca06269ba6a",  "Dragon's Descent",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  24-9, 256,  234, 0}, // title=Dragon's Descent 1.7
   {"cad9b532a4ced6793e18ba7237e44d40",  "Dragon's Havoc",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  6,  23-9, 256,  232, 0}, // title=Dragon's Havoc    
   {"2a3cb324b75af461fc974b02e6b30b5d",  "Dragon's Havoc",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  6,  23-9, 256,  232, 0}, // title=Dragon's Havoc - Newest 2022
@@ -195,7 +195,6 @@ bool database_Load(byte *digest)
       if (!strcmp(allConfigs.cart[i].digest,(char *) digest))
       {
           memcpy(&myCartInfo, &allConfigs.cart[i], sizeof(myCartInfo));
-          if (!isDSiMode())  myCartInfo.frameSkip = true;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
           bFound = true;
           break;
       }
@@ -213,7 +212,7 @@ bool database_Load(byte *digest)
           if (!strcmp(game_list[i].digest,(char *) digest))
           {
             memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
-            if (!isDSiMode())  myCartInfo.frameSkip = true;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
+            if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
             bFound = true;          
             break;
           }
@@ -235,7 +234,7 @@ bool database_Load(byte *digest)
                (strstr((char *) cartridge_filename, game_list[i].header_name) != NULL) ) 
           {
             memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
-            if (!isDSiMode())  myCartInfo.frameSkip = true;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
+            if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
             bFound = true;
             break;
           }
@@ -282,17 +281,12 @@ bool database_Load(byte *digest)
         // --------------------------------------------------------
         if (isDSiMode())    // DSi can handle many games in full framerate
         {
-            if (cartridge_size < 135000)  myCartInfo.frameSkip = false;    // For smaller cart sizes, don't frameskip
-            else myCartInfo.frameSkip = true;
+            if (cartridge_size < 135000)  myCartInfo.frameSkip = FRAMESKIP_DISABLE;    // For smaller cart sizes, don't frameskip
+            else myCartInfo.frameSkip = FRAMESKIP_MEDIUM;
         }
         else    // DS-Lite defaults to frame skipping
         {
-            myCartInfo.frameSkip = true;
-            myCartInfo.steals_cycles = STEAL_CYCLE;                                                                       // DS-LITE can't handle anything else anyway... this at least makes those games playable
-            if (!strcmp(myCartInfo.digest,(char *) "4e325918a8b3bbcf2f9405040abcfc6d")) myCartInfo.uses_wsync = false;    // For bonQ we disable WSync to make it playable
-            if (!strcmp(myCartInfo.digest,(char *) "9fa7743a016c9b7015ee1d386326f88e")) myCartInfo.uses_wsync = false;    // For bonQ we disable WSync to make it playable
-            if (!strcmp(myCartInfo.digest,(char *) "e7d89669a7f92ec2cc99d9663a28671c")) myCartInfo.steals_cycles = false;    // For Frenzy we want to get voices working
-            if (!strcmp(myCartInfo.digest,(char *) "26031dea7251fb861cb55f86742c9d6e")) myCartInfo.steals_cycles = false;    // For Frenzy we want to get voices working
+            myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;
         }
     }
 

@@ -378,10 +378,10 @@ static inline void maria_WriteLineRAM(word* buffer)
 static inline void maria_StoreLineRAM( ) 
 {
   uint index;
-  u32 *ptr=(u32*)maria_lineRAM;
 
   if (bRenderFrame)  // Skip every other frame...
   {
+    u32 *ptr=(u32*)maria_lineRAM;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
@@ -397,34 +397,31 @@ static inline void maria_StoreLineRAM( )
   wide_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
   wide_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;
 
-  byte mode = memory_ram[maria_dp.w + 1];
+  maria_pp.b.l = memory_ram[maria_dp.w++];
+  byte mode = memory_ram[maria_dp.w++];
   while(mode & 0x5f) 
   {
     uint width;
     byte indirect = 0;
  
-    maria_pp.b.l = memory_ram[maria_dp.w++];
-    maria_pp.b.h = memory_ram[maria_dp.w + 1];
+    maria_pp.b.h = memory_ram[maria_dp.w++];
     
     if(mode & 31) 
     { 
       maria_cycles += 8; // Maria cycles (Header 4 byte)
-      maria_palette = (memory_ram[maria_dp.w] & 0xE0) >> 3;
-      maria_horizontal = memory_ram[maria_dp.w + 2];
-      width = memory_ram[maria_dp.w] & 31;
-      width = ((~width) & 31) + 1;
-      maria_dp.w += 3;
+      maria_palette = (mode & 0xE0) >> 3;
+      maria_horizontal = memory_ram[maria_dp.w++];
+      width = (~mode & 31) + 1;
     }
     else 
     {
       maria_cycles += 12; // Maria cycles (Header 5 byte)
-      maria_palette = (memory_ram[maria_dp.w + 2] & 0xE0) >> 3;
-      maria_horizontal = memory_ram[maria_dp.w + 3];
-      indirect = memory_ram[maria_dp.w] & 32;
-      maria_wmode = memory_ram[maria_dp.w] & 128;
-      width = memory_ram[maria_dp.w + 2] & 31;
+      maria_palette = (memory_ram[maria_dp.w] & 0xE0) >> 3;
+      width = memory_ram[maria_dp.w++] & 31;
       width = (width == 0)? 32: ((~width) & 31) + 1;
-      maria_dp.w += 4;
+      maria_horizontal = memory_ram[maria_dp.w++];
+      indirect = mode & 32;
+      maria_wmode = mode & 128;
     }
 
     if(!indirect) 
@@ -458,7 +455,8 @@ static inline void maria_StoreLineRAM( )
       }
       maria_cycles += (6*width) + (cwidth*3*width); // Maria cycles (Direct graphic read)
     }
-    mode = memory_ram[maria_dp.w + 1];
+    maria_pp.b.l = memory_ram[maria_dp.w++];
+    mode = memory_ram[maria_dp.w++];      
   }
 }
 
