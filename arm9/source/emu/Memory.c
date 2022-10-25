@@ -263,10 +263,15 @@ ITCM_CODE void memory_WriteROMFast(word address, u32 size, const u32* data)
 {
   u32* ramPtr = (u32*)&memory_ram[address];
   u32* dataPtr = (u32*)data;
-  for (u32 i=0; i<size; i++)
+  u16 size2 = size;
+  do
   {
       *ramPtr++ = *dataPtr++;
+      *ramPtr++ = *dataPtr++;
+      *ramPtr++ = *dataPtr++;
+      *ramPtr++ = *dataPtr++;
   }
+  while (--size2);
 }
 
 // ----------------------------------------------------------------------------
