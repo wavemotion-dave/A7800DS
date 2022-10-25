@@ -74,9 +74,9 @@ inline static void cartridge_WriteBank(word address, byte bank)
     last_bank = bank;
     uint offset = bank * 16384;
     if (offset < (256*1024))    // If we are in fast VRAM memory
-        memory_WriteROM_DMA((u32*)&memory_ram[address], (u32*)(0x06860000 + offset), 16384);
+        memory_WriteROMFast(address, (16384/4), (u32*)(0x06860000 + offset));
     else    // Normal memory - a little slower but that's the best we can do...
-        memory_WriteROMFast(address, (16384/4), cartridge_buffer + offset);
+        memory_WriteROMFast(address, (16384/4), (u32*)(cartridge_buffer + offset));
   }
 }
 
@@ -120,15 +120,17 @@ static void cartridge_ReadHeader(const byte* header) {
   
   word cardtype = (header[53] << 8) | header[54];
   
-  myCartInfo.cardtype = (cartridge_size > 131072) ? CARTRIDGE_TYPE_SUPERCART_LARGE : CARTRIDGE_TYPE_NORMAL;    // Default guess... may be overridden below
+  myCartInfo.cardtype = (cartridge_size <= 65536) ? CARTRIDGE_TYPE_NORMAL : CARTRIDGE_TYPE_SUPERCART;    // Default guess... may be overridden below
     
-  if (cardtype & 0x0001) myCartInfo.pokeyType = POKEY_AT_4000;
   if (cardtype & 0x0002) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART;
   if (cardtype & 0x0004) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_RAM;
-  if (cardtype & 0x0008) myCartInfo.cardtype  = (cartridge_size > 131072) ? CARTRIDGE_TYPE_SUPERCART_LARGE : CARTRIDGE_TYPE_SUPERCART_ROM;
-  if (cardtype & 0x0040) myCartInfo.pokeyType = POKEY_AT_450;
+  if (cardtype & 0x0008) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_LARGE;
+  if (cardtype & 0x0010) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_ROM;
   if (cardtype & 0x0100) myCartInfo.cardtype  = CARTRIDGE_TYPE_ACTIVISION;
   if (cardtype & 0x0200) myCartInfo.cardtype  = CARTRIDGE_TYPE_ABSOLUTE;
+
+  if (cardtype & 0x0040) myCartInfo.pokeyType = POKEY_AT_450;
+  if (cardtype & 0x0001) myCartInfo.pokeyType = POKEY_AT_4000;
   
   myCartInfo.cardctrl1 = header[55];
   myCartInfo.cardctrl2 = header[56];

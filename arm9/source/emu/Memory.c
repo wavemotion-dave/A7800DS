@@ -257,7 +257,7 @@ ITCM_CODE void memory_WriteROM(word address, u32 size, const byte* data)
 // WriteROMFast (assumes memory_rom[] already set properly)
 // size is already in multiples of u32 dwords
 // ----------------------------------------------------------------------------
-ITCM_CODE void memory_WriteROMFast(word address, u32 size, const byte* data) 
+ITCM_CODE void memory_WriteROMFast(word address, u32 size, const u32* data) 
 {
   u32* ramPtr = (u32*)&memory_ram[address];
   u32* dataPtr = (u32*)data;
@@ -266,23 +266,6 @@ ITCM_CODE void memory_WriteROMFast(word address, u32 size, const byte* data)
       *ramPtr++ = *dataPtr++;
   }
 }
-
-// ----------------------------------------------------------------------------
-// WriteROMFast using DMA (assumes memory_rom[] already set properly)
-// size is already in multiples of u32 dwords
-// ----------------------------------------------------------------------------
-ITCM_CODE void memory_WriteROM_DMA(u32 *dest, u32 *src, u32 size)
-{
-    // -------------------------------------------------------------------------
-    // DMA is holding up the bus for sound so we do a mix of DMA and memcpy()
-    // which is a slight improvement but keeps the sound engine mostly running.
-    // -------------------------------------------------------------------------
-    DC_InvalidateRange(dest, 4096);
-    dmaCopyWordsAsynch(3, src, dest, 4096);
-    memcpy(dest+(4096>>2), src+(4096>>2), size-4096);
-    while (dmaBusy(3)) asm("nop");
-}
-
 
 // ----------------------------------------------------------------------------
 // ClearROM

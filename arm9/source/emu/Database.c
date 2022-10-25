@@ -287,14 +287,12 @@ bool database_Load(byte *digest)
         else    // DS-Lite defaults to frame skipping
         {
             myCartInfo.frameSkip = true;
+            myCartInfo.steals_cycles = STEAL_CYCLE;                                                                       // DS-LITE can't handle anything else anyway... this at least makes those games playable
+            if (!strcmp(myCartInfo.digest,(char *) "4e325918a8b3bbcf2f9405040abcfc6d")) myCartInfo.uses_wsync = false;    // For bonQ we disable WSync to make it playable
+            if (!strcmp(myCartInfo.digest,(char *) "9fa7743a016c9b7015ee1d386326f88e")) myCartInfo.uses_wsync = false;    // For bonQ we disable WSync to make it playable
         }
     }
 
-    if (!isDSiMode())  
-    {
-        myCartInfo.steals_cycles = STEAL_CYCLE;     // DS-LITE can't handle anything else anyway... this at least makes those games playable
-    }
-    
     return true;
 }
 

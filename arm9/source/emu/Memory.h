@@ -47,8 +47,7 @@ inline byte memory_Read(word address)
 }
 
 extern void memory_WriteROM(word address, u32 size, const byte* data);
-extern void memory_WriteROMFast(word address, u32 size, const byte* data);
-extern void memory_WriteROM_DMA(u32 *dest, u32 *src, u32 size);
+extern void memory_WriteROMFast(word address, u32 size, const u32* data);
 extern void memory_ClearROM(word address, word size);
 extern byte memory_ram[MEMORY_SIZE];
 extern byte memory_rom[MEMORY_SIZE];
