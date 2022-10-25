@@ -12,11 +12,15 @@ help you. The emulator was developed using Trebor's "7800 ProPack" of well-curat
 Features :
 ----------
  Most things you should expect from an emulator. Speed is excellent on the DSi and 
- less great on the older DS-LITE. For the DS-LITE you can expect full speed on
+ a little less great on the older DS-LITE. For the DS-LITE you can expect full speed on
  about three-quarters of the 7800 library. The more traditional games (think: Asteroids,
  Astro Blaster, Robotron, Food Fight, Centipede, Pac-Man Collection, etc) will 
  all run great. The really big bankswitched games will struggle on the older 
  DS-LITE/PHAT hardware.
+ 
+ The emulator will support ROMs up to 1024K (1MB!) in size + the 128 byte .a78 header.
+ All popular bank-switching schemes are supported including an extra 16K of RAM at 4000h.
+ Pokey support at 4000h and 450h - switch in Configuration if it's not auto-detected.
   
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.  It's worth the effort!
