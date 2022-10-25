@@ -32,18 +32,14 @@
 #include "Equates.h"
 #include "Pair.h"
 #include "Memory.h"
-#include "Rect.h"
 #include "Sally.h"
 
 #include "shared.h"
-
 
 extern void maria_Reset( );
 extern ITCM_CODE void maria_RenderScanline(void);
 extern ITCM_CODE void maria_RenderScanlineTOP(void);
 extern void maria_Clear( );
-extern rect maria_displayArea;
-extern rect maria_visibleArea;
 extern word* maria_surface;
 extern uint maria_scanline;
 

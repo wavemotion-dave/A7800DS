@@ -54,8 +54,8 @@ u8 wide_mask_high __attribute__((section(".dtcm")));
 
 static byte maria_lineRAM[MARIA_LINERAM_SIZE+4] __attribute__((section(".dtcm")));
 uint maria_cycles __attribute__((section(".dtcm")));
-static pair maria_dpp __attribute__((section(".dtcm")));
-static pair maria_dp __attribute__((section(".dtcm")));
+static lpair maria_dpp __attribute__((section(".dtcm")));
+static lpair maria_dp __attribute__((section(".dtcm")));
 static lpair maria_pp __attribute__((section(".dtcm")));
 static byte maria_horizontal __attribute__((section(".dtcm")));
 static byte maria_palette __attribute__((section(".dtcm")));
@@ -403,54 +403,60 @@ static inline void maria_StoreLineRAM( )
     byte width;
     byte indirect = 0;
  
-    maria_pp.b.l = memory_ram[maria_dp.w];
-    maria_pp.b.h = memory_ram[maria_dp.w + 2];
+    maria_pp.b.l = memory_ram[maria_dp.w++];
+    maria_pp.b.h = memory_ram[maria_dp.w + 1];
     
     if(mode & 31) 
     { 
       maria_cycles += 8; // Maria cycles (Header 4 byte)
-      maria_palette = (memory_ram[maria_dp.w + 1] & 0xE0) >> 3;
-      maria_horizontal = memory_ram[maria_dp.w + 3];
-      width = memory_ram[maria_dp.w + 1] & 31;
+      maria_palette = (memory_ram[maria_dp.w] & 0xE0) >> 3;
+      maria_horizontal = memory_ram[maria_dp.w + 2];
+      width = memory_ram[maria_dp.w] & 31;
       width = ((~width) & 31) + 1;
-      maria_dp.w += 4;
+      maria_dp.w += 3;
     }
     else 
     {
       maria_cycles += 12; // Maria cycles (Header 5 byte)
-      maria_palette = (memory_ram[maria_dp.w + 3] & 0xE0) >> 3;
-      maria_horizontal = memory_ram[maria_dp.w + 4];
-      indirect = memory_ram[maria_dp.w + 1] & 32;
-      maria_wmode = memory_ram[maria_dp.w + 1] & 128;
-      width = memory_ram[maria_dp.w + 3] & 31;
+      maria_palette = (memory_ram[maria_dp.w + 2] & 0xE0) >> 3;
+      maria_horizontal = memory_ram[maria_dp.w + 3];
+      indirect = memory_ram[maria_dp.w] & 32;
+      maria_wmode = memory_ram[maria_dp.w] & 128;
+      width = memory_ram[maria_dp.w + 2] & 31;
       width = (width == 0)? 32: ((~width) & 31) + 1;
-      maria_dp.w += 5;
+      maria_dp.w += 4;
     }
 
     if(!indirect) 
     {
-      maria_pp.b.h += maria_offset;
-      for(index = 0; index < width; index++) 
+      if (bRenderFrame)
       {
-        maria_cycles += 3; // Maria cycles (Direct graphic read)
-        if (bRenderFrame) maria_StoreGraphic();
+          maria_pp.b.h += maria_offset;
+          for(index = 0; index < width; index++) 
+          {
+             maria_StoreGraphic();
+          }
       }
+      maria_cycles += (3*width); // Maria cycles (Direct graphic read)
     }
     else {
-      byte cwidth = memory_ram[CTRL] & 16;
-      lpair basePP = maria_pp;
-      for(index = 0; index < width; index++) {
-        //maria_cycles += 3; // Maria cycles (Indirect)
-        maria_pp.b.l = memory_ram[basePP.w++];
-        maria_pp.b.h = memory_ram[CHARBASE] + maria_offset;
-        
-        maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
-        if (bRenderFrame) maria_StoreGraphic( );
-        if(cwidth) {
-          maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
-          if (bRenderFrame) maria_StoreGraphic( );
-        }
+      byte cwidth = (memory_ram[CTRL] & 16) ? 1:0;
+      if (bRenderFrame)
+      {
+          lpair basePP = maria_pp;
+          for(index = 0; index < width; index++) {
+            maria_pp.b.l = memory_ram[basePP.w++];
+            maria_pp.b.h = memory_ram[CHARBASE] + maria_offset;
+
+            //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
+            maria_StoreGraphic( );
+            if(cwidth) {
+              maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
+              if (bRenderFrame) maria_StoreGraphic( );
+            }
+          }
       }
+      maria_cycles += (6*width) + (cwidth*3*width); // Maria cycles (Direct graphic read)
     }
     mode = memory_ram[maria_dp.w + 1];
   }

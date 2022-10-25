@@ -129,15 +129,7 @@ static inline void sally_Branch(byte branch) {
 // Delay
 // ----------------------------------------------------------------------------
 static inline void sally_Delay(byte delta) {
-#if 0
-  pair address1 = sally_address;
-  address1.w -= delta;
-  if(address1.b.h != sally_address.b.h) {
-    sally_cyclesX4 += 4;
-  }
-#else
-  if (((word)sally_address.b.l + (word)delta) > 255) sally_cyclesX4 += 4;
-#endif  
+  if (((word)sally_address.b.l + (word)delta) & 0xFF00) sally_cyclesX4 += 4;
 }
 
 // ----------------------------------------------------------------------------
@@ -177,7 +169,7 @@ static inline void sally_Immediate( ) {
 // Indirect
 // ----------------------------------------------------------------------------
 static inline void sally_Indirect( ) {
-  pair base;
+  lpair base;
   base.b.l = memory_Read_Fast(sally_pc.w++);
   base.b.h = memory_Read_Fast(sally_pc.w++);
   sally_address.b.l = memory_Read_Fast(base.w);
@@ -282,7 +274,7 @@ static inline void sally_ADC( ) {
     sally_a = (ah << 4) | (al & 15);
   }
   else {
-    pair temp;
+    lpair temp;
     temp.w = sally_a + data + (sally_p & _fC);
 
     if(temp.b.h) {
@@ -783,7 +775,7 @@ static inline void sally_SBC( ) {
       ah -= 6;
     }
     
-    pair temp;
+    lpair temp;
     temp.w = sally_a - data - !(sally_p & _fC);
 
     if(!temp.b.h) {
@@ -804,7 +796,7 @@ static inline void sally_SBC( ) {
     sally_a = (ah << 4) | (al & 15);
   }
   else {
-    pair temp;
+    lpair temp;
     temp.w = sally_a - data - !(sally_p & _fC);
         
     if(!temp.b.h) {

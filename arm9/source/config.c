@@ -93,13 +93,15 @@ void SaveConfig(bool bShow)
 // -------------------------------------------------------------------------------------------------
 static void ApplyOptions(void)
 {
-    extern u8 bRefreshXY;
+    extern u8 bRefreshXY, frameSkipMask;
     extern unsigned char keyboard_data[];
         
     bRefreshXY = true;
     
     keyboard_data[15] = myCartInfo.diff1;
     keyboard_data[16] = myCartInfo.diff2;
+    
+    frameSkipMask = (myCartInfo.frameSkip ? 0x01 : 0xFF);
 }
 
 
