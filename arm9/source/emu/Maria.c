@@ -400,7 +400,7 @@ static inline void maria_StoreLineRAM( )
   byte mode = memory_ram[maria_dp.w + 1];
   while(mode & 0x5f) 
   {
-    byte width;
+    uint width;
     byte indirect = 0;
  
     maria_pp.b.l = memory_ram[maria_dp.w++];
