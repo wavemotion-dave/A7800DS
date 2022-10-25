@@ -291,6 +291,8 @@ bool database_Load(byte *digest)
             myCartInfo.steals_cycles = STEAL_CYCLE;                                                                       // DS-LITE can't handle anything else anyway... this at least makes those games playable
             if (!strcmp(myCartInfo.digest,(char *) "4e325918a8b3bbcf2f9405040abcfc6d")) myCartInfo.uses_wsync = false;    // For bonQ we disable WSync to make it playable
             if (!strcmp(myCartInfo.digest,(char *) "9fa7743a016c9b7015ee1d386326f88e")) myCartInfo.uses_wsync = false;    // For bonQ we disable WSync to make it playable
+            if (!strcmp(myCartInfo.digest,(char *) "e7d89669a7f92ec2cc99d9663a28671c")) myCartInfo.steals_cycles = false;    // For Frenzy we want to get voices working
+            if (!strcmp(myCartInfo.digest,(char *) "26031dea7251fb861cb55f86742c9d6e")) myCartInfo.steals_cycles = false;    // For Frenzy we want to get voices working
         }
     }
 
