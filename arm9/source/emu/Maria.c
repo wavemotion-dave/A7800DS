@@ -451,8 +451,8 @@ static inline void maria_StoreLineRAM( )
             //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
             maria_StoreGraphic( );
             if(cwidth) {
-              maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
-              if (bRenderFrame) maria_StoreGraphic( );
+              //maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
+              maria_StoreGraphic( );
             }
           }
       }
