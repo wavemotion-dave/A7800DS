@@ -51,7 +51,8 @@ void memory_Reset( )
 // ----------------------------------------------------------------------------
 ITCM_CODE byte memory_Read_Slower(word address) 
 { 
-  if ((address & 0xFFFC) == 0x284)
+  if (address & 0x8000) return memory_ram[address];
+  else if ((address & 0xFFFC) == 0x284)
   {
       if (address & 0x1)
       {
@@ -75,7 +76,7 @@ ITCM_CODE byte memory_Read_Slower(word address)
       {
           // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's 
           // good enough as nothing else should be mapped in this region except POKEY.
-          if ((address & 0xFFC0) == 0x440) return pokey_GetRegister(0x4000 + (address - 0x0450));
+          if ((address & 0xFFC0) == 0x440) return pokey_GetRegister(0x4000 | (address & 0xF));
       }
   }
   return memory_ram[address];
@@ -87,6 +88,7 @@ ITCM_CODE byte memory_Read_Slower(word address)
 ITCM_CODE void memory_Write(word address, byte data) 
 {
   extern u32 bg32;
+    
   if (myCartInfo.pokeyType)
   {
       if (myCartInfo.pokeyType == POKEY_AT_4000)
@@ -103,7 +105,7 @@ ITCM_CODE void memory_Write(word address, byte data)
           // good enough as nothing else should be mapped in this region except POKEY.
           if ((address & 0xFFC0) == 0x440)
           {
-            pokey_SetRegister(0x4000 + (address - 0x0450), data);
+            pokey_SetRegister(0x4000 | (address & 0x0F), data);
             return;
           }          
       }

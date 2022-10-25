@@ -166,7 +166,7 @@ struct options_t
 
 const struct options_t Game_Option_Table[] =
 {
-    {"CART TYPE",   0, {"NORMAL", "SUPERCART", "SUPER LARGE", "SUPER RAM", "SUPER ROM", "ABSOLUTE", "ACTIVISION"},            &myCartInfo.cardtype,            7},
+    {"CART TYPE",   0, {"NORMAL", "SUPERCART", "SUPER LARGE", "SUPER RAM", "SUPER ROM", "ABSOLUTE", "ACTIVISION", "FRACTALUS"},&myCartInfo.cardtype,           8},
     {"HIGHSCORE",   0, {"DISABLED", "ENABLED"},                                                                               &myCartInfo.hsc,                 2},
     {"FRAMESKIP",   0, {"DISABLED", "ENABLED"},                                                                               &myCartInfo.frameSkip,           2},
     {"POKEY",       0, {"NONE", "AT 4000", "AT 450"},                                                                         &myCartInfo.pokeyType,           3},

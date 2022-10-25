@@ -42,7 +42,7 @@ extern void memory_Write(word address, byte data);
 
 inline byte memory_Read(word address)
 {
-    if (address < 0x284) return memory_ram[address];    // This happens a lot... so it speeds up emulation
+    if (!(address & 0xFE00)) return memory_ram[address];    // This happens a lot... so it speeds up emulation
     return memory_Read_Slower(address);
 }
 

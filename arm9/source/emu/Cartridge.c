@@ -331,6 +331,12 @@ void cartridge_Store( ) {
         memory_WriteROM(57344, 8192, cartridge_buffer + 114688);
       }
       break;
+     case CARTRIDGE_TYPE_FRACTALUS:
+      {
+          memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
+          memory_ClearROM(0x4000, 0x4000);
+      }
+      break;
   }
   maxbank = cartridge_size / 16384;
 }

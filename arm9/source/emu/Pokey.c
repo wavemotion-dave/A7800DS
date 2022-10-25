@@ -178,7 +178,7 @@ void pokey_Reset( )
 
 
 /* Called prior to each scanline */
-void pokey_Scanline() 
+ITCM_CODE void pokey_Scanline() 
 {
   random_scanline_counter += CYCLES_PER_SCANLINE; 
 
@@ -186,7 +186,7 @@ void pokey_Scanline()
 		pot_scanline++;  
 }
 
-byte pokey_GetRegister(word address) 
+ITCM_CODE byte pokey_GetRegister(word address) 
 {
   byte data = 0;
 
@@ -249,7 +249,7 @@ byte pokey_GetRegister(word address)
 // ----------------------------------------------------------------------------
 // SetRegister
 // ----------------------------------------------------------------------------
-void pokey_SetRegister(word address, byte value) {
+ITCM_CODE void pokey_SetRegister(word address, byte value) {
   byte channelMask;
   uint channel;
 
@@ -434,7 +434,7 @@ static inline void loc_set_byte(byte *p, uint v)
 // ----------------------------------------------------------------------------
 // Process
 // ----------------------------------------------------------------------------
-void pokey_Process(uint length) 
+ITCM_CODE void pokey_Process(uint length) 
 {
   byte* buffer = pokey_buffer + pokeyBufIdx;
   byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
