@@ -56,7 +56,7 @@ static byte maria_lineRAM[MARIA_LINERAM_SIZE+4] __attribute__((section(".dtcm"))
 uint maria_cycles __attribute__((section(".dtcm")));
 static pair maria_dpp __attribute__((section(".dtcm")));
 static pair maria_dp __attribute__((section(".dtcm")));
-static pair maria_pp __attribute__((section(".dtcm")));
+static lpair maria_pp __attribute__((section(".dtcm")));
 static byte maria_horizontal __attribute__((section(".dtcm")));
 static byte maria_palette __attribute__((section(".dtcm")));
 static int maria_offset __attribute__((section(".dtcm"))); 
@@ -438,7 +438,7 @@ static inline void maria_StoreLineRAM( )
     }
     else {
       byte cwidth = memory_ram[CTRL] & 16;
-      pair basePP = maria_pp;
+      lpair basePP = maria_pp;
       for(index = 0; index < width; index++) {
         //maria_cycles += 3; // Maria cycles (Indirect)
         maria_pp.b.l = memory_ram[basePP.w++];

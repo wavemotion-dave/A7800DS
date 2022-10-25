@@ -37,4 +37,17 @@ typedef union  {
 } Pair;
 
 typedef Pair pair;
+
+typedef union  { 
+  u32 w;
+  struct  {
+    byte l; 
+    byte h;
+    byte b2;
+    byte b3;
+  } b;
+} LPair;
+
+typedef LPair lpair;
+
 #endif
