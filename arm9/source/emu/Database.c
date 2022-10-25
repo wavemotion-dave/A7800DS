@@ -269,7 +269,8 @@ bool database_Load(byte *digest)
         // -------------------------------------------------------------------
         if (myCartInfo.hasHeader == false)
         {
-            myCartInfo.cardtype      = (cartridge_size <= (48*1024)) ? CT_NORMAL:CT_SUPROM;
+            if (cartridge_size == (144*1024)) myCartInfo.cardtype = CT_SUPLRG;
+            else myCartInfo.cardtype = (cartridge_size <= (48*1024)) ? CT_NORMAL:CT_SUPROM;
             myCartInfo.pokeyType     = POKEY_NONE;
             myCartInfo.cardctrl1     = JOY;
             myCartInfo.cardctrl2     = JOY;

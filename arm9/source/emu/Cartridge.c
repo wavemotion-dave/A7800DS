@@ -244,9 +244,48 @@ bool cartridge_Load(char *filename)
 }
 
 
-// ----------------------------------------------------------------------------
-// Store
-// ----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
+// Here are the main 7800 Bankswitching schemes (ignoring Absolute, Activistion and Fractalus):
+//
+// NORMAL           Anything 48K or less... fits into memory (0xffff downwards) without switching.
+// SUPERCART        Games that are 128+K in size with nothing mapped in at 0x4000
+// SUPERCART_LARGE  Games that are 144+K in size with the extra 16K bank 0 fixed at 0x4000
+// SUPERCART_RAM    Games that are 128+K in size with extra 16K of RAM at 0x4000
+// SUPERCART_ROM    Games that are 128+K in size with bank 6 fixed at 0x4000
+//
+// For the "Super Carts" the 16K at 0xC000 is the last bank in the ROM.
+// For the "Super Carts" the 16K at 0x8000 is the bankswapping bank and is switched by writing
+// the bank # to any address in that region.  For Supercart "Large" there are actually two
+// chips (16K fixed and 128K bankswapped) and the bank is relative to the 128K chip so emulators
+// will use (bank+1) to compensate for the extra 16K fixed bank 0 at 0x4000.
+//
+// In theory, since we can write any bank number 0-255 that would allow up to 255 banks of 16k
+// which is a whopping 4096K (4 Megabytes) of ROM but in practice carts seem to limit to 512K
+// or less for practical reasons with a few outstanding tech-demos reaching 1024K. 
+//
+// How these map into the .a78 header (the word at offset 53+54):
+//  bit 0     = pokey at $4000
+//  bit 1     = supergame bank switched     - this is SUPERCART
+//  bit 2     = supergame ram at $4000      - this is SUPERCART_RAM
+//  bit 3     = rom at $4000                - this is SUPERCART LARGE
+//
+//  bit 4     = bank 6 at $4000             - this is SUPERCART_ROM
+//  bit 5     = banked ram
+//  bit 6     = pokey at $450
+//  bit 7     = mirror ram at $4000
+//
+//  bit 8     = activision banking
+//  bit 9     = absolute banking
+//  bit 10    = pokey at $440
+//  bit 11    = ym2151 at $460/$461
+//
+//  bit 12    = souper
+//  bit 13    = banksets
+//  bit 14    = halt banked ram
+//  bit 15    = pokey@800
+//
+// If none of those bankswitching bits are set... assume NORMAL (unless cart > 64K in which case assume SUPERCART)
+// ------------------------------------------------------------------------------------------
 void cartridge_Store( ) {
   switch(myCartInfo.cardtype) {
     case CARTRIDGE_TYPE_NORMAL:
