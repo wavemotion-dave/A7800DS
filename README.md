@@ -84,13 +84,11 @@ Controls :
 --------------------------------------------------------------------------------
 Credits:
 --------------------------------------------------------------------------------
-Thanks Wintermute for devkitpro and libnds (http://www.devkitpro.org).
-  Greg Stanton for ProSystem source code (https://home.comcast.net/~gscottstanton/)
-   an Atari 7800 emulator.
-  zx81 (http://zx81.zx81.free.fr/serendipity_fr/) for PSP A7800 version (that helped
-   me a lot to understand ProSystem).
-  raz0red (http://www.twitchasylum.com/forum/viewtopic.php?t=519) for WII7800  (that
-  helped me a lot to fix some timing problem).
+ * Thanks Wintermute for devkitpro and libnds (http://www.devkitpro.org).
+ * Greg Stanton for ProSystem source code (https://home.comcast.net/~gscottstanton/) an Atari 7800 emulator.
+ * zx81 (http://zx81.zx81.free.fr/serendipity_fr/) for PSP A7800 version (that helped me a lot to understand ProSystem).
+ * raz0red (http://www.twitchasylum.com/forum/viewtopic.php?t=519) for WII7800  (that helped me a lot to fix some timing problem).
+ * The folks at AtariAge who helped weed out many of the old ProSystem Maria rendering bugs.
 
 --------------------------------------------------------------------------------
 Original Author:
@@ -104,6 +102,18 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.8 : 26-Oct-2022 by wavemotion-dave
+  * Massive optmization of the Maria rendering to help the DS-Lite run more games. 
+  * Fix for Rampage
+  * Fix for Rescue on Fractalus
+  * Fix for F-18 Hornet
+  * Fix for Double Dragon
+  * Fix for Basketbrawl
+  * Better A78 header parsing for improved game detection
+  * New Moderate Frameskip to show 3/4 frames (not as aggressive as the old 1/2 frameskip)
+  * Support for 1024K (+128 byte header) games. Only a few tech demos available so far.
+  * Removed most of the old hacks for DS-Lite as the speed is good enough to render those games properly.
+
 V3.7 : 23-Oct-2022 by wavemotion-dave
   * Optmization across the board for faster and smoother performance.
   * Gained enough speed that we have restored full HQ sound for the DS-Lite.
