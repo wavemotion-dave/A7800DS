@@ -62,7 +62,7 @@ static byte maria_palette __attribute__((section(".dtcm")));
 static int maria_offset __attribute__((section(".dtcm"))); 
 static byte maria_h08 __attribute__((section(".dtcm")));
 static byte maria_h16 __attribute__((section(".dtcm")));
-static uint16 maria_h8_h16 __attribute__((section(".dtcm")));
+static uint maria_h8_h16 __attribute__((section(".dtcm")));
 static u32 maria_wmode __attribute__((section(".dtcm")));
 
 word *framePtr __attribute__((section(".dtcm"))) = (word *)0;
@@ -167,6 +167,11 @@ static inline bool maria_IsHolyDMA( )
 static inline byte maria_GetColor(byte data) 
 {
   return (data & 3) ? memory_ram[BACKGRND | data] : memory_ram[BACKGRND];
+}
+
+static inline byte maria_GetColorFast(byte data) 
+{
+  return memory_ram[BACKGRND | data];
 }
 
 static u8 wide_lookup[256] __attribute__((section(".dtcm"))) =
@@ -334,15 +339,29 @@ static inline void maria_WriteLineRAM(word* buffer)
       }
       else
       {
-          *pix++ = maria_GetColor(wide_lookup_mode2A[colors.by.color0])       |
-                   maria_GetColor(wide_lookup_mode2B[colors.by.color0]) << 8  |
-                   maria_GetColor(wide_lookup_mode2A[colors.by.color1]) << 16 |
-                   maria_GetColor(wide_lookup_mode2B[colors.by.color1]) << 24;
+          if ((colors.wo.color0 == 0))
+          {
+              *pix++ = bg32;
+          }
+          else
+          {
+              *pix++ = maria_GetColor(wide_lookup_mode2A[colors.by.color0])       |
+                       maria_GetColor(wide_lookup_mode2B[colors.by.color0]) << 8  |
+                       maria_GetColor(wide_lookup_mode2A[colors.by.color1]) << 16 |
+                       maria_GetColor(wide_lookup_mode2B[colors.by.color1]) << 24;
+          }
               
-          *pix++ = maria_GetColor(wide_lookup_mode2A[colors.by.color2])       |
-                   maria_GetColor(wide_lookup_mode2B[colors.by.color2]) << 8  |
-                   maria_GetColor(wide_lookup_mode2A[colors.by.color3]) << 16 |
-                   maria_GetColor(wide_lookup_mode2B[colors.by.color3]) << 24;
+          if ((colors.wo.color1 == 0))
+          {
+              *pix++ = bg32;
+          }
+          else
+          {
+              *pix++ = maria_GetColor(wide_lookup_mode2A[colors.by.color2])       |
+                       maria_GetColor(wide_lookup_mode2B[colors.by.color2]) << 8  |
+                       maria_GetColor(wide_lookup_mode2A[colors.by.color3]) << 16 |
+                       maria_GetColor(wide_lookup_mode2B[colors.by.color3]) << 24;
+          }
       }
     }
   }
@@ -359,13 +378,13 @@ static inline void maria_WriteLineRAM(word* buffer)
       }
       else
       {
-          *pix++ = maria_GetColor((colors.by.color0 & 30)) |
+          *pix++ = maria_GetColorFast((colors.by.color0 & 30)) |
                   (maria_GetColor((colors.by.color0 & 28) | ((colors.by.color0 & 1) << 1)) <<8)  |
-                  (maria_GetColor((colors.by.color1 & 30))<<16) |
+                  (maria_GetColorFast((colors.by.color1 & 30))<<16) |
                   (maria_GetColor((colors.by.color1 & 28) | ((colors.by.color1 & 1) << 1)) <<24);
-          *pix++ = maria_GetColor((colors.by.color2 & 30)) |
+          *pix++ = maria_GetColorFast((colors.by.color2 & 30)) |
                   (maria_GetColor((colors.by.color2 & 28) | ((colors.by.color2 & 1) << 1)) <<8) |
-                  (maria_GetColor((colors.by.color3 & 30))<<16) |
+                  (maria_GetColorFast((colors.by.color3 & 30))<<16) |
                   (maria_GetColor((colors.by.color3 & 28) | ((colors.by.color3 & 1) << 1)) <<24);
       }
     }
@@ -392,10 +411,10 @@ static inline void maria_StoreLineRAM( )
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr   = 0;
-  }
-    
-  wide_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
-  wide_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;
+      
+    wide_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
+    wide_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;      
+  }    
 
   maria_pp.b.l = memory_ram[maria_dp.w++];
   uint mode = memory_ram[maria_dp.w++];
@@ -454,11 +473,11 @@ static inline void maria_StoreLineRAM( )
           }
           maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
       }
-      maria_cycles += (6*width);
-      if (cwidth) maria_cycles += (3*width); // Maria cycles (Direct graphic read)
+      maria_cycles += (6*width);             // Compensate Maria cycles for Indirect 1 byte
+      if (cwidth) maria_cycles += (3*width); // Compensate Maria cycles for Indirect 2 byte
     }
       
-    maria_dp.w &= 0xFFFF;   // zzz
+    maria_dp.w &= 0xFFFF;   // Super Pac-Man requires that we wrap this...
     
     maria_pp.b.l = memory_ram[maria_dp.w++];
     mode = memory_ram[maria_dp.w++];
@@ -540,8 +559,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       maria_dp.b.h = memory_ram[maria_dpp.w + 1];
       maria_StoreLineRAM( );
-      maria_offset--;
-      if(maria_offset < 0) 
+      if(--maria_offset < 0) 
       {
         maria_cycles += 10; // Maria cycles (Last line of zone) ( /*20*/ 
         maria_dpp.w += 3;
