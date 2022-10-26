@@ -820,7 +820,7 @@ void dsInstallSoundEmuFIFO(void)
 }
 
 
-void dsMainLoop(void) 
+ITCM_CODE void dsMainLoop(void) 
 {
   static u8 lcd_swap_counter=0;
   static u8 special_hsc_entry=0;    

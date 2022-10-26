@@ -47,13 +47,13 @@
 
 byte tia_buffer[SNDLENGTH] __attribute__((section(".dtcm")))  = {0};
 u32 tiaBufIdx __attribute__((section(".dtcm"))) = 0;
+byte tia_volume[2] __attribute__((section(".dtcm"))) = {0};
+uint tia_counter[2] __attribute__((section(".dtcm"))) = {0};
+uint tia_counterMax[2] __attribute__((section(".dtcm"))) = {0};
 static byte TIA_POLY4[ ] __attribute__((section(".dtcm"))) = {1,1,0,1,1,1,0,0,0,0,1,0,1,0,0};
 static byte TIA_POLY5[ ] __attribute__((section(".dtcm"))) = {0,0,1,0,1,1,0,0,1,1,1,1,1,0,0,0,1,1,0,1,1,1,0,1,0,1,0,0,0,0,1};
 static byte TIA_POLY9[ ] __attribute__((section(".dtcm"))) = {0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,1,1,0,0,1,0,1,0,0,1,1,1,1,1,0,0,1,1,0,1,1,0,1,0,1,1,1,0,1,1,0,0,1,0,0,1,1,1,1,0,1,0,0,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,1,1,1,0,1,0,1,1,0,1,0,1,0,0,0,0,1,1,0,1,0,1,0,0,0,1,0,1,0,0,0,1,1,1,0,0,1,1,0,1,1,0,0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,0,0,0,1,1,0,0,1,1,1,1,0,0,1,0,0,0,1,1,1,0,0,1,1,0,1,0,1,1,0,1,1,0,1,0,0,1,0,0,1,1,1,1,1,1,0,1,1,1,1,0,1,1,0,0,0,0,1,1,1,1,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,1,0,1,0,0,0,1,1,0,0,0,1,1,1,0,1,1,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,1,1,1,0,0,0,1,1,1,0,0,1,1,0,0,1,0,0,1,0,1,1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,1,1,1,1,0,0,0,1,1,1,0,0,0,1,0,0,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1,1,1,1,0,0,1,0,1,0,1,1,1,0,0,0,0,0,1,1,0,1,1,0,0,0,1,0,1,0,1,0,0,0,0,1,0,1,1,1,0,0,0,0,1,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0,1,0,0,1,1,0,1,0,0,1,0,0,0,1,0,0,1,0,1,0,0,0,1,1,0,1,0,0,0,0,0,1,1,1,1,0,0,1,0,0,1,0,1,1,1,1,1,1,1,0,1,0,0,1,0,0,0,1,1,0,1,1,1,0,0,0,1,0,1,0,0,1,0,1,0,1,0,1,1,1,0,0,1,0,1,1,0,0,1,1,1,1,1,0,0,0,1,1,0};
 static byte TIA_DIV31[ ] __attribute__((section(".dtcm"))) = {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0};
-static byte tia_volume[2] __attribute__((section(".dtcm"))) = {0};
-static uint tia_counterMax[2] __attribute__((section(".dtcm"))) = {0};
-static uint tia_counter[2] __attribute__((section(".dtcm"))) = {0};
 byte tia_audc[2] __attribute__((section(".dtcm"))) = {0};
 byte tia_audf[2] __attribute__((section(".dtcm"))) = {0};
 byte tia_audv[2] __attribute__((section(".dtcm"))) = {0};
@@ -153,92 +153,10 @@ void tia_Clear( ) {
   }
 }
 
-// ----------------------------------------------------------------------------
-// SetRegister
-// ----------------------------------------------------------------------------
-void tia_SetRegister(word address, byte data) 
-{
-  byte channel=0;
-  byte frequency;
-      
-  switch(address) {
-    case AUDC0:
-      tia_audc[0] = data & 15;
-      break;
-    case AUDC1:
-      tia_audc[1] = data & 15;
-      channel = 1;
-      break;
-    case AUDF0:
-      tia_audf[0] = data & 31;
-      break;
-    case AUDF1:
-      tia_audf[1] = data & 31;
-      channel = 1;
-      break;
-    case AUDV0:
-      tia_audv[0] = (data & 15) << 2;
-      break;
-    case AUDV1:
-      tia_audv[1] = (data & 15) << 2;
-      channel = 1;
-      break;
-    default:
-      return;
-  }
 
-  if(tia_audc[channel] == 0) 
-  {
-    frequency = 0;
-    tia_volume[channel] = tia_audv[channel];
-  }
-  else 
-  {
-    frequency = tia_audf[channel] + 1;
-    if(tia_audc[channel] > 11) 
-    {
-      frequency *= 3;
-    }
-  }
-
-  if(frequency != tia_counterMax[channel]) 
-  {
-    tia_counterMax[channel] = frequency;
-    if(tia_counter[channel] == 0 || frequency == 0)
-    {
-      tia_counter[channel] = frequency;
-    }
-  }
-}
-
-void tia_MemoryChannel(byte channel) 
-{
-  byte frequency = 0;
-  if(tia_audc[channel] == 0) 
-  {
-    tia_volume[channel] = tia_audv[channel];
-  }
-  else 
-  {
-    frequency = tia_audf[channel] + 1;
-    if(tia_audc[channel] > 11) 
-    {
-      frequency *= 3;
-    }
-  }
-
-  if(frequency != tia_counterMax[channel]) 
-  {
-    tia_counterMax[channel] = frequency;
-    if(tia_counter[channel] == 0 || frequency == 0)
-    {
-      tia_counter[channel] = frequency;
-    }
-  }
-}
 
 // Same as TIA_Process but designed for Pokey integration...
-int TIA_Sample(void)
+ITCM_CODE  int TIA_Sample(void)
 {
     if(tia_counter[0] > 1) 
     {
@@ -264,7 +182,6 @@ int TIA_Sample(void)
 // --------------------------------------------------------------------------------------
 // Process
 // --------------------------------------------------------------------------------------
-u8 tia_sample __attribute__((section(".dtcm"))) = 0;
 ITCM_CODE void tia_Process(void) 
 {
   for(u8 index = 0; index < 2; index++) 

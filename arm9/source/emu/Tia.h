@@ -52,9 +52,38 @@ extern byte tia_audv[2];
 
 extern void tia_Reset( );
 extern void tia_SetRegister(word address, byte data);
-extern void tia_MemoryChannel(byte channel);
 extern void tia_Clear( );
 extern void tia_Process(void);
 extern byte tia_buffer[];
+extern byte tia_volume[2];
+extern uint tia_counter[2];
+extern uint tia_counterMax[2];
+
+
+inline void tia_MemoryChannel(byte channel) 
+{
+  byte frequency = 0;
+  if(tia_audc[channel] == 0) 
+  {
+    tia_volume[channel] = tia_audv[channel];
+  }
+  else 
+  {
+    frequency = tia_audf[channel] + 1;
+    if(tia_audc[channel] > 11) 
+    {
+      frequency *= 3;
+    }
+  }
+
+  if(frequency != tia_counterMax[channel]) 
+  {
+    tia_counterMax[channel] = frequency;
+    if(tia_counter[channel] == 0 || frequency == 0)
+    {
+      tia_counter[channel] = frequency;
+    }
+  }
+}
 
 #endif
