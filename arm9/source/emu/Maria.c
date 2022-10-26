@@ -399,13 +399,12 @@ static inline void maria_StoreLineRAM( )
 
   maria_pp.b.l = memory_ram[maria_dp.w++];
   byte mode = memory_ram[maria_dp.w++];
+  maria_pp.b.h = memory_ram[maria_dp.w++];
   while(mode & 0x5f) 
   {
     uint width;
     byte indirect = 0;
  
-    maria_pp.b.h = memory_ram[maria_dp.w++];
-    
     if(mode & 31) 
     { 
       maria_cycles += 8; // Maria cycles (Header 4 byte)
@@ -433,6 +432,7 @@ static inline void maria_StoreLineRAM( )
           {
              maria_StoreGraphic();
           }
+          maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
       }
       maria_cycles += (3*width); // Maria cycles (Direct graphic read)
     }
@@ -452,12 +452,16 @@ static inline void maria_StoreLineRAM( )
               maria_StoreGraphic( );
             }
           }
+          maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
       }
       maria_cycles += (6*width) + (cwidth*3*width); // Maria cycles (Direct graphic read)
     }
-    maria_pp.w &= 0xFFFF;
+      
+    maria_dp.w &= 0xFFFF;   // zzz
+    
     maria_pp.b.l = memory_ram[maria_dp.w++];
-    mode = memory_ram[maria_dp.w++];      
+    mode = memory_ram[maria_dp.w++];
+    maria_pp.b.h = memory_ram[maria_dp.w++];      
   }
 }
 
