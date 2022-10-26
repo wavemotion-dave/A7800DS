@@ -114,7 +114,7 @@ Database_Entry game_list[] = {
   {"181a9978d9da7a7e21f770808cc681f2",  "Merlain",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  25-9, 320,  234, 0}, // title=Merlain
   {"5fe8ef9e368acd5699e5a453082b7636",  "Morf",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  25-9, 256,  224, 0}, // title=Morf
   {"9ff38ea62004201d870caa8bd9463525",  "Moon Cresta (NTSC)",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 30, 13-9, 320,  210, 0}, // title=Moon Cresta
-  {"3bc8f554cf86f8132a623cc2201a564b",  "Motor Psycho",                     CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Motor Psycho
+  {"3bc8f554cf86f8132a623cc2201a564b",  "Motor Psycho",                     CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 1}, // title=Motor Psycho
   {"fc0ea52a9fac557251b65ee680d951e5",  "Ms. Pac-Man",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  25-9, 256,  224, 0}, // title=Ms. Pac-Man      
   {"2a17dc5a61be342dd00af719cc335852",  "Ms Pac-Man 320",                   CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 5,  24-9, 265,  230, 0}, // title=Ms Pac-Man 320
   {"220121f771fc4b98cef97dc040e8d378",  "Ninja Golf",                       CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  10, 28-9, 270,  234, 1}, // title=Ninja Golf
@@ -165,7 +165,8 @@ Database_Entry game_list[] = {
   {"208ef955fa90a29815eb097bce89bace",  "Touchdown Football",               CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Touchdown Football
   {"8d64763db3100aadc552db5e6868506a",  "Tower Toppler",                    CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  16-9, 256,  230, 0}, // title=Tower Toppler
   {"79df20ee86a989e669158bcb9d113e8a",  "UniWarS",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 9,  13-9, 282,  200, 0}, // title=UniWarS
-  {"acf63758ecf3f3dd03e9d654ae6b69b7",  "Water Ski",                        CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Water Ski
+  {"acf63758ecf3f3dd03e9d654ae6b69b7",  "Water Ski",                        CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  11-9, 256,  197, 0}, // title=Water Ski
+  {"427cb05d0a1abb068998e2760d77f4fb",  "Water Ski",                        CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  11-9, 256,  197, 0}, // title=Water Ski
   {"3799d72f78dda2ee87b0ef8bf7b91186",  "Winter Games",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Winter Games
   {"846751861993b907c512cc9c10c67035",  "Wizards Dungeon",                  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  26-9, 256,  224, 0}, // title=Wizards Dungeon
   {"05fb699db9eef564e2fe45c568746dbc",  "Xenophobe",                        CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  15, 22-9, 284,  234, 0}, // title=Xenophobe
@@ -234,6 +235,7 @@ bool database_Load(byte *digest)
                (strstr((char *) cartridge_filename, game_list[i].header_name) != NULL) ) 
           {
             memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
+            strcpy(myCartInfo.digest, (char *)digest); 
             if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
             bFound = true;
             break;
@@ -248,7 +250,7 @@ bool database_Load(byte *digest)
     // --------------------------------------------------------------------------
     if (!bFound) 
     {
-        strcpy(myCartInfo.digest, (char *)digest);
+        strcpy(myCartInfo.digest, (char *)digest); 
         myCartInfo.xOffset       = 0;
         myCartInfo.yOffset       = 22-9;
         myCartInfo.xScale        = 256;
