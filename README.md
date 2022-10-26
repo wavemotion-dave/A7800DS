@@ -258,7 +258,7 @@ Compatibility Table (on the faster DSi)
 ```
 GAME                    MD5SUM                              HSC   FPS NOTES
 ========================================================================================================================
-Ace Of Aces             0be996d25144966d5541c9eb4919b289    NO    60  Minor graphical glitches. Very playable.
+Ace Of Aces             0be996d25144966d5541c9eb4919b289    NO    60  Near perfect
 Alien Brigade           877dcc97a775ed55081864b2dbf5f1e2    NO    60  Near perfect
 Arkanoid Demo           212ee2a6e66d8bb7fbf26f343cc8dc19    NO    60  Playable though paddles would be nice.
 Asteroids               07342c78619ba6ffcc61c10e907e3b50    YES   60  Near perfect

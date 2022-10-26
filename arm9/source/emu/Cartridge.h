@@ -86,6 +86,7 @@
 
 #define STEAL_CYCLE     true
 #define NO_STEALING     false
+
 #define USES_WSYNC      true
 #define SKIP_WSYNC      false
 

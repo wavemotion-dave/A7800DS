@@ -100,7 +100,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       framePtr = (word*)(maria_surface);
       sally_Execute(34);
       maria_RenderScanlineTOP( );
-      if(myCartInfo.steals_cycles) 
+      if(myCartInfo.steals_cycles == NO_STEALING) 
       {
         prosystem_cycles += maria_cycles;
         if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
@@ -131,7 +131,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 
     maria_RenderScanline( );
     
-    if(myCartInfo.steals_cycles) 
+    if(myCartInfo.steals_cycles == NO_STEALING) 
     {
       prosystem_cycles += maria_cycles;
       if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
@@ -167,7 +167,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 
     maria_RenderScanline( );
     
-    if(myCartInfo.steals_cycles) 
+    if(myCartInfo.steals_cycles == NO_STEALING) 
     {
       prosystem_cycles += maria_cycles;
       if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
