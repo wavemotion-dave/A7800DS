@@ -134,7 +134,7 @@ static void cartridge_ReadHeader(const byte* header) {
   
   myCartInfo.cardctrl1 = header[55];
   myCartInfo.cardctrl2 = header[56];
-  myCartInfo.region = header[57];
+  myCartInfo.region = header[57] & 1;
   myCartInfo.hsc = (header[58]&1 ? HSC_YES:HSC_NO);
   myCartInfo.steals_cycles = true;       // By default, assume the cart steals cycles
   myCartInfo.uses_wsync = true;          // By default, assume the cart uses wsync
@@ -423,4 +423,5 @@ void cartridge_Release( )
     myCartInfo.steals_cycles = false;
     myCartInfo.uses_wsync = false;
     myCartInfo.hasHeader = false;
+    last_bank = 255;
 }

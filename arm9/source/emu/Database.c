@@ -255,7 +255,6 @@ bool database_Load(byte *digest)
         myCartInfo.yScale        = 220;
         myCartInfo.diff1         = DIFF_A;
         myCartInfo.diff2         = DIFF_A;
-        myCartInfo.region        = NTSC;
         myCartInfo.steals_cycles = STEAL_CYCLE;
         myCartInfo.uses_wsync    = false;
         myCartInfo.spare1        = 0;
@@ -268,6 +267,7 @@ bool database_Load(byte *digest)
         // -------------------------------------------------------------------
         if (myCartInfo.hasHeader == false)
         {
+            myCartInfo.region        = NTSC;
             if (cartridge_size == (144*1024)) myCartInfo.cardtype = CT_SUPLRG;
             else myCartInfo.cardtype = (cartridge_size <= (48*1024)) ? CT_NORMAL:CT_SUPROM;
             myCartInfo.pokeyType     = POKEY_NONE;
