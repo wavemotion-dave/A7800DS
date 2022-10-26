@@ -455,6 +455,7 @@ static inline void maria_StoreLineRAM( )
       }
       maria_cycles += (6*width) + (cwidth*3*width); // Maria cycles (Direct graphic read)
     }
+    maria_pp.w &= 0xFFFF;
     maria_pp.b.l = memory_ram[maria_dp.w++];
     mode = memory_ram[maria_dp.w++];      
   }
