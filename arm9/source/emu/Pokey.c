@@ -99,7 +99,6 @@ static byte rand17[0x1ffff];
 static uint r9;
 static uint r17;
 static byte SKCTL;
-byte RANDOM;
 
 byte POT_input[8] = {228, 228, 228, 228, 228, 228, 228, 228};
 static int pot_scanline;
@@ -166,7 +165,6 @@ void pokey_Reset( )
   rand_init(rand17, 17,16, 1, 0x1c000);
 
   SKCTL = SK_RESET;
-  RANDOM = 0;
 
   r9 = 0;
   r17 = 0;
@@ -196,6 +194,7 @@ ITCM_CODE byte pokey_GetRegister(word address)
         r9 = 0;
         r17 = 0;
       }
+      byte RANDOM;
       if( pokey_audctl & POKEY_POLY9 )
       {
         RANDOM = rand9[r9];

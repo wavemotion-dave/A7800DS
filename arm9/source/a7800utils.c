@@ -164,13 +164,13 @@ ITCM_CODE void VsoundHandler_Pokey(void)
   extern unsigned char tia_buffer[];
   extern u32 pokeyBufIdx;
 
-  for (u8 i=0; i<2; i++)
+  for (uint i=0; i<2; i++)
   {
       // If there is a fresh Pokey sample... 
       if (myPokeyBufIdx != pokeyBufIdx)
       {
-          lastPokeySample = tia_buffer[myPokeyBufIdx];
-          myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
+          lastPokeySample = tia_buffer[myPokeyBufIdx++];
+          myPokeyBufIdx &= (SNDLENGTH-1);
       }
       *snd_ptr++ = lastPokeySample;
   }
@@ -186,13 +186,13 @@ ITCM_CODE void VsoundHandler_PokeyLite(void)
   extern unsigned char tia_buffer[];
   extern u32 pokeyBufIdx;
 
-  for (u8 i=0; i<4; i++)
+  for (uint i=0; i<4; i++)
   {
       // If there is a fresh Pokey sample... 
       if (myPokeyBufIdx != pokeyBufIdx)
       {
-          lastPokeySample = tia_buffer[myPokeyBufIdx];
-          myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
+          lastPokeySample = tia_buffer[myPokeyBufIdx++];
+          myPokeyBufIdx &= (SNDLENGTH-1);
       }
       *snd_ptr++ = lastPokeySample;
   }

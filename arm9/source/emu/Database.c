@@ -31,7 +31,7 @@ extern uint cartridge_size;
 
 
 Database_Entry game_list[] = {
-  {"f5150c0fc1948832211e57852abb0c6e",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  22-9, 256,  220, 0}, // title=7800 Utility Cart
+  {"f5150c0fc1948832211e57852abb0c6e",  "Utility Cart",                     CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  22-9, 256,  220, 0}, // title=7800 Utility Cart
   {"4332c24e4f3bc72e7fe1b77adf66c2b7",  "3D Asteroids",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=3D Asteroids
   {"0be996d25144966d5541c9eb4919b289",  "Ace of Aces",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Ace Of Aces
   {"877dcc97a775ed55081864b2dbf5f1e2",  "Alien Brigade",                    CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  7,  30-9, 264,  230, 1}, // title=Alien Brigade
@@ -47,12 +47,12 @@ Database_Entry game_list[] = {
   {"f5f6b69c5eb4b55fc163158d1a6b423e",  "Basketbrawl",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    SKIP_WSYNC, HSC_NO,  0,  22-9, 256,  220, 1}, // title=Basketbrawl
   {"78b1061d651ef806becac1dd3fda29a0",  "Beef Drop",                        CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    SKIP_WSYNC, HSC_YES, 0,  16-9, 256,  220, 0}, // title=Beef Drop (Final Atariage)
   {"34483432b92f565f4ced82a141119164",  "Bentley Bear",                     CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  3,  22-9, 256,  220, 0}, // title=Bentley Bear's Crystal Quest
-  {"4e325918a8b3bbcf2f9405040abcfc6d",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  26-9, 256,  220, 0}, // title=BonQ (found on Atairage Age site)
+  {"4e325918a8b3bbcf2f9405040abcfc6d",  "Older b*nQ",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  26-9, 256,  220, 0}, // title=BonQ (found on Atairage Age site)
   {"9fa7743a016c9b7015ee1d386326f88e",  "b*nQ",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  26-9, 256,  220, 0}, // title=BonQ (final Atariage)
   {"4a8a22cff154f479f1ddaa386f21fc39",  "Boom",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  15-9, 256,  220, 0}, // title=Boom!
   {"000b5888d2489f7e256d80a0848ecd14",  "Cannon in D for Defense",          CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  223, 0}, // title=Cannon in D for Defense (demo 03)
   {"5a09946e57dbe30408a8f253a28d07db",  "Centipede",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 24, 24-9, 300,  230, 0}, // title=Centipede
-  {"20660b667df538ec32a8e1b998438604",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 24, 24-9, 300,  230, 0}, // title=Centipede - Frameless Hack
+  {"20660b667df538ec32a8e1b998438604",  "Frameless Centipede",              CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 24, 24-9, 300,  230, 0}, // title=Centipede - Frameless Hack
   {"a4b5d742860beb25c29def4530194c1e",  "Chase",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  8,  27-9, 269,  233, 0}, // title=Chase
   {"93e4387864b014c155d7c17877990d1e",  "Choplifter",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Choplifter
   {"2e8e28f6ad8b9b9267d518d880c73ebb",  "Commando",                         CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  20-9, 256,  220, 1}, // title=Commando
@@ -92,7 +92,7 @@ Database_Entry game_list[] = {
   {"fd9e78e201b6baafddfd3e1fbfe6ba31",  "Hat Trick",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  25-9, 256,  227, 0}, // title=Hat Trick                       
   {"c3672482ca93f70eafd9134b936c3feb",  "Ikari Warriors",                   CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  25-9, 256,  230, 0}, // title=Ikari Warriors
   {"baebc9246c087e893dfa489632157180",  "Impossible Mission",               CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Impossible Mission
-  {"1745feadabb24e7cefc375904c73fa4c",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Impossible Mission
+  {"1745feadabb24e7cefc375904c73fa4c",  "Alternate Impossible Mission",     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Impossible Mission
   {"045fd12050b7f2b842d5970f2414e912",  "Jinks",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  3,  22-9, 261,  234, 0}, // title=Jinks
   {"f18b3b897a25ab3885b43b4bd141b396",  "Joust",                            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  25-9, 256,  234, 0}, // title=Joust                           
   {"e54edc299e72d22d0ba05d16f3393e8c",  "Jr. Pac-Man (NTSC)",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 4,  22-9, 268,  234, 0}, // title=Jr Pac-Man  
@@ -132,9 +132,9 @@ Database_Entry game_list[] = {
   {"86546808dc60961cdb1b20e761c50ab1",  "Plutos",                           CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  25-9, 256,  234, 0}, // title=Plutos (non-XM)
   {"584582bb09ee8122e7fc09dc7d1ed813",  "Pole Position II",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  35, 22-9, 320,  230, 0}, // title=Pole Position II                
   {"1745feadabb24e7cefc375904c73fa4c",  "Possible Mission",                 CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Possible Mission
-  {"0710aa2620435230da6a7cf3f620210d",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  18-9, 256,  210, 0}, // title=Popeye Demo 2.7f (homebrew)
-  {"81187dbc08934214bd55187d4b8149dd",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  18-9, 256,  210, 0}, // title=Popeye Demo 2.8 (homebrew)  
-  {"640c7827fe63082efbaffc13f7983744",  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  18-9, 256,  210, 0}, // title=Popeye Demo 2.9 (homebrew)  
+  {"0710aa2620435230da6a7cf3f620210d",  "Demo 2.7f Popeye",                 CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  18-9, 256,  210, 0}, // title=Popeye Demo 2.7f (homebrew)
+  {"81187dbc08934214bd55187d4b8149dd",  "Demo 2.8 Popeye",                  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  18-9, 256,  210, 0}, // title=Popeye Demo 2.8 (homebrew)  
+  {"640c7827fe63082efbaffc13f7983744",  "Demo 2.9 Popeye",                  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  18-9, 256,  210, 0}, // title=Popeye Demo 2.9 (homebrew)  
   {"631262731c193928d01365d2bc31b64f",  "Popeye",                           CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  18-9, 256,  210, 0}, // title=Popeye Demo 1.0RC
   {"ac03806cef2558fc795a7d5d8dba7bc0",  "Rampage",                          CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Rampage
   {"383ed9bd1efb9b6cb3388a777678c928",  "Realsports Baseball",              CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 1}, // title=Realsports Baseball
@@ -275,7 +275,9 @@ bool database_Load(byte *digest)
             myCartInfo.pokeyType     = POKEY_NONE;
             myCartInfo.cardctrl1     = JOY;
             myCartInfo.cardctrl2     = JOY;
-            myCartInfo.hsc           = false;            
+            myCartInfo.hsc           = false;
+            strncpy(myCartInfo.header_name, (char *) cartridge_filename, 32);
+            myCartInfo.header_name[32] = 0;
         }
         
         // --------------------------------------------------------
