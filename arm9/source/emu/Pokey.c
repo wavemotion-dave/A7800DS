@@ -219,7 +219,7 @@ ITCM_CODE byte pokey_GetRegister(word address)
 // SetRegister
 // ----------------------------------------------------------------------------
 ITCM_CODE void pokey_SetRegister(word address, byte value) {
-  byte channelMask;
+  uint channelMask;
   uint channel;
 
   switch(address) {
@@ -396,8 +396,7 @@ static inline uint loc_get_int(byte *p)
 
 static inline void loc_set_byte(byte *p, uint v)
 {
-  u32 *ptr32 = (u32 *)p;
-  *ptr32 = v;
+  *((u32 *)p) = v;
 }
 
 // ----------------------------------------------------------------------------
@@ -411,7 +410,7 @@ ITCM_CODE void pokey_Process(uint length)
   while(length) 
   {
     int currentValue;
-    byte nextEvent = POKEY_SAMPLE;
+    uint nextEvent = POKEY_SAMPLE;
     uint eventMin = loc_get_int(sampleCntrPtrB);
 
     byte channel;

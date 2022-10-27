@@ -43,7 +43,6 @@ union ColorUnion
         word color1;
     } wo;
 };
-union ColorUnion colors __attribute__((section(".dtcm")));
 
 #define MARIA_LINERAM_SIZE 160
 
@@ -52,7 +51,8 @@ uint  maria_scanline __attribute__((section(".dtcm"))) = 1;
 u8 wide_mask_low __attribute__((section(".dtcm")));
 u8 wide_mask_high __attribute__((section(".dtcm")));
 
-static byte maria_lineRAM[MARIA_LINERAM_SIZE+4] __attribute__((section(".dtcm")));
+static byte maria_lineRAM[256] __attribute__((section(".dtcm")));
+
 uint maria_cycles __attribute__((section(".dtcm")));
 static lpair maria_dpp __attribute__((section(".dtcm")));
 static lpair maria_dp __attribute__((section(".dtcm")));
@@ -283,14 +283,14 @@ static u8 wide_lookup_mode2B[] __attribute__((section(".dtcm"))) =
 static inline void maria_WriteLineRAM(word* buffer) 
 {
   extern uint32 bg32;
-  uint index;
-  register unsigned int *pix=(unsigned int *) buffer;
-  register uint32 *ptr = (uint32 *)&maria_lineRAM[0];
+  union ColorUnion colors; 
+  unsigned int *pix=(unsigned int *) buffer;
+  uint32 *ptr = (uint32 *)&maria_lineRAM[0];
   byte rmode = memory_ram[CTRL] & 3;
     
   if(rmode == 0) // 160A/B
   {
-    for(index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
+    for(uint index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
     {
       colors.color32 = *ptr++;
         
@@ -301,17 +301,13 @@ static inline void maria_WriteLineRAM(word* buffer)
       }
       else
       {
-          register word color, color1;
-          
           if ((colors.wo.color0 == 0))
           {
               *pix++ = bg32;
           }
           else
           {
-              color = maria_GetColor(colors.by.color0);
-              color1 = maria_GetColor(colors.by.color1);
-              *pix++ = color_lookup_160AB[color][color1];
+              *pix++ = color_lookup_160AB[maria_GetColor(colors.by.color0)][maria_GetColor(colors.by.color1)];
           }
           
           if ((colors.wo.color1 == 0))
@@ -320,16 +316,14 @@ static inline void maria_WriteLineRAM(word* buffer)
           }
           else
           {
-              color = maria_GetColor(colors.by.color2);
-              color1 = maria_GetColor(colors.by.color3);
-              *pix++ = color_lookup_160AB[color][color1];
+              *pix++ = color_lookup_160AB[maria_GetColor(colors.by.color2)][maria_GetColor(colors.by.color3)];
           }
       }
     }
   }
   else if(rmode == 2)  // 320B/D
   {    
-    for(index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
+    for(uint index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
     {
       colors.color32 = *ptr++;
       if (colors.color32 == 0)
@@ -367,7 +361,7 @@ static inline void maria_WriteLineRAM(word* buffer)
   }
   else if(rmode == 3) // 320A/C
   {
-    for(index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
+    for(uint index = 0; index < MARIA_LINERAM_SIZE/4; index++) 
     {
       colors.color32 = *ptr++;
 
@@ -422,7 +416,7 @@ static inline void maria_StoreLineRAM( )
   while(mode & 0x5f) 
   {
     uint width;
-    byte indirect = 0;
+    uint indirect = 0;
  
     if(mode & 31) 
     { 
@@ -455,21 +449,18 @@ static inline void maria_StoreLineRAM( )
       }
       maria_cycles += (3*width); // Maria cycles (Direct graphic read)
     }
-    else {
-      byte cwidth = (memory_ram[CTRL] & 16);
+    else 
+    {
+      uint cwidth = (memory_ram[CTRL] & 16);
       if (bRenderFrame)
       {
           lpair basePP = maria_pp;
-          for(index = 0; index < width; index++) {
+          for(index = 0; index < width; index++) 
+          {
             maria_pp.b.l = memory_ram[basePP.w++];
             maria_pp.b.h = memory_ram[CHARBASE] + maria_offset;
-
-            //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
-            maria_StoreGraphic( );
-            if(cwidth) {
-              //maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
-              maria_StoreGraphic( );
-            }
+            maria_StoreGraphic( );              //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
+            if(cwidth) maria_StoreGraphic( );   //maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
           }
           maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
       }
@@ -507,6 +498,7 @@ void maria_Reset( ) {
    maria_h16 = 0;
    maria_h8_h16 = 0x0000;
    maria_wmode = 0;
+   bg32 = 0x00000000;
     
    // ----------------------------------------------------------------------------------
    // Build the 160 A/B color lookup table for a few frames of increased performance

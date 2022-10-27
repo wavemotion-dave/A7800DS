@@ -236,7 +236,7 @@ void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr,
 
 void vblankIntr() 
 {
-  static u8 xx=0;
+  static uint xx=0;
 
   if (bRefreshXY)
   {
