@@ -71,16 +71,21 @@
 #define POKEY_IRQST 0x400e
 #define POKEY_SKSTAT 0x400f
 
-
 #include "shared.h"
-
+#define CYCLES_PER_SCANLINE 454
 
 extern void pokey_Reset( );
 extern void pokey_SetRegister(word address, byte value);
 extern byte pokey_GetRegister(word address);
 extern void pokey_Process(uint length);
-extern void pokey_Scanline();
 extern void pokey_Clear( );
-extern byte pokey_buffer[];
+extern uint32 random_scanline_counter;
+
+/* Called prior to each scanline */
+inline void pokey_Scanline() 
+{
+  random_scanline_counter += CYCLES_PER_SCANLINE; 
+}
+
 
 #endif

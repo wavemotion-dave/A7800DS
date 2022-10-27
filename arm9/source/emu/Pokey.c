@@ -69,15 +69,15 @@
 
 #define SK_RESET	0x03
 
-byte pokey_buffer[SNDLENGTH] = {0};
+extern byte tia_buffer[];
 
 u32 pokeyBufIdx __attribute__((section(".dtcm"))) = 0;
 
 static uint pokey_frequency = 1787520;
 static uint pokey_sampleRate = (31440/2);
-static byte pokey_audf[4];
-static byte pokey_audc[4];
-static byte pokey_audctl;
+static uint pokey_audf[4];
+static uint pokey_audc[4];
+static uint pokey_audctl __attribute__((section(".dtcm")));
 static byte pokey_output[4];
 static byte pokey_outVol[4];
 static byte pokey_poly04[POKEY_POLY4_SIZE] = {1,1,0,1,1,1,0,0,0,0,1,0,1,0,0};
@@ -90,7 +90,7 @@ static uint pokey_poly05Cntr;
 static uint pokey_poly17Cntr;
 static uint pokey_divideMax[4];
 static uint pokey_divideCount[4];
-static uint pokey_sampleMax;
+static uint pokey_sampleMax __attribute__((section(".dtcm")));
 static uint pokey_sampleCount[2];
 static uint pokey_baseMultiplier;
 
@@ -104,8 +104,8 @@ byte RANDOM;
 byte POT_input[8] = {228, 228, 228, 228, 228, 228, 228, 228};
 static int pot_scanline;
 
-static uint32 random_scanline_counter;
-static uint32 prev_random_scanline_counter;
+uint32 random_scanline_counter __attribute__((section(".dtcm")));
+uint32 prev_random_scanline_counter __attribute__((section(".dtcm")));
 
 static void rand_init(byte *rng, int size, int left, int right, int add)
 {
@@ -177,41 +177,13 @@ void pokey_Reset( )
 }                           
 
 
-/* Called prior to each scanline */
-ITCM_CODE void pokey_Scanline() 
-{
-  random_scanline_counter += CYCLES_PER_SCANLINE; 
-
-	if (pot_scanline < 228)
-		pot_scanline++;  
-}
-
 ITCM_CODE byte pokey_GetRegister(word address) 
 {
   byte data = 0;
 
-  byte addr = address & 0x0f;
-  if (addr < 8) 
+  if (address == POKEY_RANDOM)
   {
-    byte b = POT_input[addr];
-    if (b <= pot_scanline)
-      return b;
-    return pot_scanline;
-  }  
-
-  switch (address) {
-    case POKEY_ALLPOT: {
-      byte b = 0;
-			for (int i = 0; i < 8; i++)
-				if (POT_input[addr] <= pot_scanline)
-					b &= ~(1 << i);		/* reset bit if pot value known */
-      return b;
-		}    
-    case POKEY_RANDOM:
-      {
-        uint32 prosystem_extra_cycles = 0; ///tbd
-      uint32 curr_scanline_counter = 
-        ( random_scanline_counter + prosystem_cycles + prosystem_extra_cycles );
+      uint32 curr_scanline_counter =  ( random_scanline_counter + prosystem_cycles );
 
       if( SKCTL & SK_RESET )
       {
@@ -237,8 +209,6 @@ ITCM_CODE byte pokey_GetRegister(word address)
 
       RANDOM = RANDOM ^ 0xff;
       data = RANDOM;
-      }
-      break;
   }
 
   return data;
@@ -436,7 +406,7 @@ static inline void loc_set_byte(byte *p, uint v)
 // ----------------------------------------------------------------------------
 ITCM_CODE void pokey_Process(uint length) 
 {
-  byte* buffer = pokey_buffer + pokeyBufIdx;
+  byte* buffer = tia_buffer + pokeyBufIdx;
   byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
 
   while(length) 
@@ -517,7 +487,7 @@ ITCM_CODE void pokey_Process(uint length)
 void pokey_Clear( ) {
   uint index;
   for(index = 0; index < SNDLENGTH; index++) {
-    pokey_buffer[index] = 0;
+    tia_buffer[index] = 0;
     pokeyBufIdx=0;
   }
 }

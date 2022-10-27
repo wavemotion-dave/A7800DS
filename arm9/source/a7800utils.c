@@ -57,7 +57,7 @@ int bg2;
 int bg3;             // BG pointers 
 int bg0s, bg1s;      // sub BG pointers 
 
-#define MAX_DEBUG 5
+#define MAX_DEBUG 16
 int debug[MAX_DEBUG]={0};
 u8 DEBUG_DUMP = 0;
 //#define WRITE_TWEAKS
@@ -142,7 +142,7 @@ ITCM_CODE void VsoundHandler(void)
   extern unsigned char tia_buffer[];
   extern u32 tiaBufIdx;
 
-  for (u8 i=0; i<4; i++)
+  for (u32 i=0; i<4; i++)
   {
       // If there is a fresh sample... 
       if (myTiaBufIdx != tiaBufIdx)
@@ -161,7 +161,7 @@ ITCM_CODE void VsoundHandler(void)
 
 ITCM_CODE void VsoundHandler_Pokey(void)
  {
-  extern unsigned char pokey_buffer[];
+  extern unsigned char tia_buffer[];
   extern u32 pokeyBufIdx;
 
   for (u8 i=0; i<2; i++)
@@ -169,7 +169,7 @@ ITCM_CODE void VsoundHandler_Pokey(void)
       // If there is a fresh Pokey sample... 
       if (myPokeyBufIdx != pokeyBufIdx)
       {
-          lastPokeySample = pokey_buffer[myPokeyBufIdx];
+          lastPokeySample = tia_buffer[myPokeyBufIdx];
           myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
       }
       *snd_ptr++ = lastPokeySample;
@@ -181,6 +181,26 @@ ITCM_CODE void VsoundHandler_Pokey(void)
 }
 
 
+ITCM_CODE void VsoundHandler_PokeyLite(void)
+ {
+  extern unsigned char tia_buffer[];
+  extern u32 pokeyBufIdx;
+
+  for (u8 i=0; i<4; i++)
+  {
+      // If there is a fresh Pokey sample... 
+      if (myPokeyBufIdx != pokeyBufIdx)
+      {
+          lastPokeySample = tia_buffer[myPokeyBufIdx];
+          myPokeyBufIdx = (myPokeyBufIdx+1) & (SNDLENGTH-1);
+      }
+      *snd_ptr++ = lastPokeySample;
+  }
+  if (snd_ptr == snd_end)
+  {
+      snd_ptr = snd_sta;
+  }
+}
 
 // Color fading effect
 void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr, unsigned char valEnd, unsigned char uWait) {
@@ -808,10 +828,12 @@ void dsInstallSoundEmuFIFO(void)
         snd_end = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
     }
     
-    TIMER2_DATA = TIMER_FREQ(SOUND_FREQ/2);
+    TIMER2_DATA = TIMER_FREQ((isDS_LITE && myCartInfo.pokeyType) ? (SOUND_FREQ/4) : (SOUND_FREQ/2));
     TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
     if (myCartInfo.pokeyType)
-        irqSet(IRQ_TIMER2, VsoundHandler_Pokey);  
+    {
+        irqSet(IRQ_TIMER2, isDS_LITE ? VsoundHandler_PokeyLite:VsoundHandler_Pokey);  
+    }
     else
     {
         irqSet(IRQ_TIMER2, VsoundHandler);
