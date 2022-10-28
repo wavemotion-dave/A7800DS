@@ -70,6 +70,7 @@ word *framePtr __attribute__((section(".dtcm"))) = (word *)0;
 
 u32 color_lookup_160AB[256][256];
 byte color_lookup_320AC[256] __attribute__((section(".dtcm")));
+u32 maria_charbase __attribute__((section(".dtcm")));
 
 extern u32 bg32;
 
@@ -110,7 +111,7 @@ static inline void _maria_StoreCells4(byte data)
         if (data & 0xC0) *ptr++ = maria_palette | ((data       ) >> 6); else ptr++;
         if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else ptr++;
         if (data & 0x0C) *ptr++ = maria_palette | ((data & 0x0C) >> 2); else ptr++;
-        if (data & 0x03) *ptr++ = maria_palette | (data & 0x03); 
+        if (data & 0x03) *ptr   = maria_palette | (data & 0x03); 
     }
   }
   maria_horizontal += 4;
@@ -448,8 +449,9 @@ static inline void maria_StoreLineRAM( )
           lpair basePP = maria_pp;
           for(index = 0; index < width; index++) 
           {
-            maria_pp.b.l = memory_ram[basePP.w++];
-            maria_pp.b.h = memory_ram[CHARBASE] + maria_offset;
+            maria_pp.w = ((maria_charbase + maria_offset) << 8) | memory_ram[basePP.w++];
+            //maria_pp.b.l = memory_ram[basePP.w++];
+            //maria_pp.b.h = maria_charbase + maria_offset;
             maria_StoreGraphic( );              //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
             if(cwidth) maria_StoreGraphic( );   //maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
           }
@@ -491,6 +493,7 @@ void maria_Reset( ) {
    maria_wmode = 0;
    bg32 = 0x00000000;
    bg8=0x00;
+   maria_charbase = 0;
     
    // ----------------------------------------------------------------------------------
    // Build the 160 A/B color lookup table for a few frames of increased performance
@@ -540,10 +543,10 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       {
         maria_cycles += 20; // Maria cycles (NMI)  /*29, 16, 20*/
         sally_ExecuteNMI( );
+        maria_dp.b.l = memory_ram[maria_dpp.w + 2];
+        maria_dp.b.h = memory_ram[maria_dpp.w + 1];
       }
     
-      maria_dp.b.l = memory_ram[maria_dpp.w + 2];
-      maria_dp.b.h = memory_ram[maria_dpp.w + 1];
       maria_StoreLineRAM( );
       if(--maria_offset < 0) 
       {

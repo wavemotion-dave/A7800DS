@@ -87,7 +87,8 @@ ITCM_CODE byte memory_Read_Slower(word address)
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_Write(word address, byte data) 
 {
-  extern u32 bg32, bg8;
+  extern u32 bg32, maria_charbase;
+  extern u8 bg8;
     
   if (myCartInfo.pokeyType)
   {
@@ -146,6 +147,10 @@ ITCM_CODE void memory_Write(word address, byte data)
         memory_ram[BACKGRND] = data;
         bg8 = data;
         bg32 =  data | (data<<8) | (data<<16) | (data<<24);
+        break;
+      case CHARBASE:
+        memory_ram[CHARBASE] = data;
+        maria_charbase = data;
         break;
       case AUDC0:
         tia_audc[0] = data & 15;
