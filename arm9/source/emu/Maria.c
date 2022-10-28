@@ -165,14 +165,9 @@ static inline bool maria_IsHolyDMA( )
 // ----------------------------------------------------------------------------
 // GetColor
 // ----------------------------------------------------------------------------
-static inline byte Zmaria_GetColor(byte data) 
-{
-  return (data & 3) ? memory_ram[BACKGRND | data] : memory_ram[BACKGRND];
-}
-
 static inline byte maria_GetColor(byte data) 
 {
-  return memory_ram[BACKGRND | data];
+  return (data & 3) ? memory_ram[BACKGRND | data] : memory_ram[BACKGRND];
 }
 
 static u8 wide_lookup[256] __attribute__((section(".dtcm"))) =
