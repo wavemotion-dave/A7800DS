@@ -50,6 +50,7 @@ word* maria_surface __attribute__((section(".dtcm"))) = 0;
 uint  maria_scanline __attribute__((section(".dtcm"))) = 1;
 u8 wide_mask_low __attribute__((section(".dtcm")));
 u8 wide_mask_high __attribute__((section(".dtcm")));
+u8 bg8 __attribute__((section(".dtcm")));
 
 static byte maria_lineRAM[256] __attribute__((section(".dtcm")));
 
@@ -167,7 +168,7 @@ static inline bool maria_IsHolyDMA( )
 // ----------------------------------------------------------------------------
 static inline byte maria_GetColor(byte data) 
 {
-  return (data & 3) ? memory_ram[BACKGRND | data] : memory_ram[BACKGRND];
+  return (data & 3) ? memory_ram[BACKGRND | data] : bg8;
 }
 
 
@@ -489,6 +490,7 @@ void maria_Reset( ) {
    maria_h8_h16 = 0x0000;
    maria_wmode = 0;
    bg32 = 0x00000000;
+   bg8=0x00;
     
    // ----------------------------------------------------------------------------------
    // Build the 160 A/B color lookup table for a few frames of increased performance
