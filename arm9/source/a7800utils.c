@@ -31,9 +31,9 @@
 u8 isDS_LITE                            __attribute__((section(".dtcm"))) = 0;
 u8 frameSkipMask                        __attribute__((section(".dtcm"))) = 1;
 
-static unsigned char lastPokeySample    __attribute__((section(".dtcm"))) = 0;
-static unsigned char lastTiaSample      __attribute__((section(".dtcm"))) = 0;
-static unsigned char lastSample         __attribute__((section(".dtcm"))) = 0;
+static u16 lastPokeySample              __attribute__((section(".dtcm"))) = 0;
+static u16 lastTiaSample                __attribute__((section(".dtcm"))) = 0;
+static u16 lastSample                   __attribute__((section(".dtcm"))) = 0;
 u16 gTotalAtariFrames                   __attribute__((section(".dtcm"))) = 0;
 int atari_frames                        __attribute__((section(".dtcm"))) = 0;
 u8 bRefreshXY                           __attribute__((section(".dtcm"))) = false;
@@ -134,15 +134,14 @@ void dsWriteTweaks(void)
 
 u32 myTiaBufIdx     __attribute__((section(".dtcm"))) = 0;
 u32 myPokeyBufIdx   __attribute__((section(".dtcm"))) = 0;
-u8* snd_ptr         __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
-u8* snd_sta         __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000);
-u8* snd_end         __attribute__((section(".dtcm"))) = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
+u16* snd_ptr        __attribute__((section(".dtcm"))) = (u16*)((u32)sound_buffer + 0xA000000);
+u16* snd_sta        __attribute__((section(".dtcm"))) = (u16*)((u32)sound_buffer + 0xA000000);
+u16* snd_end        __attribute__((section(".dtcm"))) = (u16*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
 ITCM_CODE void VsoundHandler(void) 
 {
-  extern unsigned char tia_buffer[];
   extern u32 tiaBufIdx;
 
-  for (u32 i=0; i<4; i++)
+  for (u32 i=0; i<2; i++)
   {
       // If there is a fresh sample... 
       if (myTiaBufIdx != tiaBufIdx)
@@ -161,19 +160,16 @@ ITCM_CODE void VsoundHandler(void)
 
 ITCM_CODE void VsoundHandler_Pokey(void)
  {
-  extern unsigned char tia_buffer[];
   extern u32 pokeyBufIdx;
 
-  for (uint i=0; i<2; i++)
+  // If there is a fresh Pokey sample... 
+  if (myPokeyBufIdx != pokeyBufIdx)
   {
-      // If there is a fresh Pokey sample... 
-      if (myPokeyBufIdx != pokeyBufIdx)
-      {
-          lastPokeySample = tia_buffer[myPokeyBufIdx++];
-          myPokeyBufIdx &= (SNDLENGTH-1);
-      }
-      *snd_ptr++ = lastPokeySample;
+      lastPokeySample = tia_buffer[myPokeyBufIdx++];
+      myPokeyBufIdx &= (SNDLENGTH-1);
   }
+  *snd_ptr++ = lastPokeySample;
+  
   if (snd_ptr == snd_end)
   {
       snd_ptr = snd_sta;
@@ -183,10 +179,9 @@ ITCM_CODE void VsoundHandler_Pokey(void)
 
 ITCM_CODE void VsoundHandler_PokeyLite(void)
  {
-  extern unsigned char tia_buffer[];
   extern u32 pokeyBufIdx;
 
-  for (uint i=0; i<4; i++)
+  for (uint i=0; i<2; i++)
   {
       // If there is a fresh Pokey sample... 
       if (myPokeyBufIdx != pokeyBufIdx)
@@ -516,12 +511,12 @@ bool dsWaitOnQuit(void) {
   return bRet;
 }
 
+char szName[256];
+char szName2[256];
 void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel) 
 {
   unsigned int ucBcl,ucGame;
   u8 maxLen;
-  char szName[256];
-  char szName2[256];
   
   // Display all games if possible
   unsigned short dmaVal = *(bgGetMapPtr(bg1b) +31*32);
@@ -557,7 +552,6 @@ unsigned int dsWaitForRom(void)
   bool bDone=false, bRet=false;
   u32 ucHaut=0x00, ucBas=0x00,ucSHaut=0x00, ucSBas=0x00,romSelected= 0, firstRomDisplay=0,nbRomPerPage, uNbRSPage, uLenFic=0;
   s32 ucFlip=0, ucFlop=0;
-  char szName[64];
 
   decompress(bgFileSelTiles, bgGetGfxPtr(bg0b), LZ77Vram);
   decompress(bgFileSelMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -800,7 +794,7 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 //---------------------------------------------------------------------------------
 void dsInstallSoundEmuFIFO(void) 
 {
-    memset(sound_buffer, 0x00, SNDLENGTH);
+    memset(sound_buffer, 0x00, SNDLENGTH * (sizeof(u16)));
     irqDisable(IRQ_TIMER2);  
     
     FifoMessage msg;
@@ -817,15 +811,15 @@ void dsInstallSoundEmuFIFO(void)
     
     if (isDS_LITE)
     {
-        snd_ptr = (u8*)((u32)sound_buffer + 0x00400000);
-        snd_sta = (u8*)((u32)sound_buffer + 0x00400000);
-        snd_end = (u8*)((u32)sound_buffer + 0x00400000 + SNDLENGTH);
+        snd_ptr = (u16*)((u32)sound_buffer + 0x00400000);
+        snd_sta = (u16*)((u32)sound_buffer + 0x00400000);
+        snd_end = (u16*)((u32)sound_buffer + 0x00400000 + SNDLENGTH);
     }
     else
     {
-        snd_ptr = (u8*)((u32)sound_buffer + 0xA000000);
-        snd_sta = (u8*)((u32)sound_buffer + 0xA000000);
-        snd_end = (u8*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
+        snd_ptr = (u16*)((u32)sound_buffer + 0xA000000);
+        snd_sta = (u16*)((u32)sound_buffer + 0xA000000);
+        snd_end = (u16*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
     }
     
     TIMER2_DATA = TIMER_FREQ((isDS_LITE && myCartInfo.pokeyType) ? (SOUND_FREQ/4) : (SOUND_FREQ/2));
@@ -841,15 +835,14 @@ void dsInstallSoundEmuFIFO(void)
     irqEnable(IRQ_TIMER2);  
 }
 
-
+char fpsbuf[32];
 ITCM_CODE void dsMainLoop(void) 
 {
   static u8 lcd_swap_counter=0;
   static u8 special_hsc_entry=0;    
   static short int last_keys_pressed = 999;
-  char fpsbuf[32];
   unsigned int keys_pressed,keys_touch=0, romSel;
-  int iTx,iTy;
+  short iTx,iTy;
   static int scale_screen_dampen=0;
   
     // Timers are fed with 33.513982 MHz clock.
@@ -1099,10 +1092,10 @@ int a78Filescmp (const void *c1, const void *c2) {
   return strcasecmp (p1->filename, p2->filename);
 }
 
+char filenametmp[255];
 void proFindFiles(void) {
   DIR *pdir;
   struct dirent *pent;
-  char filenametmp[255];
   
   countpro = countfiles = 0;
   

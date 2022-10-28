@@ -17,8 +17,7 @@ typedef enum {
 
 typedef struct FICtoLoad {
   char filename[255];
-  bool directory;
-  unsigned int uCrc;
+  u8 directory;
 } FICA7800;
 
 typedef struct {

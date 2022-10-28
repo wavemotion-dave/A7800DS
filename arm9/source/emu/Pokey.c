@@ -69,7 +69,7 @@
 
 #define SK_RESET	0x03
 
-extern byte tia_buffer[];
+extern u16 tia_buffer[];
 
 u32 pokeyBufIdx __attribute__((section(".dtcm"))) = 0;
 
@@ -402,9 +402,9 @@ static inline void loc_set_byte(byte *p, uint v)
 // ----------------------------------------------------------------------------
 // Process
 // ----------------------------------------------------------------------------
+uint pokSampIdx=0;
 ITCM_CODE void pokey_Process(uint length) 
 {
-  byte* buffer = tia_buffer + pokeyBufIdx;
   byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
 
   while(length) 
@@ -471,9 +471,18 @@ ITCM_CODE void pokey_Process(uint length)
       currentValue = (currentValue << 2) + 8;
       currentValue += TIA_Sample();        
       currentValue = (currentValue >> 1);
-      *buffer++ = currentValue;
-      pokeyBufIdx++;
-      pokeyBufIdx &= (SNDLENGTH-1);
+      
+      if (pokSampIdx & 1)
+      {
+          tia_buffer[pokeyBufIdx++] |= (currentValue<<8);
+          pokeyBufIdx &= (SNDLENGTH-1);
+      }
+      else
+      {
+          tia_buffer[pokeyBufIdx] = currentValue;
+      }
+      pokSampIdx++;
+        
       length--;
     }
   }

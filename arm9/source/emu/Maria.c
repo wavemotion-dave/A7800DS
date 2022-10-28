@@ -68,6 +68,7 @@ static u32 maria_wmode __attribute__((section(".dtcm")));
 word *framePtr __attribute__((section(".dtcm"))) = (word *)0;
 
 u32 color_lookup_160AB[256][256];
+byte color_lookup_320AC[256] __attribute__((section(".dtcm")));
 
 extern u32 bg32;
 
@@ -371,14 +372,8 @@ static inline void maria_WriteLineRAM(word* buffer)
       }
       else
       {
-          *pix++ = maria_GetColorFast((colors.by.color0 & 30)) |
-                  (maria_GetColor((colors.by.color0 & 28) | ((colors.by.color0 & 1) << 1)) <<8)  |
-                  (maria_GetColorFast((colors.by.color1 & 30))<<16) |
-                  (maria_GetColor((colors.by.color1 & 28) | ((colors.by.color1 & 1) << 1)) <<24);
-          *pix++ = maria_GetColorFast((colors.by.color2 & 30)) |
-                  (maria_GetColor((colors.by.color2 & 28) | ((colors.by.color2 & 1) << 1)) <<8) |
-                  (maria_GetColorFast((colors.by.color3 & 30))<<16) |
-                  (maria_GetColor((colors.by.color3 & 28) | ((colors.by.color3 & 1) << 1)) <<24);
+          *pix++ = maria_GetColor((colors.by.color0 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color0]) <<8)  | (maria_GetColorFast((colors.by.color1 & 30))<<16) | (maria_GetColor(color_lookup_320AC[colors.by.color1]) <<24);
+          *pix++ = maria_GetColor((colors.by.color2 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color2]) <<8)  | (maria_GetColorFast((colors.by.color3 & 30))<<16) | (maria_GetColor(color_lookup_320AC[colors.by.color3]) <<24);
       }
     }
   }
@@ -508,6 +503,8 @@ void maria_Reset( ) {
        {
           color_lookup_160AB[color][color1] = color | (color<<8) | (color1<<16) | (color1<<24);
        }
+       
+       color_lookup_320AC[color] = (color & 28) | ((color & 1) << 1);
    }
 }
 

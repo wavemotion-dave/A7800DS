@@ -45,7 +45,7 @@
 #define TIA_POLY5_SIZE 31
 #define TIA_POLY9_SIZE 511
 
-byte tia_buffer[SNDLENGTH] __attribute__((section(".dtcm")))  = {0};
+u16 tia_buffer[SNDLENGTH] __attribute__((section(".dtcm")))  = {0};
 u32 tiaBufIdx __attribute__((section(".dtcm"))) = 0;
 byte tia_volume[2] __attribute__((section(".dtcm"))) = {0};
 uint tia_counter[2] __attribute__((section(".dtcm"))) = {0};
@@ -184,6 +184,7 @@ ITCM_CODE  int TIA_Sample(void)
 // --------------------------------------------------------------------------------------
 ITCM_CODE void tia_Process(void) 
 {
+  u8 samp[2];
   for(u8 index = 0; index < 2; index++) 
   {
     if(tia_counter[0] > 1) 
@@ -204,7 +205,8 @@ ITCM_CODE void tia_Process(void)
       tia_counter[1] = tia_counterMax[1];
       tia_ProcessChannel1();
     }
-    tia_buffer[tiaBufIdx] = ((tia_volume[0] + tia_volume[1]));
-    tiaBufIdx = (tiaBufIdx+1) & (SNDLENGTH-1);
+    samp[index] = ((tia_volume[0] + tia_volume[1]));
   }
+  tia_buffer[tiaBufIdx++] = ((u16)samp[0]<<8) | (samp[1]);;
+  tiaBufIdx &= (SNDLENGTH-1);
 }

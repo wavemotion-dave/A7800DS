@@ -18,7 +18,7 @@
 #include "Sound.h"
 #define SOUND_SOURCE "Sound.cpp"
 
-unsigned char sound_buffer[SNDLENGTH];    // Sound buffer
+u16 sound_buffer[SNDLENGTH];    // Sound buffer
 
 void processSound(register unsigned char *buffer) 
 {
