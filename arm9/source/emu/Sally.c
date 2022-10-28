@@ -229,7 +229,7 @@ static inline void sally_ZeroPageY( ) {
 // ADC
 // ----------------------------------------------------------------------------
 static inline void sally_ADC( ) {
-  byte data = memory_Read(sally_address.w);
+  byte data = memory_Read_Fast(sally_address.w);
   if(sally_p & _fD) {
     word al = (sally_a & 15) + (data & 15) + (sally_p & _fC);
     word ah = (sally_a >> 4) + (data >> 4);
@@ -760,7 +760,7 @@ static inline void sally_RTS( ) {
 // SBC
 // ----------------------------------------------------------------------------
 static inline void sally_SBC( ) {
-  byte data = memory_Read(sally_address.w);
+  byte data = memory_Read_Fast(sally_address.w);
 
   if(sally_p & _fD) {
     word al = (sally_a & 15) - (data & 15) - !(sally_p & _fC);

@@ -282,7 +282,6 @@ static u8 wide_lookup_mode2B[] __attribute__((section(".dtcm"))) =
 // ----------------------------------------------------------------------------
 static inline void maria_WriteLineRAM(word* buffer) 
 {
-  extern uint32 bg32;
   union ColorUnion colors; 
   unsigned int *pix=(unsigned int *) buffer;
   uint32 *ptr = (uint32 *)&maria_lineRAM[0];
@@ -404,7 +403,7 @@ static inline void maria_StoreLineRAM( )
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
-    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr   = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0; *ptr = 0;
       
     wide_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
     wide_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;      

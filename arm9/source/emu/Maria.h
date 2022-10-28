@@ -25,9 +25,7 @@
 #ifndef MARIA_H
 #define MARIA_H
 
-#define MARIA_SURFACE_SIZE 77440
-
-// 77440 = 320 x 242
+#define MARIA_SURFACE_SIZE (128*1024)   // DS screen buffer size
 
 #include "Equates.h"
 #include "Pair.h"
