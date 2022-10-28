@@ -94,7 +94,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles %= CYCLES_PER_SCANLINE;
       
-    if (maria_scanline == 16) 
+    if (maria_scanline & 0x10) 
     {
       memory_ram[MSTAT] = 0;
       framePtr = (word*)(maria_surface);

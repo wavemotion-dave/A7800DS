@@ -60,7 +60,6 @@ int bg0s, bg1s;      // sub BG pointers
 #define MAX_DEBUG 16
 int debug[MAX_DEBUG]={0};
 u8 DEBUG_DUMP = 0;
-//#define WRITE_TWEAKS
 
 #define SOUND_FREQ  (31440/2)           // Be careful if you change this - this matches the frequency of the POKEY update and if we are TIA-only, we will double it.
 
@@ -112,25 +111,6 @@ static void DumpDebugData(void)
         }
     }
 }
-
-void dsWriteTweaks(void)
-{
-#ifdef WRITE_TWEAKS
-    FILE *fp;
-    dsPrintValue(22,0,0, (char*)"CFG");
-    fp = fopen("../A7800.txt", "a+");
-    if (fp != NULL)
-    {
-        fprintf(fp, "%-32s CT=%d PK=%d RE=%d SY=%d ST=%d HS=%d   %3d  %3d  %3d  %3d  %s\n", (char*)cartridge_digest, cartridge_type, cartridge_pokey, 
-                cartridge_region, cartridge_uses_wsync, cartridge_steals_cycles, cartridge_hsc_enabled, cartridge_xOffset, cartridge_yOffset+9,cartridge_xScale,cartridge_yScale,cartridge_filename);
-        fflush(fp);
-        fclose(fp);
-    }
-    WAITVBL;WAITVBL;WAITVBL;WAITVBL;WAITVBL;
-    dsPrintValue(22,0,0, (char*)"   ");
-#endif    
-}
-
 
 u32 myTiaBufIdx     __attribute__((section(".dtcm"))) = 0;
 u32 myPokeyBufIdx   __attribute__((section(".dtcm"))) = 0;
@@ -1024,7 +1004,6 @@ ITCM_CODE void dsMainLoop(void)
               if (++lcd_swap_counter == 30)
               {
                   if (keys_pressed & KEY_A)   lcdSwap();
-                  dsWriteTweaks();
               }
           } 
           if (scale_screen_dampen > 5)

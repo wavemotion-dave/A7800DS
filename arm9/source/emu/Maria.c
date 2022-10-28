@@ -165,12 +165,12 @@ static inline bool maria_IsHolyDMA( )
 // ----------------------------------------------------------------------------
 // GetColor
 // ----------------------------------------------------------------------------
-static inline byte maria_GetColor(byte data) 
+static inline byte Zmaria_GetColor(byte data) 
 {
   return (data & 3) ? memory_ram[BACKGRND | data] : memory_ram[BACKGRND];
 }
 
-static inline byte maria_GetColorFast(byte data) 
+static inline byte maria_GetColor(byte data) 
 {
   return memory_ram[BACKGRND | data];
 }
@@ -372,8 +372,8 @@ static inline void maria_WriteLineRAM(word* buffer)
       }
       else
       {
-          *pix++ = maria_GetColor((colors.by.color0 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color0]) <<8)  | (maria_GetColorFast((colors.by.color1 & 30))<<16) | (maria_GetColor(color_lookup_320AC[colors.by.color1]) <<24);
-          *pix++ = maria_GetColor((colors.by.color2 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color2]) <<8)  | (maria_GetColorFast((colors.by.color3 & 30))<<16) | (maria_GetColor(color_lookup_320AC[colors.by.color3]) <<24);
+          *pix++ = maria_GetColor((colors.by.color0 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color0]) <<8)  | (maria_GetColor((colors.by.color1 & 30))<<16) | (maria_GetColor(color_lookup_320AC[colors.by.color1]) <<24);
+          *pix++ = maria_GetColor((colors.by.color2 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color2]) <<8)  | (maria_GetColor((colors.by.color3 & 30))<<16) | (maria_GetColor(color_lookup_320AC[colors.by.color3]) <<24);
       }
     }
   }
