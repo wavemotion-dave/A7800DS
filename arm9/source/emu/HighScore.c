@@ -22,6 +22,8 @@
 // ----------------------------------------------------------------------------
 // HighScore.cpp
 // ----------------------------------------------------------------------------
+#include <fat.h>
+#include <dirent.h>
 #include "HighScore.h"
 #include "Cartridge.h"
 #include "Database.h"
@@ -75,7 +77,10 @@ bool cartridge_SaveHighScoreSram(void)
           if ((sram[2] == 0x68) && (sram[3] == 0x83) && (sram[4] == 0xaa) && (sram[5] == 0x55) && (sram[6] == 0x9c))
           {
               last_chksum = chksum;
-              FILE* file = fopen("A7800DS.sram", "wb+");
+              DIR* dir = opendir("/data");
+              if (dir) closedir(dir);      // Directory exists.
+              else mkdir("/data", 0777);   // Doesn't exist - make it...
+              FILE* file = fopen("/data/A7800DS.sram", "wb+");
               if( file != NULL ) 
               {
                 if( fwrite( sram, 1, HS_SRAM_SIZE, file ) != HS_SRAM_SIZE ) 
@@ -106,7 +111,7 @@ static bool cartridge_LoadHighScoreSram(void)
     
     while (status == false)
     {
-        FILE* file = fopen("A7800DS.sram", "rb" );
+        FILE* file = fopen("/data/A7800DS.sram", "rb" );
         if( file == NULL ) 
         {
             status = false;
