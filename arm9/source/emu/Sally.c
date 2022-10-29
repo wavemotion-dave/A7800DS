@@ -112,16 +112,11 @@ static inline void sally_Flags(byte data)
 // Branch
 // ----------------------------------------------------------------------------
 static inline void sally_Branch(byte branch) {
-  if(branch) {
-    PCUnion temp = sally_pc;
+  if(branch) 
+  {
+    uint carry = sally_pc.w;
     sally_pc.w += (signed char)sally_address.b.l;
-       
-    if(temp.b.h != sally_pc.b.h) {
-      sally_cyclesX4 += 8;
-    }
-    else {
-      sally_cyclesX4 += 4;
-    }
+    sally_cyclesX4 += ((carry ^ sally_pc.w) & 0x100) ? 8:4;
   }
 }
 

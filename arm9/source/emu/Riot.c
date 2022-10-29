@@ -80,8 +80,6 @@ ITCM_CODE void riot_SetInput(const byte* input) {
   SWCHA is directionals.  SWCHB is console switches and button mode.
   button signals are in high bits of INPT0-5.*/
     
-  //memory_ram[INPT5] |= 0x3F;memory_ram[INPT6] |= 0x1F;
-
   memory_ram[SWCHA] = ((~memory_ram[CTLSWA]) | riot_dra);	/*SWCHA as driven by RIOT*/
 
   /*now console switches will force bits to ground:*/
