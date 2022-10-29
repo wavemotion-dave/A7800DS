@@ -18,7 +18,6 @@
 #include "main.h"
 #include "config.h"
 #include "a7800utils.h"
-#include "emu/Bios.h"
 #include "emu/Database.h"
 #include "emu/ProSystem.h"
 #include "emu/Sound.h"
@@ -27,6 +26,7 @@
 #include "bgBottom.h"
 #include "bgTop.h"
 #include "bgFileSel.h"
+#include "printf.h"
 
 u8 isDS_LITE                            __attribute__((section(".dtcm"))) = 0;
 u8 frameSkipMask                        __attribute__((section(".dtcm"))) = 1;
@@ -364,11 +364,6 @@ void dsLoadGame(char *filename)
     // Initialize the virtual console emulation 
     database_Load(cartridge_digest);
 
-    if (bios_Load("7800.rom")) 
-    {
-      bios_enabled = true;
-    }
-
     // ------------------------------------------------------------------------------------------------
     // Enable or disbale frameskip... 0xFF means display every frame and 0x01 means every-other frame
     // ------------------------------------------------------------------------------------------------
@@ -490,6 +485,8 @@ bool dsWaitOnQuit(void) {
 
   return bRet;
 }
+
+void _putchar(char character) {};
 
 char szName[256];
 char szName2[256];

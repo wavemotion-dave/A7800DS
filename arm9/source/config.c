@@ -12,6 +12,7 @@
 #include "config.h"
 #include "bgBottom.h"
 #include "bgFileSel.h"
+#include "printf.h"
 
 struct AllConfig_t allConfigs;
 

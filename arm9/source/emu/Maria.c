@@ -450,8 +450,6 @@ static inline void maria_StoreLineRAM( )
           for(index = 0; index < width; index++) 
           {
             maria_pp.w = ((maria_charbase + maria_offset) << 8) | memory_ram[basePP.w++];
-            //maria_pp.b.l = memory_ram[basePP.w++];
-            //maria_pp.b.h = maria_charbase + maria_offset;
             maria_StoreGraphic( );              //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
             if(cwidth) maria_StoreGraphic( );   //maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
           }

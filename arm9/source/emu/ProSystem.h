@@ -28,7 +28,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "Equates.h"
-#include "Bios.h"
 #include "Cartridge.h"
 #include "HighScore.h"
 #include "Maria.h"

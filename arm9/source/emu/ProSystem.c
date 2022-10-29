@@ -58,14 +58,7 @@ void prosystem_Reset( )
     maria_Reset( );
     riot_Reset ( );
     cartridge_LoadHighScoreCart();
-    if(bios_enabled) 
-    {
-      bios_Store( );
-    }
-    else 
-    {
-      cartridge_Store( );
-    }
+    cartridge_Store( );
 
     prosystem_cycles = sally_ExecuteRES( );
     prosystem_active = true;

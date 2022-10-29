@@ -27,7 +27,6 @@
 #define MEMORY_SIZE 65536
 
 #include "Equates.h"
-#include "Bios.h"
 #include "Cartridge.h"
 #include "Tia.h"
 #include "Riot.h"
