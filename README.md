@@ -102,6 +102,13 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V3.9 : 29-Oct-2022 by wavemotion-dave
+  * More optmization and more games playable on the DS-Lite.
+  * Highscore A7800.SRAM file moved to /data (move yours manually) - this allows the same high score file even if your roms are in different directories.
+  * Fix for One-on-One.
+  * Fix for voices in Jinx.
+  * Cleanup of code - removed unused functions and vars. Switched to a memory-lite sprintf().
+
 V3.8 : 26-Oct-2022 by wavemotion-dave
   * Massive optmization of the Maria rendering to help the DS-Lite run more games. 
   * Fix for Rampage

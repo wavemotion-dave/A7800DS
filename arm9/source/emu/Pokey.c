@@ -70,6 +70,9 @@
 #define SK_RESET	0x03
 
 extern u16 tia_buffer[];
+extern byte TIA_POLY4[];
+extern byte TIA_POLY5[];
+
 
 u32 pokeyBufIdx __attribute__((section(".dtcm"))) = 0;
 
@@ -80,14 +83,14 @@ static uint pokey_audc[4];
 static uint pokey_audctl __attribute__((section(".dtcm")));
 static byte pokey_output[4];
 static byte pokey_outVol[4];
-static byte pokey_poly04[POKEY_POLY4_SIZE] = {1,1,0,1,1,1,0,0,0,0,1,0,1,0,0};
-static byte pokey_poly05[POKEY_POLY5_SIZE] = {0,0,1,1,0,0,0,1,1,1,1,0,0,1,0,1,0,1,1,0,1,1,1,0,1,0,0,0,0,0,1};
+#define pokey_poly04 TIA_POLY4
+#define pokey_poly05 TIA_POLY5
 static byte pokey_poly17[POKEY_POLY17_SIZE];
 static uint pokey_poly17Size;
-static uint pokey_polyAdjust;
-static uint pokey_poly04Cntr;
-static uint pokey_poly05Cntr;
-static uint pokey_poly17Cntr;
+static uint pokey_polyAdjust __attribute__((section(".dtcm")));
+static uint pokey_poly04Cntr __attribute__((section(".dtcm")));
+static uint pokey_poly05Cntr __attribute__((section(".dtcm")));
+static uint pokey_poly17Cntr __attribute__((section(".dtcm")));
 static uint pokey_divideMax[4];
 static uint pokey_divideCount[4];
 static uint pokey_sampleMax __attribute__((section(".dtcm")));

@@ -43,6 +43,7 @@ extern "C" {
 #define PRINTF_DISABLE_SUPPORT_FLOAT
 #define PRINTF_DISABLE_SUPPORT_EXPONENTIAL
 #define PRINTF_DISABLE_SUPPORT_LONG_LONG
+#define PRINTF_DISABLE_SUPPORT_PTRDIFF_T
 
 /**
  * Output a character to a custom device like UART, used by the printf() function

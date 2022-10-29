@@ -48,8 +48,8 @@ union ColorUnion
 
 word* maria_surface __attribute__((section(".dtcm"))) = 0;
 uint  maria_scanline __attribute__((section(".dtcm"))) = 1;
-u8 wide_mask_low __attribute__((section(".dtcm")));
-u8 wide_mask_high __attribute__((section(".dtcm")));
+u8 write_mask_low __attribute__((section(".dtcm")));
+u8 write_mask_high __attribute__((section(".dtcm")));
 u8 bg8 __attribute__((section(".dtcm")));
 
 static byte maria_lineRAM[256] __attribute__((section(".dtcm")));
@@ -103,7 +103,7 @@ static inline void _maria_StoreCells4(byte data)
         if (data & 0xC0) *ptr++ = maria_palette | ((data       ) >> 6); else *ptr++ = 0;
         if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else *ptr++ = 0;
         if (data & 0x0C) *ptr++ = maria_palette | ((data & 0x0C) >> 2); else *ptr++ = 0;
-        if (data & 0x03) *ptr++ = maria_palette | (data & 0x03);        else *ptr++ = 0;
+        if (data & 0x03) *ptr   = maria_palette | (data & 0x03);        else *ptr++ = 0;
     }
     else
 #endif        
@@ -120,18 +120,18 @@ static inline void _maria_StoreCells4(byte data)
 // ----------------------------------------------------------------------------
 // StoreCell - write mode
 // ----------------------------------------------------------------------------
-static inline void maria_StoreCellWide(byte data) 
+static inline void maria_StoreCellWriteMode(byte data) 
 {
   if(maria_horizontal < MARIA_LINERAM_SIZE) 
   {
       if (data)
       {
           byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
-          if (data & wide_mask_high)  // high
+          if (data & write_mask_high)  // high
           {
               *ptr = (maria_palette & 0x10) | (data >> 4);
           }
-          if (data & wide_mask_low)  // low
+          if (data & write_mask_low)  // low
           {
             ptr++;
             *ptr = (maria_palette & 0x10) | (data & 0x0F);
@@ -173,7 +173,7 @@ static inline byte maria_GetColor(byte data)
 }
 
 
-static u8 wide_lookup[256] __attribute__((section(".dtcm"))) =
+static u8 write_mode_lookup[256] __attribute__((section(".dtcm"))) =
 {
     0x00, 0x04, 0x08, 0x0C, 0x40, 0x44, 0x48, 0x4C, 0x80, 0x84, 0x88, 0x8C, 0xC0, 0xC4, 0xC8, 0xCC, 
     0x01, 0x05, 0x09, 0x0D, 0x41, 0x45, 0x49, 0x4D, 0x81, 0x85, 0x89, 0x8D, 0xC1, 0xC5, 0xC9, 0xCD, 
@@ -207,7 +207,7 @@ static inline void maria_StoreGraphic( )
     }
     else
     {
-      maria_StoreCellWide(wide_lookup[data]);
+      maria_StoreCellWriteMode(write_mode_lookup[data]);
     }
   }
   else 
@@ -235,7 +235,7 @@ static inline void maria_StoreGraphic( )
   maria_pp.w++;
 }
 
-static u8 wide_lookup_mode2A[] __attribute__((section(".dtcm"))) =
+static u8 write_mode_lookup_mode2A[] __attribute__((section(".dtcm"))) =
 {
     0x00, 0x00, 0x02, 0x02, 0x00, 0x00, 0x02, 0x02, 0x01, 0x01, 0x03, 0x03, 0x01, 0x01, 0x03, 0x03, 
     0x10, 0x10, 0x12, 0x12, 0x10, 0x10, 0x12, 0x12, 0x11, 0x11, 0x13, 0x13, 0x11, 0x11, 0x13, 0x13, 
@@ -256,7 +256,7 @@ static u8 wide_lookup_mode2A[] __attribute__((section(".dtcm"))) =
 };
 
 
-static u8 wide_lookup_mode2B[] __attribute__((section(".dtcm"))) =
+static u8 write_mode_lookup_mode2B[] __attribute__((section(".dtcm"))) =
 {
     0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
     0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 
@@ -337,10 +337,10 @@ static inline void maria_WriteLineRAM(word* buffer)
           }
           else
           {
-              *pix++ = maria_GetColor(wide_lookup_mode2A[colors.by.color0])       |
-                       maria_GetColor(wide_lookup_mode2B[colors.by.color0]) << 8  |
-                       maria_GetColor(wide_lookup_mode2A[colors.by.color1]) << 16 |
-                       maria_GetColor(wide_lookup_mode2B[colors.by.color1]) << 24;
+              *pix++ = maria_GetColor(write_mode_lookup_mode2A[colors.by.color0])       |
+                       maria_GetColor(write_mode_lookup_mode2B[colors.by.color0]) << 8  |
+                       maria_GetColor(write_mode_lookup_mode2A[colors.by.color1]) << 16 |
+                       maria_GetColor(write_mode_lookup_mode2B[colors.by.color1]) << 24;
           }
               
           if ((colors.wo.color1 == 0))
@@ -349,10 +349,10 @@ static inline void maria_WriteLineRAM(word* buffer)
           }
           else
           {
-              *pix++ = maria_GetColor(wide_lookup_mode2A[colors.by.color2])       |
-                       maria_GetColor(wide_lookup_mode2B[colors.by.color2]) << 8  |
-                       maria_GetColor(wide_lookup_mode2A[colors.by.color3]) << 16 |
-                       maria_GetColor(wide_lookup_mode2B[colors.by.color3]) << 24;
+              *pix++ = maria_GetColor(write_mode_lookup_mode2A[colors.by.color2])       |
+                       maria_GetColor(write_mode_lookup_mode2B[colors.by.color2]) << 8  |
+                       maria_GetColor(write_mode_lookup_mode2A[colors.by.color3]) << 16 |
+                       maria_GetColor(write_mode_lookup_mode2B[colors.by.color3]) << 24;
           }
       }
     }
@@ -398,8 +398,8 @@ static inline void maria_StoreLineRAM( )
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0; *ptr = 0;
       
-    wide_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
-    wide_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;      
+    write_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
+    write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;      
   }    
 
   maria_pp.b.l = memory_ram[maria_dp.w++];

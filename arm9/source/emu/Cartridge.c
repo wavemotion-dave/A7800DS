@@ -38,7 +38,6 @@ char cartridge_filename[128];
 // -------------------------------------------------------------------------------------------------
 static byte cartridge_buffer[MAX_CART_SIZE+128] ALIGN(32); // The extra 128 bytes is for the possible .a78 header
 uint cartridge_size __attribute__((section(".dtcm"))) = 0;
-static uint maxbank = 9;
 
 // ----------------------------------------------------------------------------
 // HasHeader
@@ -73,7 +72,7 @@ inline static void cartridge_WriteBank(word address, byte bank)
   {
     last_bank = bank;
     uint offset = bank * 16384;
-    if (offset < (256*1024))    // If we are in fast VRAM memory
+    if (offset < (272*1024))    // If we are in fast VRAM memory
         memory_WriteROMFast(address, (16384/(4*4)), (u32*)(0x06860000 + offset));
     else    // Normal memory - a little slower but that's the best we can do...
         memory_WriteROMFast(address, (16384/(4*4)), (u32*)(cartridge_buffer + offset));
@@ -201,10 +200,10 @@ static bool _cartridge_Load(uint size)
     
 
   // -----------------------------------------------------------------------------
-  // Copy up to 256K bytes of cart into the fast memory - used for bank swap only
+  // Copy up to 272K bytes of cart into the fast memory - used for bank swap only
   // -----------------------------------------------------------------------------
   u32 *fast_mem = (u32*)0x06860000;
-  memcpy(fast_mem, cartridge_buffer, (256 * 1024));
+  memcpy(fast_mem, cartridge_buffer, (272 * 1024));
   
   hash_Compute(cartridge_buffer, cartridge_size, cartridge_digest);
   return true;
@@ -228,6 +227,8 @@ bool cartridge_Load(char *filename)
     if(fseek(file, 0L, SEEK_SET)) { }
     
     if (size > (MAX_CART_SIZE+128)) return false;   // Cart is too big... can't handle it
+    
+    memset(cartridge_buffer, 0xFF, MAX_CART_SIZE+128);  // Set all to 0xFF before we read the ROM in
 
     if(fread(cartridge_buffer, 1, size, file) != size && ferror(file)) 
     {
@@ -338,7 +339,6 @@ void cartridge_Store( ) {
       }
       break;
   }
-  maxbank = cartridge_size / 16384;
 }
 
 // ----------------------------------------------------------------------------
