@@ -776,7 +776,7 @@ void dsInstallSoundEmuFIFO(void)
     
     FifoMessage msg;
     msg.SoundPlay.data = &sound_buffer;
-    msg.SoundPlay.freq = (myCartInfo.pokeyType ? SOUND_FREQ+21:(SOUND_FREQ*2)+21);
+    msg.SoundPlay.freq = (myCartInfo.pokeyType ? SOUND_FREQ:(SOUND_FREQ*2));
     msg.SoundPlay.volume = 127;
     msg.SoundPlay.pan = 64;
     msg.SoundPlay.loop = 1;
