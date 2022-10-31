@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <fat.h>
 #include <nds.h>
+#include <maxmod9.h>
 
 #include "main.h"
 #include "intro.h"
 #include "config.h"
 #include "a7800utils.h"
+#include "soundbank.h"
 
 // Program entry point
 int main(int argc, char **argv) 
@@ -44,6 +46,7 @@ int main(int argc, char **argv)
   {
       chdir("/roms");    // Try to start in roms area... doesn't matter if it fails
       chdir("a7800");    // And try to start in the subdir /a7800... doesn't matter if it fails.
+      chdir("a78");      // And try to start in the subdir /a78... doesn't matter if it fails.
   }
   
   // Main loop of emulation

@@ -41,11 +41,11 @@ Database_Entry game_list[] = {
   {"07342c78619ba6ffcc61c10e907e3b50",  "Asteroids",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  25-9, 256,  230, 0}, // title=Asteroids
   {"3d38281ed8a8d8c7cd457a18c92c8604",  "Astro Blaster",                    CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 30, 17-9, 320,  210, 0}, // title=Astro Blaster
   {"a51e5df28a0fe8c52e9d28fb5f8e44a6",  "Astro Fighter",                    CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 32, 17-9, 320,  210, 0}, // title=Astro Fighter
-  {"7cdfbe37634e7dcd4dc67db7edbcd3ba",  "Baby Pac-Man",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  32, 22-9, 320,  220, 0}, // title=Baby Pac Man
+  {"7cdfbe37634e7dcd4dc67db7edbcd3ba",  "Baby Pac-Man",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  32, 22-9, 320,  221, 0}, // title=Baby Pac Man
   {"8fc3a695eaea3984912d98ed4a543376",  "Ballblazer",                       CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Ballblazer
   {"42682415906c21c6af80e4198403ffda",  "Barnyard Blaster",                 CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Barnyard Blaster
-  {"f5f6b69c5eb4b55fc163158d1a6b423e",  "Basketbrawl",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    SKIP_WSYNC, HSC_NO,  0,  22-9, 256,  220, 1}, // title=Basketbrawl
-  {"78b1061d651ef806becac1dd3fda29a0",  "Beef Drop",                        CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    SKIP_WSYNC, HSC_YES, 0,  16-9, 256,  220, 0}, // title=Beef Drop (Final Atariage)
+  {"f5f6b69c5eb4b55fc163158d1a6b423e",  "Basketbrawl",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 1}, // title=Basketbrawl
+  {"78b1061d651ef806becac1dd3fda29a0",  "Beef Drop",                        CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  16-9, 256,  220, 0}, // title=Beef Drop (Final Atariage)
   {"34483432b92f565f4ced82a141119164",  "Bentley Bear",                     CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  3,  22-9, 256,  220, 0}, // title=Bentley Bear's Crystal Quest
   {"4e325918a8b3bbcf2f9405040abcfc6d",  "Older b*nQ",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  26-9, 256,  220, 0}, // title=BonQ (found on Atairage Age site)
   {"9fa7743a016c9b7015ee1d386326f88e",  "b*nQ",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  26-9, 256,  220, 0}, // title=BonQ (final Atariage)
@@ -101,8 +101,8 @@ Database_Entry game_list[] = {
   {"2d8fc6f9d3f5a6ca99d13c601f9adbb9",  "Keystone",                         CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  22-9, 256,  220, 0}, // title=Keystone_Koppers_RC4_demo.a78
   {"17b3b764d33eae9b5260f01df7bb9d2f",  "Klax",                             CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  28-9, 256,  234, 0}, // title=Klax (fixed)
   {"5fb805f2b69820a9b196f5fed2a23c99",  "Klax",                             CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  28-9, 256,  234, 0}, // title=Klax       
-  {"1d47c3802135d864dc1d922ec27aa708",  "Knight Guy On Board",              CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  STEAL_CYCLE,    SKIP_WSYNC, HSC_NO,  0,  22-9, 256,  233, 0}, // title=Knight Guy On Board - 30 Squares Of Fate 
-  {"f57d0af323d4e173fb49ed447f0563d7",  "Kung Fu Master",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    SKIP_WSYNC, HSC_NO,  22, 22-9, 276,  225, 0}, // title=Kung Fu Master
+  {"1d47c3802135d864dc1d922ec27aa708",  "Knight Guy On Board",              CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  233, 0}, // title=Knight Guy On Board - 30 Squares Of Fate 
+  {"f57d0af323d4e173fb49ed447f0563d7",  "Kung Fu Master",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  22, 22-9, 276,  225, 0}, // title=Kung Fu Master
   {"fe657a1b8a34b2c0e1d2171166d40926",  "Legend of Silverpeak",             CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  15-9, 256,  201, 1}, // title=Legend of Silverpeak
   {"431ca060201ee1f9eb49d44962874049",  "Mario",                            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Mario Bros.
   {"37b5692e33a98115e574185fa8398c22",  "Mat Mania Challenge",              CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Mat Mania Challenge
@@ -123,7 +123,7 @@ Database_Entry game_list[] = {
   {"5013b69cb05b21a1194ce48517df7bfc",  "Pac-Man Collection",               CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 10, 19-9, 281,  231, 0}, // title=Pac-Man Collection (homebrew)    
   {"a59d362e3a391ff1482131aa0818ad3e",  "Pac-Man 40th Anniversary",         CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 9,  18-9, 278,  221, 0}, // title=Pac-Man Collection 40th Anniversary Edition (homebrew) - Older
   {"1330d23ebad9b5ded92ebeacdf305abd",  "Pac-Man 40th Anniversary",         CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 9,  18-9, 278,  221, 0}, // title=Pac-Man Collection 40th Anniversary Edition (homebrew) - PMC_XM Newest
-  {"c80edcd555cd3d81f664e5f02826dc26",  "Pac-Man XM-S",                     CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 11, 25-9, 279,  231, 0}, // title=Pac-Man Collection 40th - Short Mazes (2022)
+  {"c80edcd555cd3d81f664e5f02826dc26",  "Pac-Man XM-S",                     CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 11, 25-9, 279,  233, 0}, // title=Pac-Man Collection 40th - Short Mazes (2022)
   {"d0bf3b841ad4bbd356e9588874749a13",  "Pac-Man Plus 320",                 CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 10, 22-9, 274,  233, 0}, // title=Pac-Man Plus 320
   {"1a5207870dec6fae9111cb747e20d8e3",  "Pete Rose Baseball",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Pete Rose Baseball
   {"ec206c8db4316eb1ebce9fc960da7d8f",  "Pit Fighter",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Pit Fighter                     
@@ -258,7 +258,7 @@ bool database_Load(byte *digest)
         myCartInfo.diff1         = DIFF_A;
         myCartInfo.diff2         = DIFF_A;
         myCartInfo.steals_cycles = NO_STEALING;
-        myCartInfo.uses_wsync    = false;
+        myCartInfo.uses_wsync    = USES_WSYNC;
         myCartInfo.spare1        = 0;
         myCartInfo.spare2        = 0;
         myCartInfo.spare3        = 0;
@@ -271,7 +271,7 @@ bool database_Load(byte *digest)
         {
             myCartInfo.region        = NTSC;
             if (cartridge_size == (144*1024)) myCartInfo.cardtype = CT_SUPLRG;
-            else myCartInfo.cardtype = (cartridge_size <= (48*1024)) ? CT_NORMAL:CT_SUPROM;
+            else myCartInfo.cardtype = (cartridge_size <= (52*1024)) ? CT_NORMAL:CT_SUPROM;
             myCartInfo.pokeyType     = POKEY_NONE;
             myCartInfo.cardctrl1     = JOY;
             myCartInfo.cardctrl2     = JOY;
@@ -285,7 +285,7 @@ bool database_Load(byte *digest)
         // --------------------------------------------------------
         if (isDSiMode())    // DSi can handle many games in full framerate
         {
-            if (cartridge_size < 135000)  myCartInfo.frameSkip = FRAMESKIP_DISABLE;    // For smaller cart sizes, don't frameskip
+            if (cartridge_size <= (130*1024))  myCartInfo.frameSkip = FRAMESKIP_DISABLE;    // For smaller cart sizes, don't frameskip
             else myCartInfo.frameSkip = FRAMESKIP_MEDIUM;
         }
         else    // DS-Lite defaults to frame skipping

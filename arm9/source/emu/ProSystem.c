@@ -24,7 +24,6 @@
 // ----------------------------------------------------------------------------
 
 #include "ProSystem.h"
-#include "Sound.h"
 #include "Database.h"
 
 #define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system
@@ -108,7 +107,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
-        pokey_Process(1);
+        pokey_Process();
         pokey_Scanline();
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
   }
@@ -134,7 +133,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
-        pokey_Process(1);
+        pokey_Process();
         pokey_Scanline();
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
   }
@@ -170,7 +169,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
-        pokey_Process(1);
+        pokey_Process();
         pokey_Scanline();
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
   }    
@@ -186,7 +185,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     sally_Execute(CYCLES_PER_SCANLINE);
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
-        pokey_Process(1);
+        pokey_Process();
         pokey_Scanline();
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
   }    

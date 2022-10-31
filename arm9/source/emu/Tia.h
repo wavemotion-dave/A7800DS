@@ -45,6 +45,8 @@
 
 #include "shared.h"
 
+#define SNDLENGTH (1024)
+
 extern u16 tia_buffer[];
 
 extern byte tia_audc[2];
@@ -56,9 +58,11 @@ extern void tia_Reset( );
 extern void tia_SetRegister(word address, byte data);
 extern void tia_Clear( );
 extern void tia_Process(void);
+extern u16 tia_ProcessNow(void);
 extern byte tia_volume[2];
 extern uint tia_counter[2];
 extern uint tia_counterMax[2];
+
 
 
 inline void tia_MemoryChannel(byte channel) 

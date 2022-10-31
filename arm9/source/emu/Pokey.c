@@ -41,7 +41,7 @@
 #include <stdlib.h>
 #include "Pokey.h"
 #include "ProSystem.h"
-#include "Sound.h"
+
 #define POKEY_NOTPOLY5 0x80
 #define POKEY_POLY4 0x40
 #define POKEY_PURE 0x20
@@ -69,10 +69,8 @@
 
 #define SK_RESET	0x03
 
-extern u16 tia_buffer[];
 extern byte TIA_POLY4[];
 extern byte TIA_POLY5[];
-
 
 u32 pokeyBufIdx __attribute__((section(".dtcm"))) = 0;
 
@@ -402,93 +400,159 @@ static inline void loc_set_byte(byte *p, uint v)
   *((u32 *)p) = v;
 }
 
+extern u32 tiaBufIdx;
 // ----------------------------------------------------------------------------
 // Process
 // ----------------------------------------------------------------------------
-uint pokSampIdx=0;
-ITCM_CODE void pokey_Process(uint length) 
+ITCM_CODE void pokey_Process(void) 
 {
-  byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
+    byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
 
-  while(length) 
-  {
-    int currentValue;
-    uint nextEvent = POKEY_SAMPLE;
-    uint eventMin = loc_get_int(sampleCntrPtrB);
-
-    byte channel;
-    for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) {
-      if(pokey_divideCount[channel] <= eventMin) {
-        eventMin = pokey_divideCount[channel];
-        nextEvent = channel;
-      }
-    }
-    
-    for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) {
-      pokey_divideCount[channel] -= eventMin;
-    }
-
-    uint new_value = loc_get_int(sampleCntrPtrB) - eventMin;
-    loc_set_byte(sampleCntrPtrB, new_value);
-
-    pokey_polyAdjust += eventMin;
-
-    if(nextEvent != POKEY_SAMPLE) 
+    while (1)
     {
-      pokey_poly04Cntr = (pokey_poly04Cntr + pokey_polyAdjust) % POKEY_POLY4_SIZE;
-      pokey_poly05Cntr = (pokey_poly05Cntr + pokey_polyAdjust) % POKEY_POLY5_SIZE;
-      pokey_poly17Cntr = (pokey_poly17Cntr + pokey_polyAdjust) % pokey_poly17Size;
-      pokey_polyAdjust = 0;
-      pokey_divideCount[nextEvent] += pokey_divideMax[nextEvent];
+        int currentValue;
+        uint nextEvent = POKEY_SAMPLE;
+        uint eventMin = loc_get_int(sampleCntrPtrB);
 
-      if((pokey_audc[nextEvent] & POKEY_NOTPOLY5) || pokey_poly05[pokey_poly05Cntr]) {
-        if(pokey_audc[nextEvent] & POKEY_PURE) {
-          pokey_output[nextEvent] = !pokey_output[nextEvent];
+        byte channel;
+        for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) {
+          if(pokey_divideCount[channel] <= eventMin) {
+            eventMin = pokey_divideCount[channel];
+            nextEvent = channel;
+          }
         }
-        else if (pokey_audc[nextEvent] & POKEY_POLY4) {
-          pokey_output[nextEvent] = pokey_poly04[pokey_poly04Cntr];
-        }
-        else {
-          pokey_output[nextEvent] = pokey_poly17[pokey_poly17Cntr];
-        }
-      }
 
-      if(pokey_output[nextEvent]) {
-        pokey_outVol[nextEvent] = pokey_audc[nextEvent] & POKEY_VOLUME_MASK;
-      }
-      else {
-        pokey_outVol[nextEvent] = 0;
-      }
+        for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) {
+          pokey_divideCount[channel] -= eventMin;
+        }
+
+        uint new_value = loc_get_int(sampleCntrPtrB) - eventMin;
+        loc_set_byte(sampleCntrPtrB, new_value);
+
+        pokey_polyAdjust += eventMin;
+
+        if(nextEvent != POKEY_SAMPLE) 
+        {
+          pokey_poly04Cntr = (pokey_poly04Cntr + pokey_polyAdjust) % POKEY_POLY4_SIZE;
+          pokey_poly05Cntr = (pokey_poly05Cntr + pokey_polyAdjust) % POKEY_POLY5_SIZE;
+          pokey_poly17Cntr = (pokey_poly17Cntr + pokey_polyAdjust) % pokey_poly17Size;
+          pokey_polyAdjust = 0;
+          pokey_divideCount[nextEvent] += pokey_divideMax[nextEvent];
+
+          if((pokey_audc[nextEvent] & POKEY_NOTPOLY5) || pokey_poly05[pokey_poly05Cntr]) {
+            if(pokey_audc[nextEvent] & POKEY_PURE) {
+              pokey_output[nextEvent] = !pokey_output[nextEvent];
+            }
+            else if (pokey_audc[nextEvent] & POKEY_POLY4) {
+              pokey_output[nextEvent] = pokey_poly04[pokey_poly04Cntr];
+            }
+            else {
+              pokey_output[nextEvent] = pokey_poly17[pokey_poly17Cntr];
+            }
+          }
+
+          if(pokey_output[nextEvent]) {
+            pokey_outVol[nextEvent] = pokey_audc[nextEvent] & POKEY_VOLUME_MASK;
+          }
+          else {
+            pokey_outVol[nextEvent] = 0;
+          }
+        }
+        else 
+        {
+          *pokey_sampleCount += pokey_sampleMax;
+          currentValue = 0;
+
+          for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) 
+          {
+            currentValue += pokey_outVol[channel];
+          }
+
+          extern int TIA_Sample(void);
+          currentValue = (currentValue << 2) + 8;
+          currentValue += TIA_Sample();        
+          currentValue = (currentValue >> 1);
+
+          tia_buffer[tiaBufIdx++] = (u16)((currentValue<<8) | currentValue);
+          tiaBufIdx &= (SNDLENGTH-1);
+          return;
+        }
     }
-    else 
+}
+
+
+ITCM_CODE u16 pokey_ProcessNow(void) 
+{
+    byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
+
+    while (1)
     {
-      *pokey_sampleCount += pokey_sampleMax;
-      currentValue = 0;
+        int currentValue;
+        uint nextEvent = POKEY_SAMPLE;
+        uint eventMin = loc_get_int(sampleCntrPtrB);
 
-      for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) 
-      {
-        currentValue += pokey_outVol[channel];
-      }
+        byte channel;
+        for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) {
+          if(pokey_divideCount[channel] <= eventMin) {
+            eventMin = pokey_divideCount[channel];
+            nextEvent = channel;
+          }
+        }
 
-      extern int TIA_Sample(void);
-      currentValue = (currentValue << 2) + 8;
-      currentValue += TIA_Sample();        
-      currentValue = (currentValue >> 1);
-      
-      if (pokSampIdx & 1)
-      {
-          tia_buffer[pokeyBufIdx++] |= (currentValue<<8);
-          pokeyBufIdx &= (SNDLENGTH-1);
-      }
-      else
-      {
-          tia_buffer[pokeyBufIdx] = currentValue;
-      }
-      pokSampIdx++;
-        
-      length--;
+        for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) {
+          pokey_divideCount[channel] -= eventMin;
+        }
+
+        uint new_value = loc_get_int(sampleCntrPtrB) - eventMin;
+        loc_set_byte(sampleCntrPtrB, new_value);
+
+        pokey_polyAdjust += eventMin;
+
+        if(nextEvent != POKEY_SAMPLE) 
+        {
+          pokey_poly04Cntr = (pokey_poly04Cntr + pokey_polyAdjust) % POKEY_POLY4_SIZE;
+          pokey_poly05Cntr = (pokey_poly05Cntr + pokey_polyAdjust) % POKEY_POLY5_SIZE;
+          pokey_poly17Cntr = (pokey_poly17Cntr + pokey_polyAdjust) % pokey_poly17Size;
+          pokey_polyAdjust = 0;
+          pokey_divideCount[nextEvent] += pokey_divideMax[nextEvent];
+
+          if((pokey_audc[nextEvent] & POKEY_NOTPOLY5) || pokey_poly05[pokey_poly05Cntr]) {
+            if(pokey_audc[nextEvent] & POKEY_PURE) {
+              pokey_output[nextEvent] = !pokey_output[nextEvent];
+            }
+            else if (pokey_audc[nextEvent] & POKEY_POLY4) {
+              pokey_output[nextEvent] = pokey_poly04[pokey_poly04Cntr];
+            }
+            else {
+              pokey_output[nextEvent] = pokey_poly17[pokey_poly17Cntr];
+            }
+          }
+
+          if(pokey_output[nextEvent]) {
+            pokey_outVol[nextEvent] = pokey_audc[nextEvent] & POKEY_VOLUME_MASK;
+          }
+          else {
+            pokey_outVol[nextEvent] = 0;
+          }
+        }
+        else 
+        {
+          *pokey_sampleCount += pokey_sampleMax;
+          currentValue = 0;
+
+          for(channel = POKEY_CHANNEL1; channel <= POKEY_CHANNEL4; channel++) 
+          {
+            currentValue += pokey_outVol[channel];
+          }
+
+          extern int TIA_Sample(void);
+          currentValue = (currentValue << 2) + 8;
+          currentValue += TIA_Sample();        
+          currentValue = (currentValue >> 1);
+
+          return (u16)((currentValue << 8) | currentValue);
+        }
     }
-  }
 }
 
 // ----------------------------------------------------------------------------

@@ -77,7 +77,8 @@
 extern void pokey_Reset( );
 extern void pokey_SetRegister(word address, byte value);
 extern byte pokey_GetRegister(word address);
-extern void pokey_Process(uint length);
+extern void pokey_Process(void);
+extern u16 pokey_ProcessNow(void);
 extern void pokey_Clear( );
 extern uint32 random_scanline_counter;
 

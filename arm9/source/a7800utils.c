@@ -10,6 +10,7 @@
 // =====================================================================================
 #include <nds.h>
 #include <nds/fifomessages.h>
+#include <maxmod9.h>
 
 #include <fat.h>
 #include <dirent.h>
@@ -20,20 +21,18 @@
 #include "a7800utils.h"
 #include "emu/Database.h"
 #include "emu/ProSystem.h"
-#include "emu/Sound.h"
 
 #include "clickNoQuit_wav.h"
 #include "bgBottom.h"
 #include "bgTop.h"
 #include "bgFileSel.h"
 #include "printf.h"
+#include "soundbank.h"
+#include "soundbank_bin.h"
 
 u8 isDS_LITE                            __attribute__((section(".dtcm"))) = 0;
 u8 frameSkipMask                        __attribute__((section(".dtcm"))) = 1;
-
-static u16 lastPokeySample              __attribute__((section(".dtcm"))) = 0;
-static u16 lastTiaSample                __attribute__((section(".dtcm"))) = 0;
-static u16 lastSample                   __attribute__((section(".dtcm"))) = 0;
+u16 lastSample                          __attribute__((section(".dtcm"))) = 0;
 u16 gTotalAtariFrames                   __attribute__((section(".dtcm"))) = 0;
 int atari_frames                        __attribute__((section(".dtcm"))) = 0;
 u8 bRefreshXY                           __attribute__((section(".dtcm"))) = false;
@@ -43,6 +42,9 @@ u16 full_speed                          __attribute__((section(".dtcm"))) = 0;
 short int etatEmu                       __attribute__((section(".dtcm"))) = 0;
 u16 fpsDisplay                          __attribute__((section(".dtcm"))) = 0;
 u16 bEmulatorRun                        __attribute__((section(".dtcm"))) = 1;
+
+extern u32 tiaBufIdx;
+char fpsbuf[32];
 
 // -----------------------------------------------------------------
 // Some vars for listing filenames of ROMs... 1K of ROMs is plenty
@@ -61,8 +63,6 @@ int bg0s, bg1s;      // sub BG pointers
 int debug[MAX_DEBUG]={0};
 u8 DEBUG_DUMP = 0;
 
-#define SOUND_FREQ  (31440/2)           // Be careful if you change this - this matches the frequency of the POKEY update and if we are TIA-only, we will double it.
-
 uint video_height;                       // Actual video height
 u16 *bufVideo;                           // Video flipping buffer
 gamecfg GameConf;                        // Game Config svg
@@ -72,6 +72,8 @@ short cyBG __attribute__((section(".dtcm")));
 short xdxBG  __attribute__((section(".dtcm")));
 short ydyBG  __attribute__((section(".dtcm")));
 
+u32 myTiaBufIdx     __attribute__((section(".dtcm"))) = 0;
+u8 soundEmuPause = 1;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
@@ -112,70 +114,31 @@ static void DumpDebugData(void)
     }
 }
 
-u32 myTiaBufIdx     __attribute__((section(".dtcm"))) = 0;
-u32 myPokeyBufIdx   __attribute__((section(".dtcm"))) = 0;
-u16* snd_ptr        __attribute__((section(".dtcm"))) = (u16*)((u32)sound_buffer + 0xA000000);
-u16* snd_sta        __attribute__((section(".dtcm"))) = (u16*)((u32)sound_buffer + 0xA000000);
-u16* snd_end        __attribute__((section(".dtcm"))) = (u16*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
-ITCM_CODE void VsoundHandler(void) 
+// ------------------------------------------------------------
+// Utility function to pause the sound... 
+// ------------------------------------------------------------
+void SoundPause(void)
 {
-  extern u32 tiaBufIdx;
+    soundEmuPause = 1;
+}
 
-  for (u32 i=0; i<2; i++)
-  {
-      // If there is a fresh sample... 
-      if (myTiaBufIdx != tiaBufIdx)
-      {
-          lastSample = tia_buffer[myTiaBufIdx];
-          myTiaBufIdx = (myTiaBufIdx+1) & (SNDLENGTH-1);
-      }
-      *snd_ptr++ = lastSample;
-  }
-  if (snd_ptr == snd_end)
-  {
-      snd_ptr = snd_sta;
-  }
+// ------------------------------------------------------------
+// Utility function to un pause the sound... 
+// ------------------------------------------------------------
+void SoundUnPause(void)
+{
+    myTiaBufIdx = 0;
+    tiaBufIdx = 0;
+    memset(tia_buffer, 0x00, SNDLENGTH);
+    TIMER0_CR=0;
+    TIMER0_DATA=0;
+    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+    atari_frames = 0;
+    WAITVBL;WAITVBL;
+    soundEmuPause = 0;
 }
 
 
-ITCM_CODE void VsoundHandler_Pokey(void)
- {
-  extern u32 pokeyBufIdx;
-
-  // If there is a fresh Pokey sample... 
-  if (myPokeyBufIdx != pokeyBufIdx)
-  {
-      lastPokeySample = tia_buffer[myPokeyBufIdx++];
-      myPokeyBufIdx &= (SNDLENGTH-1);
-  }
-  *snd_ptr++ = lastPokeySample;
-  
-  if (snd_ptr == snd_end)
-  {
-      snd_ptr = snd_sta;
-  }
-}
-
-
-ITCM_CODE void VsoundHandler_PokeyLite(void)
- {
-  extern u32 pokeyBufIdx;
-
-  for (uint i=0; i<2; i++)
-  {
-      // If there is a fresh Pokey sample... 
-      if (myPokeyBufIdx != pokeyBufIdx)
-      {
-          lastPokeySample = tia_buffer[myPokeyBufIdx++];
-          myPokeyBufIdx &= (SNDLENGTH-1);
-      }
-      *snd_ptr++ = lastPokeySample;
-  }
-  if (snd_ptr == snd_end)
-  {
-      snd_ptr = snd_sta;
-  }
-}
 
 // Color fading effect
 void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr, unsigned char valEnd, unsigned char uWait) {
@@ -341,17 +304,15 @@ void dsShowScreenMain(bool full)
 
 void dsFreeEmu(void) 
 {
-    // Stop timer of sound
-    TIMER2_CR=0; irqDisable(IRQ_TIMER2); 
+    SoundPause();
 }
 
 void dsLoadGame(char *filename) 
 {
   unsigned int index;
   
-  // Free buffer if needed
-  TIMER2_CR=0; irqDisable(IRQ_TIMER2); 
-  
+  SoundPause();  
+    
   // Clear out debug info...
   for (int i=0; i<MAX_DEBUG; i++)
   {
@@ -374,8 +335,6 @@ void dsLoadGame(char *filename)
     dsShowScreenEmu();
     prosystem_Reset();
       
-    lastPokeySample = 0;
-    lastTiaSample = 0;
     lastSample = 0;
       
     if (DEBUG_DUMP)
@@ -412,12 +371,12 @@ void dsLoadGame(char *filename)
     GameConf.DS_Pad[12] = 6;   GameConf.DS_Pad[13] = 8;
     GameConf.DS_Pad[14] = 7;   GameConf.DS_Pad[15] = 9;
 
-    dsInstallSoundEmuFIFO();
-      
     atari_frames = 0;
     TIMER0_CR=0;
     TIMER0_DATA=0;
     TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+      
+    SoundUnPause();
   }
 }
 
@@ -436,11 +395,13 @@ unsigned int dsReadPad(void) {
 	return ret_keys_pressed;
 }
 
+char szName[256];
+char szName2[256];
+
 bool dsWaitOnQuit(void) {
   bool bRet=false, bDone=false;
   unsigned int keys_pressed;
   unsigned int posdeb=0;
-  char szName[32];
   
   decompress(bgFileSelTiles, bgGetGfxPtr(bg0b), LZ77Vram);
   decompress(bgFileSelMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -488,11 +449,9 @@ bool dsWaitOnQuit(void) {
 
 void _putchar(char character) {};
 
-char szName[256];
-char szName2[256];
 void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel) 
 {
-  unsigned int ucBcl,ucGame;
+  unsigned int ucGame;
   u8 maxLen;
   
   // Display all games if possible
@@ -504,7 +463,7 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
   dsPrintValue(31,22,0,(char *) (NoDebGame+14<countpro ? ">" : " "));
   sprintf(szName,"%s","A=SELECT, Y=HALT EMU, B=BACK");
   dsPrintValue(16-strlen(szName)/2,23,0,szName);
-  for (ucBcl=0;ucBcl<17; ucBcl++) 
+  for (u8 ucBcl=0;ucBcl<17; ucBcl++) 
   {
     ucGame= ucBcl+NoDebGame;
     if (ucGame < countpro) {
@@ -768,51 +727,106 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
   }
 }
 
+
+// --------------------------------------------------------------------------------------------
+// MAXMOD streaming setup and handling...
+// --------------------------------------------------------------------------------------------
+#define sample_rate  31300      // To rough match the TIA driver for the Atari 7800 - we purposely undershoot slightly
+#define buffer_size  (256+4)    // Enough buffer that we don't have to fill it too often but not so big as to create lag
+
+mm_ds_system sys  __attribute__((section(".dtcm")));
+mm_stream myStream __attribute__((section(".dtcm")));
+
+// -------------------------------------------------------------------------------------------
+// maxmod will call this routine when the buffer is half-empty and requests that
+// we fill the sound buffer with more samples. They will request 'len' samples and
+// we will fill exactly that many. If the sound is paused, we fill with 'mute' samples.
+// -------------------------------------------------------------------------------------------
+mm_word OurSoundMixer(mm_word len, mm_addr dest, mm_stream_formats format)
+{
+    if (soundEmuPause)  // If paused, just send same value - no amplitude... no sound
+    {
+      s32 *p = (s32*)dest;
+      for (int i=0; i<len/4; i++)
+      {
+        *p++ = 0x0000;
+      }
+    }
+    else
+    {
+      // -----------------------------------------------------------------------------------
+      // Len is always a multiple of 2 so we will transfer 16-bits at a time which takes 
+      // just as much CPU time as an 8-bit transfer but we get 2x the data throughput...
+      // -----------------------------------------------------------------------------------
+      s16 *p = (s16*)dest;
+      int new_len = (len>>1);
+      while (new_len--)
+      {
+          if (myTiaBufIdx != tiaBufIdx)
+          {
+            *p++ = tia_buffer[myTiaBufIdx++];
+            myTiaBufIdx &= (SNDLENGTH-1);
+          }
+          else // We're short some samples... this happens due to emualtor timing not being perfect. Just make up the samples.
+          {
+              *p++ = (myCartInfo.pokeyType ? pokey_ProcessNow() : tia_ProcessNow());
+          }
+      }
+    }
+    return  len;
+}
+
+
+// -------------------------------------------------------------------------------------------
+// Setup the maxmod audio stream - this will be an 8-bit Mono output.
+// -------------------------------------------------------------------------------------------
+void setupStream(void) 
+{
+  //----------------------------------------------------------------
+  //  initialize maxmod with our small 3-effect soundbank
+  //----------------------------------------------------------------
+  mmInitDefaultMem((mm_addr)soundbank_bin);
+
+  mmLoadEffect(SFX_CLICKNOQUIT);
+  mmLoadEffect(SFX_KEYCLICK);
+  mmLoadEffect(SFX_MUS_INTRO);   
+
+  //----------------------------------------------------------------
+  //  open stream
+  //----------------------------------------------------------------
+  myStream.sampling_rate  = sample_rate;        // sampling rate =
+  myStream.buffer_length  = buffer_size;        // buffer length =
+  myStream.callback   = OurSoundMixer;          // set callback function
+  myStream.format     = MM_STREAM_8BIT_MONO;    // format = mono 8-bit
+  myStream.timer      = MM_TIMER2;              // use hardware timer 2
+  myStream.manual     = false;                  // use automatic filling
+  mmStreamOpen( &myStream );
+
+  //----------------------------------------------------------------
+  //  when using 'automatic' filling, your callback will be triggered
+  //  every time half of the wave buffer is processed.
+  //
+  //  so: 
+  //  25000 (rate)
+  //  ----- = ~21 Hz for a full pass, and ~42hz for half pass
+  //  1200  (length)
+  //----------------------------------------------------------------
+  //  with 'manual' filling, you must call mmStreamUpdate
+  //  periodically (and often enough to avoid buffer underruns)
+  //----------------------------------------------------------------
+}
+
+
 //---------------------------------------------------------------------------------
 void dsInstallSoundEmuFIFO(void) 
 {
-    memset(sound_buffer, 0x00, SNDLENGTH * (sizeof(u16)));
-    irqDisable(IRQ_TIMER2);  
-    
-    FifoMessage msg;
-    msg.SoundPlay.data = &sound_buffer;
-    msg.SoundPlay.freq = (myCartInfo.pokeyType ? SOUND_FREQ:(SOUND_FREQ*2));
-    msg.SoundPlay.volume = 127;
-    msg.SoundPlay.pan = 64;
-    msg.SoundPlay.loop = 1;
-    msg.SoundPlay.format = ((1)<<4) | SoundFormat_8Bit;
-    msg.SoundPlay.loopPoint = 0;
-    msg.SoundPlay.dataSize = SNDLENGTH >> 2;
-    msg.type = EMUARM7_PLAY_SND;
-    fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
-    
-    if (isDS_LITE)
-    {
-        snd_ptr = (u16*)((u32)sound_buffer + 0x00400000);
-        snd_sta = (u16*)((u32)sound_buffer + 0x00400000);
-        snd_end = (u16*)((u32)sound_buffer + 0x00400000 + SNDLENGTH);
-    }
-    else
-    {
-        snd_ptr = (u16*)((u32)sound_buffer + 0xA000000);
-        snd_sta = (u16*)((u32)sound_buffer + 0xA000000);
-        snd_end = (u16*)((u32)sound_buffer + 0xA000000 + SNDLENGTH);
-    }
-    
-    TIMER2_DATA = TIMER_FREQ((isDS_LITE && myCartInfo.pokeyType) ? (SOUND_FREQ/4) : (SOUND_FREQ/2));
-    TIMER2_CR = TIMER_DIV_1 | TIMER_IRQ_REQ | TIMER_ENABLE;	     
-    if (myCartInfo.pokeyType)
-    {
-        irqSet(IRQ_TIMER2, isDS_LITE ? VsoundHandler_PokeyLite:VsoundHandler_Pokey);  
-    }
-    else
-    {
-        irqSet(IRQ_TIMER2, VsoundHandler);
-    }
-    irqEnable(IRQ_TIMER2);  
+    setupStream();    
 }
 
-char fpsbuf[32];
+// ----------------------------------------------------------------------------------
+// This is where the action happens!  The main loop runs continually and clocks
+// out the 60 frames per second of the 7800 Prosystem
+// ----------------------------------------------------------------------------------
 ITCM_CODE void dsMainLoop(void) 
 {
   static u8 lcd_swap_counter=0;
@@ -894,13 +908,10 @@ ITCM_CODE void dsMainLoop(void)
               iTx = touch.px;
               iTy = touch.py;
               if ((iTx>8) && (iTx<55) && (iTy>154) && (iTy<171))  { // 32,160  -> 64,168   POWER
-                irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
-                soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+                SoundPause();
+                mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
                 if (dsWaitOnQuit()) etatEmu=A7800_QUITSTDS;
-                else { 
-                    irqEnable(IRQ_TIMER2); 
-                }
-                fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+                else SoundUnPause();
               }
               else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper corner...
                  full_speed = 1-full_speed; 
@@ -908,15 +919,15 @@ ITCM_CODE void dsMainLoop(void)
                  dampen=60;
               }
               else if ((iTx>63) && (iTx<105) && (iTy>154) && (iTy<171))  { // 72,160  -> 105,168   PAUSE
-                if (keys_touch == 0) soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+                if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
                 tchepres(10);
               }
               else if ((iTx>152) && (iTx<198) && (iTy>154) && (iTy<171))  { // 142,160  -> 175,168   SELECT
-                if (keys_touch == 0) soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+                if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
                 tchepres(11);
               }
               else if ((iTx>208) && (iTx<251) && (iTy>154) && (iTy<171))  { // 191,160  -> 224,168   RESET
-                if (keys_touch == 0) soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+                if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
                 tchepres(6);
               }
               else if ((iTx>90) && (iTx<110) && (iTy>90) && (iTy<110))  { // Atari Logo - Activate HSC Maintenence Mode (only on High Score screen)
@@ -924,7 +935,7 @@ ITCM_CODE void dsMainLoop(void)
               }
               else if ((iTx>115) && (iTx<144) && (iTy>154) && (iTy<171))  { // Snap HSC Sram
                 dsPrintValue(13,0,0, "SAVING");
-                soundPlaySample(clickNoQuit_wav, SoundFormat_16Bit, clickNoQuit_wav_size, 22050, 127, 64, false, 0);
+                mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
                 WAITVBL;WAITVBL;
                 cartridge_SaveHighScoreSram();
                 dsPrintValue(13,0,0, "      ");
@@ -933,23 +944,21 @@ ITCM_CODE void dsMainLoop(void)
               }
               else if ((iTx>69) && (iTx<180) && (iTy>22) && (iTy<62))   // Cartridge slot
               {     
-                irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+                SoundPause();
                 // Find files in current directory and show it 
                 proFindFiles();
                 romSel=dsWaitForRom();
                 if (romSel) { etatEmu=A7800_PLAYINIT; dsLoadGame(proromlist[ucFicAct].filename); if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}
                 else 
                 { 
-                    irqEnable(IRQ_TIMER2); 
+                    SoundUnPause();
                 }
-                fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
               }
               else if ((iTx>190) && (iTx<230) && (iTy>22) && (iTy<62))   // Gear Icon (Settings)
               {     
-                irqDisable(IRQ_TIMER2); fifoSendValue32(FIFO_USER_01,(1<<16) | (0) | SOUND_SET_VOLUME);
+                SoundPause();
                 ShowConfig();
-                irqEnable(IRQ_TIMER2); 
-                fifoSendValue32(FIFO_USER_01,(1<<16) | (127) | SOUND_SET_VOLUME);
+                SoundUnPause();
               }
               
               keys_touch=1;

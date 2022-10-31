@@ -8,6 +8,7 @@ more slowly and since the sound core is tied to scanlines, the sound will be wro
 All the debug on this port to the DS has been done with NTSC roms - seek them out!
 Do not ask me about such files, I don't have them. A search with Google will certainly 
 help you. The emulator was developed using Trebor's "7800 ProPack" of well-curated games.
+The emulator will auto-start in /roms/a7800 or /roms/a78 if those directories exist.
 
 Features :
 ----------
@@ -15,12 +16,12 @@ Features :
  a little less great on the older DS-LITE. For the DS-LITE you can expect full speed on
  about three-quarters of the 7800 library. The more traditional games (think: Asteroids,
  Astro Blaster, Robotron, Food Fight, Centipede, Pac-Man Collection, etc) will 
- all run great. The really big bankswitched games will struggle on the older 
- DS-LITE/PHAT hardware.
+ all run great. The really big bankswitched games may struggle on the older 
+ DS-LITE/PHAT hardware - try the game and see!
  
  The emulator will support ROMs up to 1024K (1MB!) in size + the 128 byte .a78 header.
  All popular bank-switching schemes are supported including an extra 16K of RAM at 4000h.
- Pokey support at 4000h and 450h - switch in Configuration if it's not auto-detected.
+ Pokey support at 4000h and 450h - change this in Configuration if it's not auto-detected.
   
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.  It's worth the effort!
@@ -87,8 +88,9 @@ Credits:
  * Thanks Wintermute for devkitpro and libnds (http://www.devkitpro.org).
  * Greg Stanton for ProSystem source code (https://home.comcast.net/~gscottstanton/) an Atari 7800 emulator.
  * zx81 (http://zx81.zx81.free.fr/serendipity_fr/) for PSP A7800 version (that helped me a lot to understand ProSystem).
- * raz0red (http://www.twitchasylum.com/forum/viewtopic.php?t=519) for WII7800  (that helped me a lot to fix some timing problem).
+ * raz0red (http://www.twitchasylum.com/forum/viewtopic.php?t=519) for WII7800  (that helped me a lot to fix some timing problems).
  * The folks at AtariAge who helped weed out many of the old ProSystem Maria rendering bugs.
+ * The MAXMOD audio library is Copyright (c) 2008, Mukunda Johnson (mukunda@maxmod.org). See https://github.com/devkitPro/maxmod
 
 --------------------------------------------------------------------------------
 Original Author:
@@ -102,6 +104,10 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.0 : 01-Nov-2022 by wavemotion-dave
+  * Overhaul the audio system to use the MAXMOD streamling library to eliminate sound 'zingers'
+  * Other minor cleanup and tweaks as time permitted.
+
 V3.9 : 29-Oct-2022 by wavemotion-dave
   * More optmization and more games playable on the DS-Lite.
   * Highscore A7800.SRAM file moved to /data (move yours manually) - this allows the same high score file even if your roms are in different directories.
@@ -299,7 +305,7 @@ F-18 Hornet             2251a6a0f3aec84cc0aff66fc9fa91e8    NO    60  A few smal
 Failsafe (homebrew)     6287727ab36391a62f728bbdee88675c    YES   60  Near perfect
 Fatal Run               d25d5d19188e9f149977c49eb0367cd1    NO    60  Near perfect
 Food Fight              cf76b00244105b8e03cdc37677ec1073    YES   60  Near perfect
-Frenzy (with Berzerk)   e7d89669a7f92ec2cc99d9663a28671c    YES   60  Near perfect (voice slightly wrong pitch)
+Frenzy (with Berzerk)   e7d89669a7f92ec2cc99d9663a28671c    YES   60  Near perfect
 Froggie                 6053233cb59c0b4ca633623fd76c4576    YES   60  Near perfect
 Galaga                  fb8d803b328b2e442548f7799cfa9a4a    YES   60  Near perfect
 Hat Trick               fd9e78e201b6baafddfd3e1fbfe6ba31    NO    60  Near perfect

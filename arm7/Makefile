@@ -24,7 +24,7 @@ DATA		:=
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb-interwork
 
-CFLAGS	:=	-g -Wall -O3\
+CFLAGS	:=	-g -Wall -O2\
 		-mcpu=arm7tdmi -mtune=arm7tdmi -fomit-frame-pointer\
 		-ffast-math \
 		$(ARCH)
@@ -36,8 +36,8 @@ CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -fno-rtti
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=ds_arm7.specs -g $(ARCH) -Wl,-Map,$(notdir $*).map
 
-#LIBS	:=	-ldswifi7 -lmm7 -lnds7
-LIBS	:=	-ldswifi7 -lnds7
+#LIBS	:=	-ldswifi7 -lmm7 -lnds7 -lmm7
+LIBS	:=	-ldswifi7 -lnds7 -lmm7
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
