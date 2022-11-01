@@ -115,7 +115,8 @@ Database_Entry game_list[] = {
   {"5fe8ef9e368acd5699e5a453082b7636",  "Morf",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  25-9, 256,  224, 0}, // title=Morf
   {"9ff38ea62004201d870caa8bd9463525",  "Moon Cresta (NTSC)",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 30, 13-9, 320,  210, 0}, // title=Moon Cresta
   {"3bc8f554cf86f8132a623cc2201a564b",  "Motor Psycho",                     CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 1}, // title=Motor Psycho
-  {"fc0ea52a9fac557251b65ee680d951e5",  "Ms. Pac-Man",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25-9, 256,  224, 0}, // title=Ms. Pac-Man      
+  {"fc0ea52a9fac557251b65ee680d951e5",  "Ms. Pac-Man",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  25-9, 256,  224, 0}, // title=Ms. Pac-Man   
+  {"cf007563fe94cacf5ea5295dc93ce9ef",  "Ms. Pac-Man",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_YES, 0,  19-9, 256,  217, 0}, // title=Ms. Pac-Man (Bob's Enhancements)    
   {"2a17dc5a61be342dd00af719cc335852",  "Ms Pac-Man 320",                   CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 5,  24-9, 265,  230, 0}, // title=Ms Pac-Man 320
   {"220121f771fc4b98cef97dc040e8d378",  "Ninja Golf",                       CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  10, 28-9, 270,  234, 1}, // title=Ninja Golf
   {"74569571a208f8b0b1ccfb22d7c914e1",  "One On One",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  20-9, 256,  224, 0}, // title=One On One
@@ -214,6 +215,7 @@ bool database_Load(byte *digest)
           {
             memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
             if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
+            if (isDSiMode())   myCartInfo.steals_cycles = STEAL_CYCLE;       // DSi is fast enough that we will default to STEAL_CYCLE... user can override
             bFound = true;          
             break;
           }
@@ -257,7 +259,7 @@ bool database_Load(byte *digest)
         myCartInfo.yScale        = 220;
         myCartInfo.diff1         = DIFF_A;
         myCartInfo.diff2         = DIFF_A;
-        myCartInfo.steals_cycles = NO_STEALING;
+        myCartInfo.steals_cycles = (isDSiMode() ? STEAL_CYCLE: NO_STEALING); // The faster DSi defaults to stealing cycles... this is more accurate but slower
         myCartInfo.uses_wsync    = USES_WSYNC;
         myCartInfo.spare1        = 0;
         myCartInfo.spare2        = 0;
