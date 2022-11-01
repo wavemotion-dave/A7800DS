@@ -95,7 +95,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       if(myCartInfo.steals_cycles == NO_STEALING) 
       {
         prosystem_cycles += maria_cycles;
-        if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
+        if(riot_timing&2) riot_UpdateTimer( maria_cycles >> 2 );
       }
     }
     else
@@ -126,7 +126,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     if(myCartInfo.steals_cycles == NO_STEALING) 
     {
       prosystem_cycles += maria_cycles;
-      if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
+      if(riot_timing&2) riot_UpdateTimer( maria_cycles >> 2 );
     }
  
     sally_Execute(CYCLES_PER_SCANLINE);
@@ -162,7 +162,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     if(myCartInfo.steals_cycles == NO_STEALING) 
     {
       prosystem_cycles += maria_cycles;
-      if(riot_timing) riot_UpdateTimer( maria_cycles >> 2 );
+      if(riot_timing&2) riot_UpdateTimer( maria_cycles >> 2 );
     }
  
     sally_Execute(CYCLES_PER_SCANLINE);

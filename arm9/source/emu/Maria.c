@@ -380,7 +380,7 @@ static inline void maria_WriteLineRAM(word* buffer)
 // ----------------------------------------------------------------------------
 // StoreLineRAM
 // ----------------------------------------------------------------------------
-static inline void maria_StoreLineRAM( ) 
+ITCM_CODE void maria_StoreLineRAM( ) 
 {
   uint index;
 
