@@ -106,7 +106,7 @@ Database_Entry game_list[] = {
   {"fe657a1b8a34b2c0e1d2171166d40926",  "Legend of Silverpeak",             CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  15-9, 256,  201, 1}, // title=Legend of Silverpeak
   {"431ca060201ee1f9eb49d44962874049",  "Mario",                            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Mario Bros.
   {"37b5692e33a98115e574185fa8398c22",  "Mat Mania Challenge",              CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Mat Mania Challenge
-  {"f2f5e5841e4dda89a2faf8933dc33ea6",  "Mean 18 Ultimate Golf",            CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Mean 18 Ultimate Golf
+  {"f2f5e5841e4dda89a2faf8933dc33ea6",  "Mean 18 Ultimate Golf",            CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  STEAL_CYCLE,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Mean 18 Ultimate Golf
   {"bedc30ec43587e0c98fc38c39c1ef9d0",  "Meltdown",                         CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  22-9, 256,  220, 0}, // title=Meltdown
   {"c3f6201d6a9388e860328c963a3301cc",  "Meteor Shower",                    CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_YES, 0,  21-9, 256,  220, 0}, // title=Meteor Shower
   {"bc1e905db1008493a9632aa83ab4682b",  "Midnight Mutants",                 CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  NO_STEALING,    USES_WSYNC, HSC_NO,  0,  21-9, 256,  226, 1}, // title=Midnight Mutants
@@ -215,7 +215,6 @@ bool database_Load(byte *digest)
           {
             memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
             if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
-            if (isDSiMode())   myCartInfo.steals_cycles = STEAL_CYCLE;       // DSi is fast enough that we will default to STEAL_CYCLE... user can override
             bFound = true;          
             break;
           }

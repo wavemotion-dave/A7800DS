@@ -1931,7 +1931,7 @@ next_inst:
     {
         if (riot_timing & 1)   // Will only write true here if cartridge_uses_wsync is true in Memory.c
         {
-          prosystem_cycles = 456;
+          prosystem_cycles = CYCLES_PER_SCANLINE;
           memory_ram[WSYNC] = false;
           riot_timing &= 0xFE;
           break;

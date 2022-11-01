@@ -45,7 +45,7 @@
 extern int debug[];
 
 // The number of cycles per scan line
-#define CYCLES_PER_SCANLINE 454
+#define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system
 
 // Difficulty switches... 
 #define DIFF_A      0

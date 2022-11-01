@@ -26,8 +26,6 @@
 #include "ProSystem.h"
 #include "Database.h"
 
-#define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system
-
 extern u8 isDS_LITE;
 extern u8 frameSkipMask;
 
