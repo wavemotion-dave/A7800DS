@@ -105,7 +105,7 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 History :
 --------------------------------------------------------------------------------
 V4.0 : 01-Nov-2022 by wavemotion-dave
-  * Overhaul the audio system to use the MAXMOD streamling library to eliminate sound 'zingers'
+  * Overhaul the audio system to use the MAXMOD streaming library to eliminate sound 'zingers'
   * Other minor cleanup and tweaks as time permitted.
 
 V3.9 : 29-Oct-2022 by wavemotion-dave
