@@ -153,7 +153,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       
     if (maria_scanline == 247) 
     {
-       bRenderFrame = 0;    // At line 247 we can stop rendering frames...
+       bRenderFrame = 0;    // At line 247 we can stop rendering the scanlines for this frame...
     }
       
     sally_Execute(HBLANK);
