@@ -62,6 +62,9 @@ void prosystem_Reset( )
   }
 }
 
+
+#define HBLANK 34       // Number of cycles in a HBLANK
+
 // ----------------------------------------------------------------------------
 // ExecuteFrame - this is hand-tuned for NTSC output with hard-coded
 // NTSC frame values ... this will not work properly if a PAL ROM is used.
@@ -88,7 +91,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     {
       memory_ram[MSTAT] = 0;
       framePtr = (word*)(maria_surface);
-      sally_Execute(34);
+      sally_Execute(HBLANK);
       maria_RenderScanlineTOP( );
       if(myCartInfo.steals_cycles == NO_STEALING) 
       {
@@ -98,7 +101,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     }
     else
     {    
-        sally_Execute(34);
+        sally_Execute(HBLANK);
     }
     
     sally_Execute(CYCLES_PER_SCANLINE);
@@ -117,7 +120,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles %= CYCLES_PER_SCANLINE;
       
-    sally_Execute(34);
+    sally_Execute(HBLANK);
 
     maria_RenderScanline( );
     
@@ -153,7 +156,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
        bRenderFrame = 0;
     }
       
-    sally_Execute(34);
+    sally_Execute(HBLANK);
 
     maria_RenderScanline( );
     
@@ -178,7 +181,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles %= CYCLES_PER_SCANLINE;
       
-    sally_Execute(34);
+    sally_Execute(HBLANK);
 
     sally_Execute(CYCLES_PER_SCANLINE);
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.

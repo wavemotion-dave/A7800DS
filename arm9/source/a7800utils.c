@@ -731,8 +731,8 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 // --------------------------------------------------------------------------------------------
 // MAXMOD streaming setup and handling...
 // --------------------------------------------------------------------------------------------
-#define sample_rate  31300      // To rough match the TIA driver for the Atari 7800 - we purposely undershoot slightly
-#define buffer_size  (256+4)    // Enough buffer that we don't have to fill it too often but not so big as to create lag
+#define sample_rate  31400      // To rough match the TIA driver for the Atari 7800 - we purposely undershoot slightly
+#define buffer_size  (256)      // Enough buffer that we don't have to fill it too often but not so big as to create lag
 
 mm_ds_system sys  __attribute__((section(".dtcm")));
 mm_stream myStream __attribute__((section(".dtcm")));
