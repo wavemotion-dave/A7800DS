@@ -1927,14 +1927,14 @@ l_0x02:
 
 next_inst:
     prosystem_cycles += sally_cyclesX4;
-    if (riot_timing)
+    if (riot_and_wsync)
     {
-        if (riot_timing & 1)   // Will only write true here if cartridge_uses_wsync is true in Memory.c
+        if (riot_and_wsync & 1)   // Will only write true here if cartridge_uses_wsync is true in Memory.c
         {
-          prosystem_cycles = CYCLES_PER_SCANLINE;
-          memory_ram[WSYNC] = false;
-          riot_timing &= 0xFE;
-          break;
+          prosystem_cycles = CYCLES_PER_SCANLINE;              // And reset back to a full line of cycles
+          memory_ram[WSYNC] = false;                           // Clear the wsync flag - game can set this again on the next scanline
+          riot_and_wsync &= 0xFE;                              // reset the wsync bit
+          break;                                               // And we're out...
         }
         else
         {

@@ -53,6 +53,7 @@ extern byte sally_y;
 extern uint sally_p;
 extern uint sally_s;
 extern PCUnion sally_pc;
+extern bool wsync_happened;
 
 extern void sally_Execute(unsigned int cycles );
 extern void sally_Execute_Fast(unsigned int cycles );

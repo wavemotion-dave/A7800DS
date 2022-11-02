@@ -104,6 +104,10 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.1 : 02-Nov-2022 by wavemotion-dave
+  * Overhaul Maria cycle stealing - all games now use the proper cycle stealing with much closer to accurate timing. This fixes games like One-on-One and Kung Fu Master.
+  * Other minor cleanups and tweaks as time permitted.
+
 V4.0 : 01-Nov-2022 by wavemotion-dave
   * Overhaul the audio system to use the MAXMOD streaming library to eliminate sound 'zingers'
   * Other minor cleanup and tweaks as time permitted.

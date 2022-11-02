@@ -24,7 +24,7 @@
 // ----------------------------------------------------------------------------
 #include "Riot.h"
 
-uint riot_timing __attribute__((section(".dtcm"))) = 0x00;
+uint riot_and_wsync __attribute__((section(".dtcm"))) = 0x00;
 int  riot_timer __attribute__((section(".dtcm"))) = TIM64T;
 int  riot_intervals __attribute__((section(".dtcm")));
 
@@ -40,7 +40,7 @@ void riot_Reset(void) {
     riot_SetDRA(0);
     riot_SetDRB(0);
 
-    riot_timing = 0;
+    riot_and_wsync = 0;
     riot_timer = TIM64T; 
     riot_intervals = 0;
     riot_clocks = 0;
@@ -274,25 +274,25 @@ ITCM_CODE void riot_SetTimer(word timer, byte intervals)
     case T1024T:
       riot_clocks = 1024;
       riot_shift = 10;
-      riot_timing |= 2;
+      riot_and_wsync |= 2;
       break;
     case TIM1T:
       riot_clocks = 1;
       riot_shift = 0;
-      riot_timing |= 2;
+      riot_and_wsync |= 2;
       break;
     case TIM8T:
       riot_clocks = 8;
       riot_shift = 3;
-      riot_timing |= 2;
+      riot_and_wsync |= 2;
       break;
     case TIM64T:
       riot_clocks = 64;
       riot_shift = 6;
-      riot_timing |= 2;
+      riot_and_wsync |= 2;
       break;
   }
-  if(riot_timing) {
+  if(riot_and_wsync) {
     riot_currentTime = riot_clocks * intervals;
     riot_elapsed = false;
   }
@@ -319,7 +319,7 @@ ITCM_CODE void inline riot_UpdateTimer(byte cycles)
       else 
       {
         memory_ram[INTIM] = 0;
-        riot_timing &= 0xFD;
+        riot_and_wsync &= 0xFD;
       }
     }
     else 

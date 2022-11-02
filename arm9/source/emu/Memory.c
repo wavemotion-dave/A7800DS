@@ -177,7 +177,7 @@ ITCM_CODE void memory_Write(word address, byte data)
         if (myCartInfo.uses_wsync)
         {
           memory_ram[WSYNC] = true;
-          riot_timing |= 0x01;
+          riot_and_wsync |= 0x01;
         }
         break;
       case SWCHB:
