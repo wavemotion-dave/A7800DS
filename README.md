@@ -82,6 +82,31 @@ Controls :
  I want to do as the game runs... so you must do it... the high scores will also
  auto-save if you quit the emulator or select a new game.
  
+ Configuration :
+----------
+Generally you would use this to select a bankswitching scheme if the proper type wasn't auto-detected. 
+The following schemes are supported:
+
+* NORMAL           Anything 48K or less... fits into memory (0xffff downwards) without switching.
+* SUPERCART        Games that are 128+K in size with nothing mapped in at 0x4000
+* SUPERCART_LARGE  Games that are 144+K in size with the extra 16K bank 0 fixed at 0x4000
+* SUPERCART_RAM    Games that are 128+K in size with extra 16K of RAM at 0x4000
+* SUPERCART_ROM    Games that are 128+K in size with bank 6 fixed at 0x4000
+* ACTIVISION       Mostly for Double Dragon and Rampage by Activision
+* ABSOLETE         Only for the F-18 Hornet game by Absolete Entertainment
+* FRACTALUS        Only for the Rescue on Fractalus prototype (not a complete game but neat to see)
+
+The X/Y settings can be tweaked to position the 7800 emulated screen on the DS screen as best you can. Unfortunately 
+the 7800 screen resolution isn't a perfect match for the DS 256x192 so you'll have to stretch and offset a bit. Most
+games have defaults that look good enough.
+
+Frame Skipping can be OFF (show all frames), Moderate (Show 3/4 frames) or Agressive (only show 1/2 frames).  The latter is
+only really needed for the DS-Lite/Phat where the faster DSi CPU isn't available.
+
+Don't touch the WSYNC and Cycle Stealing options unless you understand them... and most people don't :)
+
+Press START to save off your configuration - if you made changes you should re-load the game to ensure all settings are applied.
+
 --------------------------------------------------------------------------------
 Credits:
 --------------------------------------------------------------------------------
