@@ -39,12 +39,12 @@ u8 bRefreshXY                           __attribute__((section(".dtcm"))) = fals
 u16 dampen                              __attribute__((section(".dtcm"))) = 0;
 unsigned char keyboard_data[20]         __attribute__((section(".dtcm"))) ALIGN(32);
 u16 full_speed                          __attribute__((section(".dtcm"))) = 0;
-short int etatEmu                       __attribute__((section(".dtcm"))) = 0;
+short int emu_state                     __attribute__((section(".dtcm"))) = 0;
 u16 fpsDisplay                          __attribute__((section(".dtcm"))) = 0;
 u16 bEmulatorRun                        __attribute__((section(".dtcm"))) = 1;
 
 extern u32 tiaBufIdx;
-char fpsbuf[32];
+char fpsbuf[33];
 
 // -----------------------------------------------------------------
 // Some vars for listing filenames of ROMs... 1K of ROMs is plenty
@@ -172,7 +172,7 @@ void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr,
 #define tchepres(a) \
    keyboard_data[GameConf.DS_Pad[a]] = 1;
 
-void vblankIntr() 
+ITCM_CODE void vblankIntr() 
 {
   static uint xx=0;
 
@@ -216,7 +216,7 @@ void dsInitScreenMain(void)
     if (isDSiMode()) isDS_LITE = false; 
     else isDS_LITE = true;    
 
-    vramSetBankB(VRAM_B_MAIN_BG_0x06020000 ); // Need to do this early so we can steal a bit of this RAM for bank swap...
+    vramSetBankB(VRAM_B_LCD );                // Need to do this early so we can steal a bit of this RAM for bank swap...
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
@@ -237,7 +237,7 @@ void dsShowScreenEmu(void)
     // Change vram
     videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
     vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
-    vramSetBankB(VRAM_B_MAIN_BG_0x06020000 );
+    vramSetBankB(VRAM_B_LCD );                // Need to do this early so we can steal a bit of this RAM for bank swap...
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
@@ -742,7 +742,7 @@ mm_stream myStream __attribute__((section(".dtcm")));
 // we fill the sound buffer with more samples. They will request 'len' samples and
 // we will fill exactly that many. If the sound is paused, we fill with 'mute' samples.
 // -------------------------------------------------------------------------------------------
-mm_word OurSoundMixer(mm_word len, mm_addr dest, mm_stream_formats format)
+ITCM_CODE mm_word OurSoundMixer(mm_word len, mm_addr dest, mm_stream_formats format)
 {
     if (soundEmuPause)  // If paused, just send same value - no amplitude... no sound
     {
@@ -843,20 +843,20 @@ ITCM_CODE void dsMainLoop(void)
     TIMER1_DATA=0;
     TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;  
   
-  while(etatEmu != A7800_QUITSTDS) {
-    switch (etatEmu) {
+  while(emu_state != A7800_QUITSTDS) {
+    switch (emu_state) {
       case A7800_MENUINIT:
         dsShowScreenMain(true);
-        etatEmu = A7800_MENUSHOW;
+        emu_state = A7800_MENUSHOW;
         break;
         
       case A7800_MENUSHOW:
-        etatEmu =  dsWaitOnMenu(A7800_MENUSHOW);
+        emu_state =  dsWaitOnMenu(A7800_MENUSHOW);
         break;
         
       case A7800_PLAYINIT:
         dsShowScreenEmu();
-        etatEmu = A7800_PLAYGAME;
+        emu_state = A7800_PLAYGAME;
         break;
         
       case A7800_PLAYGAME:
@@ -910,7 +910,7 @@ ITCM_CODE void dsMainLoop(void)
               if ((iTx>8) && (iTx<55) && (iTy>154) && (iTy<171))  { // 32,160  -> 64,168   POWER
                 SoundPause();
                 mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
-                if (dsWaitOnQuit()) etatEmu=A7800_QUITSTDS;
+                if (dsWaitOnQuit()) emu_state=A7800_QUITSTDS;
                 else SoundUnPause();
               }
               else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper corner...
@@ -948,7 +948,7 @@ ITCM_CODE void dsMainLoop(void)
                 // Find files in current directory and show it 
                 proFindFiles();
                 romSel=dsWaitForRom();
-                if (romSel) { etatEmu=A7800_PLAYINIT; dsLoadGame(proromlist[ucFicAct].filename); if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}
+                if (romSel) { emu_state=A7800_PLAYINIT; dsLoadGame(proromlist[ucFicAct].filename); if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}
                 else 
                 { 
                     SoundUnPause();

@@ -31,7 +31,7 @@ int main(int argc, char **argv)
   // Intro and main screen
   intro_logo();  
   dsInitScreenMain();
-  etatEmu = A7800_MENUINIT;
+  emu_state = A7800_MENUINIT;
     
   LoadConfig();
   
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
   {
     dsShowScreenMain(true);
     dsLoadGame(argv[1]);
-    etatEmu = A7800_PLAYINIT;
+    emu_state = A7800_PLAYINIT;
   }
   else
   {

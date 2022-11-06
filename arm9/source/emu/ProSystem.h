@@ -43,6 +43,7 @@
 //#define KANGAROO_MODE_SUPPORTED 1   // Uncomment this for KANGAROO support. Slightly slower and virtually no game uses it... but more accurate
 
 extern int debug[];
+extern u8 isDS_LITE;
 
 // The number of cycles per scan line
 #define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system
@@ -53,10 +54,7 @@ extern int debug[];
 
 extern void prosystem_Reset( );
 extern void prosystem_ExecuteFrame(const byte* input);
-extern void prosystem_Pause(bool pause);
 extern void prosystem_Close( );
-extern bool prosystem_active;
-extern bool prosystem_paused;
 extern byte prosystem_frame;
 extern uint prosystem_cycles;
 

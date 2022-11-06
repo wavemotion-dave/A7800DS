@@ -29,8 +29,6 @@
 extern u8 isDS_LITE;
 extern u8 frameSkipMask;
 
-bool prosystem_active __attribute__((section(".dtcm"))) = false;
-bool prosystem_paused __attribute__((section(".dtcm"))) = false;
 uint prosystem_cycles __attribute__((section(".dtcm"))) = 0;
 uint32 bg32           __attribute__((section(".dtcm"))) = 0;
 uint bRenderFrame     __attribute__((section(".dtcm"))) = 0;
@@ -43,7 +41,6 @@ void prosystem_Reset( )
 {
   if(cartridge_IsLoaded( )) 
   {
-    prosystem_paused = false;
     sally_Reset( );
     region_Reset( );
     tia_Clear( );
@@ -58,7 +55,6 @@ void prosystem_Reset( )
     cartridge_Store( );
 
     prosystem_cycles = sally_ExecuteRES( );
-    prosystem_active = true;
   }
 }
 
@@ -206,20 +202,9 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 }
 
 // ----------------------------------------------------------------------------
-// Pause
-// ----------------------------------------------------------------------------
-void prosystem_Pause(bool pause) {
-  if(prosystem_active) {
-    prosystem_paused = pause;
-  }
-}
-
-// ----------------------------------------------------------------------------
 // Close
 // ----------------------------------------------------------------------------
 void prosystem_Close( ) {
-  prosystem_active = false;
-  prosystem_paused = false;
   cartridge_Release( );
   maria_Reset( );
   maria_Clear( );

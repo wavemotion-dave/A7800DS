@@ -20,7 +20,7 @@ extern int bg0, bg0b, bg1b;
 
 static int display_options_list(bool bFullDisplay);
 
-#define CONFIG_INSTRUCTION_STR "B=EXIT START=SAVE SELECT=DEFAULT"
+#define CONFIG_INSTRUCTION_STR "      B=EXIT   START=SAVE      "
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 extern void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr);
 extern void dsShowScreenMain(bool);
@@ -171,23 +171,23 @@ struct options_t
 
 const struct options_t Game_Option_Table[] =
 {
-    {"CART TYPE",   0, {"NORMAL", "SUPERCART", "SUPER LARGE", "SUPER RAM", "SUPER ROM", "ABSOLUTE", "ACTIVISION", "FRACTALUS"},&myCartInfo.cardtype,           8},
-    {"HIGHSCORE",   0, {"DISABLED", "ENABLED"},                                                                               &myCartInfo.hsc,                 2},
-    {"FRAMESKIP",   0, {"DISABLED", "MEDIUM 3/4", "HIGH 1/2"},                                                                &myCartInfo.frameSkip,           3},
-    {"POKEY",       0, {"NONE", "AT 4000", "AT 450"},                                                                         &myCartInfo.pokeyType,           3},
-    {"STEALS CYC",  0, {"NO", "YES"},                                                                                         &myCartInfo.steals_cycles,       2},
-    {"USES WSYNC",  0, {"NO", "YES"},                                                                                         &myCartInfo.uses_wsync,          2},
-    {"LEFT DIFF",   0, {"A", "B"}   ,                                                                                         &myCartInfo.diff1,               2},
-    {"RIGHT DIFF",  0, {"A", "B"}   ,                                                                                         &myCartInfo.diff2,               2},
-    {"LEFT JOY",    0, {"NONE", "JOYSTICK", "LIGHTGUN", "PADDLES", "TWIN STICKS", "SOTA"},                                    &myCartInfo.cardctrl1,           6},
-    {"RIGHT JOY",   0, {"NONE", "JOYSTICK", "LIGHTGUN", "PADDLES", "TWIN STICKS", "SOTA"},                                    &myCartInfo.cardctrl2,           6},
+    {"CART TYPE",   0, {"NORMAL/FLAT", "SUPERCART", "SUPER LARGE", "SUPER RAM", "SUPER ROM", "SUPER RAM X2", "ABSOLUTE", "ACTIVISION", "FRACTALUS", "FLAT WITH RAM"},&myCartInfo.cardtype,     10},
+    {"HIGHSCORE",   0, {"DISABLED", "ENABLED"},                                                                                                                &myCartInfo.hsc,                 2},
+    {"FRAMESKIP",   0, {"DISABLED", "MEDIUM 3/4", "HIGH 1/2"},                                                                                                 &myCartInfo.frameSkip,           3},
+    {"POKEY",       0, {"NONE", "AT 4000", "AT 450", "AT 800"},                                                                                                &myCartInfo.pokeyType,           4},
+    {"STEALS CYC",  0, {"NO", "YES"},                                                                                                                          &myCartInfo.steals_cycles,       2},
+    {"USES WSYNC",  0, {"NO", "YES"},                                                                                                                          &myCartInfo.uses_wsync,          2},
+    {"LEFT DIFF",   0, {"A", "B"}   ,                                                                                                                          &myCartInfo.diff1,               2},
+    {"RIGHT DIFF",  0, {"A", "B"}   ,                                                                                                                          &myCartInfo.diff2,               2},
+    {"LEFT JOY",    0, {"NONE", "JOYSTICK", "LIGHTGUN", "PADDLES", "TWIN STICKS", "SOTA"},                                                                     &myCartInfo.cardctrl1,           6},
+    {"RIGHT JOY",   0, {"NONE", "JOYSTICK", "LIGHTGUN", "PADDLES", "TWIN STICKS", "SOTA"},                                                                     &myCartInfo.cardctrl2,           6},
     
-    {"X OFFSET",    2, {"-50",   "+50"},                                                                                 (u8*)&myCartInfo.xOffset,             2},
-    {"Y OFFSET",    2, {"-50",   "+50"},                                                                                 (u8*)&myCartInfo.yOffset,             2},
-    {"X SCALE",     2, {"+200",  "+320"},                                                                                (u8*)&myCartInfo.xScale,              2},
-    {"Y SCALE",     2, {"+180",  "+256"},                                                                                (u8*)&myCartInfo.yScale,              2},
+    {"X OFFSET",    2, {"-50",   "+50"},                                                                                                                  (u8*)&myCartInfo.xOffset,             2},
+    {"Y OFFSET",    2, {"-50",   "+50"},                                                                                                                  (u8*)&myCartInfo.yOffset,             2},
+    {"X SCALE",     2, {"+200",  "+320"},                                                                                                                 (u8*)&myCartInfo.xScale,              2},
+    {"Y SCALE",     2, {"+180",  "+256"},                                                                                                                 (u8*)&myCartInfo.yScale,              2},
     
-    {NULL,          0, {"",      ""},                                                                                          NULL,                            1},
+    {NULL,          0, {"",      ""},                                                                                                                          NULL,                            1},
 };
 
 void display_line(u8 idx, u8 highlight)

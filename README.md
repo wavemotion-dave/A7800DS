@@ -92,6 +92,7 @@ The following schemes are supported:
 * SUPERCART_LARGE  Games that are 144+K in size with the extra 16K bank 0 fixed at 0x4000
 * SUPERCART_RAM    Games that are 128+K in size with extra 16K of RAM at 0x4000
 * SUPERCART_ROM    Games that are 128+K in size with bank 6 fixed at 0x4000
+* SUPERCART_RAMX2  Games that are 128+K in size with extra 32K of RAM at 0x4000 (bankswitched in 16K chunks)
 * ACTIVISION       Mostly for Double Dragon and Rampage by Activision
 * ABSOLETE         Only for the F-18 Hornet game by Absolete Entertainment
 * FRACTALUS        Only for the Rescue on Fractalus prototype (not a complete game but neat to see)
@@ -129,6 +130,13 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.2 : 06-Nov-2022 by wavemotion-dave
+  * Added support for bankswitched RAM (32K of RAM swiched in 16K chunks). This makes the Ex version of 1942 playable.
+  * Added alternate way of handling bankswitched RAM the same way as the DragonFly cart or SN board: via writes to 0xFFFF.
+  * Fix graphical glitch for Ballblazer (just hiding it off screen).
+  * Numerous small updates to the internal cart database to ensure game run with the proper settings (mostly High Scores)
+  * New 8x density on the High Score Cart - transparent to the user but provides more slots so the HSC won't fill up.
+
 V4.1 : 02-Nov-2022 by wavemotion-dave
   * Overhaul Maria cycle stealing - all games now use the proper cycle stealing with much closer to accurate timing. This fixes games like One-on-One and Kung Fu Master.
   * Other minor cleanups and tweaks as time permitted.

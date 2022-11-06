@@ -30,6 +30,8 @@
 byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
 byte memory_rom[MEMORY_SIZE] ALIGN(32) = {0};
 
+extern bool ram_dirty[];
+
 // ----------------------------------------------------------------------------
 // Reset
 // ----------------------------------------------------------------------------
@@ -70,13 +72,14 @@ ITCM_CODE byte memory_Read_Slower(word address)
   {
       if (myCartInfo.pokeyType == POKEY_AT_4000)
       {
-        if ((address & 0xFFF0) == 0x4000) return pokey_GetRegister(address);            
+          if ((address & 0xFFF0) == 0x4000) return pokey_GetRegister(address);            
       }
       else
       {
           // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's 
           // good enough as nothing else should be mapped in this region except POKEY.
           if ((address & 0xFFC0) == 0x440) return pokey_GetRegister(0x4000 | (address & 0xF));
+          if ((address & 0xFFF0) == 0x800) return pokey_GetRegister(0x4000 | (address & 0xF));
       }
   }
   return memory_ram[address];
@@ -108,6 +111,11 @@ ITCM_CODE void memory_Write(word address, byte data)
           {
             pokey_SetRegister(0x4000 | (address & 0x0F), data);
             return;
+          }
+          if ((address & 0xFFF0) == 0x800)  // Pokey @800
+          {
+            pokey_SetRegister(0x4000 | (address & 0x0F), data);
+            return;
           }          
       }
   }
@@ -116,6 +124,12 @@ ITCM_CODE void memory_Write(word address, byte data)
   {
     if ((address & 0xF800))     // Base RAM is at 0x1800 so this will find anything that is RAM... 
     {
+        // For banking RAM we need to keep the shadow up to date.
+        if ((address & 0xC000) == 0x4000)
+        { 
+            extern u8 *shadow_ram;
+            shadow_ram[address] = data;
+        }
         memory_ram[address] = data;
         return;
     }

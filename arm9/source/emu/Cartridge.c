@@ -27,17 +27,27 @@
 #include "ProSystem.h"
 #include "Database.h"
 
-char cartridge_title[128];
-char cartridge_description[128];
-byte cartridge_digest[128];
-char cartridge_filename[128];
-
+char cartridge_title[256];
+byte cartridge_digest[256];
+char cartridge_filename[256];
 
 // -------------------------------------------------------------------------------------------------
 // We allow cart sizes up to 1024K which is pretty huge - I've not seen any ROMs bigger than this.
 // -------------------------------------------------------------------------------------------------
 static byte cartridge_buffer[MAX_CART_SIZE+128] ALIGN(32); // The extra 128 bytes is for the possible .a78 header
-uint cartridge_size __attribute__((section(".dtcm"))) = 0;
+
+uint cartridge_size         __attribute__((section(".dtcm"))) = 0;
+byte last_bank              __attribute__((section(".dtcm"))) = 255;
+byte ex_ram_bank            __attribute__((section(".dtcm"))) = 0;
+byte last_ex_ram_bank       __attribute__((section(".dtcm"))) = 0;
+byte ex_ram_bank_df         __attribute__((section(".dtcm"))) = 0;
+byte last_ex_ram_bank_df    __attribute__((section(".dtcm"))) = 0;
+u8 *shadow_ram              __attribute__((section(".dtcm"))) = 0;
+
+// ---------------------------------------------------------------------------------------
+// We support EX RAM which is 2x16K banks which are switched on bit 5 of banking writes.
+// ---------------------------------------------------------------------------------------
+byte ex_ram_buffer[0x8000] ALIGN(32) = {0};
 
 // ----------------------------------------------------------------------------
 // HasHeader
@@ -62,21 +72,80 @@ inline static uint cartridge_GetBankOffset(byte bank)
   return (bank * 16384);
 }
 
-byte last_bank = 255;
 // ----------------------------------------------------------------------------
-// WriteBank
+// WriteBank - this is the bankswitching code!
 // ----------------------------------------------------------------------------
-inline static void cartridge_WriteBank(word address, byte bank) 
+ITCM_CODE void cartridge_WriteBank(word address, byte bank) 
 {
+  if (myCartInfo.cardtype == CARTRIDGE_TYPE_SUPERCART_RAMX2) // Banking RAM
+  {
+    ex_ram_bank = ((bank >> 5) & 0x01);
+    bank &= 0x1F;   // Limit to 32 banks (512K ROM) as the upper bit is for 2X RAM
+      
+    if (last_ex_ram_bank != ex_ram_bank)
+    {
+        u32 *src  = ex_ram_bank ? (u32*)0x06820000 : (u32*)0x06824000;  // Only for the DSi.. see DS_LITE handling below
+        u32 *dest = (u32*)(memory_ram+0x4000);
+        shadow_ram = ex_ram_bank ? (u8*)0x06820000 : (u8*)0x06824000;   // // Only for the DSi.. see DS_LITE handling below
+
+        if (isDS_LITE) // Unfortunately non DSi can't write 8-bit values to LCD RAM... so we have to do this the slow way
+        {
+            src  = ex_ram_bank ? (u32*)(ex_ram_buffer+0x0000) : (u32*)(ex_ram_buffer+0x4000);  // 
+            shadow_ram = ex_ram_bank ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // 
+        }
+        shadow_ram -= 0x4000; // Makes for faster indexing in Memory.c
+        
+        for (uint i=0; i<0x1000/4; i++)
+        {
+            *dest++ = *src++;
+            *dest++ = *src++;
+            *dest++ = *src++;
+            *dest++ = *src++;
+        }
+        // Set the new EX RAM bank...
+        last_ex_ram_bank = ex_ram_bank;
+    }
+  }
+    
   if (bank != last_bank)
   {
     last_bank = bank;
+      
     uint offset = bank * 16384;
     if (offset < (272*1024))    // If we are in fast VRAM memory
         memory_WriteROMFast(address, (16384/(4*4)), (u32*)(0x06860000 + offset));
     else    // Normal memory - a little slower but that's the best we can do...
         memory_WriteROMFast(address, (16384/(4*4)), (u32*)(cartridge_buffer + offset));
   }
+}
+
+ITCM_CODE void cartridge_SwapRAM_DragonFlyStyle(u8 data)
+{
+    ex_ram_bank_df = data & 0x01;
+
+    if (last_ex_ram_bank_df != ex_ram_bank_df)
+    {
+        u32 *src  = ex_ram_bank_df ? (u32*)0x06820000 : (u32*)0x06824000;  // Only for the DSi.. see DS_LITE handling below
+        u32 *dest = (u32*)(memory_ram+0x4000);
+        shadow_ram = ex_ram_bank_df ? (u8*)0x06820000 : (u8*)0x06824000;   // Only for the DSi.. see DS_LITE handling below
+
+        if (isDS_LITE) // Unfortunately non DSi can't write 8-bit values to LCD RAM... so we have to do this the slow way
+        {
+            src  = ex_ram_bank_df ? (u32*)(ex_ram_buffer+0x0000) : (u32*)(ex_ram_buffer+0x4000);  // 
+            shadow_ram = ex_ram_bank_df ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // 
+        }
+        shadow_ram -= 0x4000; // Makes for faster indexing in Memory.c
+
+        for (uint i=0; i<0x1000/4; i++)
+        {
+            *dest++ = *src++;
+            *dest++ = *src++;
+            *dest++ = *src++;
+            *dest++ = *src++;
+        }
+        // Set the new EX RAM bank...
+        last_ex_ram_bank_df = ex_ram_bank_df;
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -100,35 +169,38 @@ static void cartridge_ReadHeader(const byte* header) {
   // -------------------------------------------------------
   //  bit 0     = pokey at $4000
   //  bit 1     = supergame bank switched
-  //  bit 2     = supergame ram at $4000
+  //  bit 2     = ram at $4000
   //  bit 3     = rom at $4000
     
-  //  bit 4     = bank 6 at $4000
+  //  bit 4     = second to last bank at $4000
   //  bit 5     = banked ram
   //  bit 6     = pokey at $450
   //  bit 7     = mirror ram at $4000
-  //
+  
   //  bit 8     = activision banking
   //  bit 9     = absolute banking
   //  bit 10    = pokey at $440
   //  bit 11    = ym2151 at $460/$461
+    
   //  bit 12    = souper
   //  bit 13    = banksets
   //  bit 14    = halt banked ram
-  //  bit 15    = pokey@800
+  //  bit 15    = pokey at $800
   
   word cardtype = (header[53] << 8) | header[54];
   
   myCartInfo.cardtype = (cartridge_size <= 65536) ? CARTRIDGE_TYPE_NORMAL : CARTRIDGE_TYPE_SUPERCART;    // Default guess... may be overridden below
     
   if (cardtype & 0x0002) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART;
-  if (cardtype & 0x0004) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_RAM;
+  if (cardtype & 0x0004) myCartInfo.cardtype  = ((cardtype & 0x0002) ? CARTRIDGE_TYPE_SUPERCART_RAM : CARTRIDGE_TYPE_FLAT_WITH_RAM);
   if (cardtype & 0x0008) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_LARGE;
   if (cardtype & 0x0010) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_ROM;
+  if (cardtype & 0x0020) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_RAMX2;
   if (cardtype & 0x0100) myCartInfo.cardtype  = CARTRIDGE_TYPE_ACTIVISION;
   if (cardtype & 0x0200) myCartInfo.cardtype  = CARTRIDGE_TYPE_ABSOLUTE;
 
   if (cardtype & 0x0040) myCartInfo.pokeyType = POKEY_AT_450;
+  if (cardtype & 0x8000) myCartInfo.pokeyType = POKEY_AT_800;
   if (cardtype & 0x0001) myCartInfo.pokeyType = POKEY_AT_4000;
   
   myCartInfo.cardctrl1 = header[55];
@@ -138,6 +210,13 @@ static void cartridge_ReadHeader(const byte* header) {
   myCartInfo.steals_cycles = STEAL_CYCLE;   // By default, assume the cart steal cycles
   myCartInfo.uses_wsync = USES_WSYNC;       // By default, assume the cart uses wsync
   last_bank = 255;
+  last_ex_ram_bank = 0;
+  ex_ram_bank = 0;
+  last_ex_ram_bank_df = 0;
+  ex_ram_bank_df = 0;
+  if (isDS_LITE) shadow_ram = ex_ram_bank ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // for DS-Lite
+  else shadow_ram = ex_ram_bank ? (u8*)0x06820000 : (u8*)0x06824000;   // // Only for the DSi.. see DS_LITE handling above
+  shadow_ram -= 0x4000; // Makes for faster indexing in Memory.c
 }
 
 // ----------------------------------------------------------------------------
@@ -151,8 +230,10 @@ static bool _cartridge_Load(uint size)
   }
 
   cartridge_Release();
+    
+  memset(ex_ram_buffer, 0x00, sizeof(ex_ram_buffer));   // Clear the EX RAM memory
   
-  byte header[128] = {0};
+  byte header[128] = {0};                   // We might have a header... this will buffer it
   for(index = 0; index < 128; index++) 
   {
     header[index] = cartridge_buffer[index];
@@ -168,7 +249,7 @@ static bool _cartridge_Load(uint size)
   }
   else 
   {
-    strcpy(cartridge_title, "NoTitle*#!.)_");
+    strcpy(cartridge_title, "NoTitle*#!.)_");   // No header... no title.
     cartridge_size = size;
     myCartInfo.hasHeader = false;
   }
@@ -204,6 +285,8 @@ static bool _cartridge_Load(uint size)
   // -----------------------------------------------------------------------------
   u32 *fast_mem = (u32*)0x06860000;
   memcpy(fast_mem, cartridge_buffer, (272 * 1024));
+    
+  memset((u8*)0x06820000, 0x00, 0x20000);   // Clear this 128K chunk of fast VRAM as we use it for RAM bankswitch
   
   hash_Compute(cartridge_buffer, cartridge_size, cartridge_digest);
   return true;
@@ -226,7 +309,7 @@ bool cartridge_Load(char *filename)
     size = ftell(file);
     if(fseek(file, 0L, SEEK_SET)) { }
     
-    if (size > (MAX_CART_SIZE+128)) return false;   // Cart is too big... can't handle it
+    if (size > (MAX_CART_SIZE+128)) {fclose(file); return false;}   // Cart is too big... can't handle it
     
     memset(cartridge_buffer, 0xFF, MAX_CART_SIZE+128);  // Set all to 0xFF before we read the ROM in
 
@@ -263,34 +346,17 @@ bool cartridge_Load(char *filename)
 // In theory, since we can write any bank number 0-255 that would allow up to 255 banks of 16k
 // which is a whopping 4096K (4 Megabytes) of ROM but in practice carts seem to limit to 512K
 // or less for practical reasons with a few outstanding tech-demos reaching 1024K. 
-//
-// How these map into the .a78 header (the word at offset 53+54):
-//  bit 0     = pokey at $4000
-//  bit 1     = supergame bank switched     - this is SUPERCART
-//  bit 2     = supergame ram at $4000      - this is SUPERCART_RAM
-//  bit 3     = rom at $4000                - this is SUPERCART LARGE
-//
-//  bit 4     = bank 6 at $4000             - this is SUPERCART_ROM
-//  bit 5     = banked ram
-//  bit 6     = pokey at $450
-//  bit 7     = mirror ram at $4000
-//
-//  bit 8     = activision banking
-//  bit 9     = absolute banking
-//  bit 10    = pokey at $440
-//  bit 11    = ym2151 at $460/$461
-//
-//  bit 12    = souper
-//  bit 13    = banksets
-//  bit 14    = halt banked ram
-//  bit 15    = pokey@800
-//
-// If none of those bankswitching bits are set... assume NORMAL (unless cart > 64K in which case assume SUPERCART)
 // ------------------------------------------------------------------------------------------
-void cartridge_Store( ) {
-  switch(myCartInfo.cardtype) {
+void cartridge_Store( ) 
+{
+  switch(myCartInfo.cardtype) 
+  {
     case CARTRIDGE_TYPE_NORMAL:
       memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
+      break;
+    case CARTRIDGE_TYPE_FLAT_WITH_RAM:
+      memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
+      memory_ClearROM(16384, 16384);
       break;
     case CARTRIDGE_TYPE_SUPERCART: {
       uint offset = cartridge_size - 16384;
@@ -312,12 +378,18 @@ void cartridge_Store( ) {
         memory_ClearROM(16384, 16384);
       }
     } break;
+    case CARTRIDGE_TYPE_SUPERCART_RAMX2: {
+      uint offset = cartridge_size - 16384;
+      if(offset < cartridge_size) {
+        memory_WriteROM(49152, 16384, cartridge_buffer + offset);
+        memory_ClearROM(16384, 16384);
+      }
+    } break;          
     case CARTRIDGE_TYPE_SUPERCART_ROM: {
       uint offset = cartridge_size - 16384;
-      if(offset < cartridge_size && cartridge_GetBankOffset(6) < cartridge_size) {
-        memory_WriteROM(49152, 16384, cartridge_buffer + offset);        
-        memory_WriteROM(16384, 16384, cartridge_buffer + cartridge_GetBankOffset(6));
-      }
+      uint lastBank = (cartridge_size/16384)-1;
+      memory_WriteROM(49152, 16384, cartridge_buffer + offset);        
+      memory_WriteROM(16384, 16384, cartridge_buffer + cartridge_GetBankOffset(lastBank-1));
     } break;
     case CARTRIDGE_TYPE_ABSOLUTE:
       memory_WriteROM(16384, 16384, cartridge_buffer);
@@ -344,16 +416,18 @@ void cartridge_Store( ) {
 // ----------------------------------------------------------------------------
 // Write
 // ----------------------------------------------------------------------------
-void cartridge_Write(word address, byte data) {
+ITCM_CODE void cartridge_Write(word address, byte data) {
   switch(myCartInfo.cardtype) 
   {
     case CARTRIDGE_TYPE_SUPERCART:
     case CARTRIDGE_TYPE_SUPERCART_RAM:
     case CARTRIDGE_TYPE_SUPERCART_ROM:
+    case CARTRIDGE_TYPE_SUPERCART_RAMX2:
       if ((address & 0xC000) == 0x8000) // Is this a bankswitching write?
       {
         cartridge_WriteBank(32768, data);
       }
+      else if (address == 0xFFFF) cartridge_SwapRAM_DragonFlyStyle(data); // For the Dragonfly way of RAM banking
       break;
     case CARTRIDGE_TYPE_SUPERCART_LARGE:
       if ((address & 0xC000) == 0x8000) // Is this a bankswitching write?
@@ -373,27 +447,6 @@ void cartridge_Write(word address, byte data) {
       break;
   }
 }
-
-// ----------------------------------------------------------------------------
-// StoreBank
-// ----------------------------------------------------------------------------
-void cartridge_StoreBank(byte bank) {
-  switch(myCartInfo.cardtype) {
-    case CARTRIDGE_TYPE_SUPERCART:
-    case CARTRIDGE_TYPE_SUPERCART_RAM:
-    case CARTRIDGE_TYPE_SUPERCART_ROM:
-    case CARTRIDGE_TYPE_SUPERCART_LARGE:
-      cartridge_WriteBank(32768, bank);        
-      break;
-    case CARTRIDGE_TYPE_ABSOLUTE:
-      cartridge_WriteBank(16384, bank);
-      break;
-    case CARTRIDGE_TYPE_ACTIVISION:
-      cartridge_WriteBank(40960, bank);
-      break;
-  }  
-}
-
 
 // ----------------------------------------------------------------------------
 // IsLoaded
@@ -424,4 +477,11 @@ void cartridge_Release( )
     myCartInfo.uses_wsync = USES_WSYNC;
     myCartInfo.hasHeader = false;
     last_bank = 255;
+    last_ex_ram_bank = 0;
+    ex_ram_bank = 0;
+    last_ex_ram_bank_df = 0;
+    ex_ram_bank_df = 0;    
+    if (isDS_LITE) shadow_ram = ex_ram_bank ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // for DS-Lite
+    else shadow_ram = ex_ram_bank ? (u8*)0x06820000 : (u8*)0x06824000;   // // Only for the DSi.. see DS_LITE handling above
+    shadow_ram -= 0x4000; // Makes for faster indexing in Memory.c
 }
