@@ -136,6 +136,8 @@ V4.2 : 06-Nov-2022 by wavemotion-dave
   * Fix graphical glitch for Ballblazer (just hiding it off screen).
   * Numerous small updates to the internal cart database to ensure game run with the proper settings (mostly High Scores)
   * New 8x density on the High Score Cart - transparent to the user but provides more slots so the HSC won't fill up.
+  * Flat 32K plus RAM cart type supported.
+  * Pokey @800 supported for upcoming homebrews.
 
 V4.1 : 02-Nov-2022 by wavemotion-dave
   * Overhaul Maria cycle stealing - all games now use the proper cycle stealing with much closer to accurate timing. This fixes games like One-on-One and Kung Fu Master.
