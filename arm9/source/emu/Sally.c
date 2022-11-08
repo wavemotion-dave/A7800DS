@@ -36,6 +36,8 @@ PCUnion sally_pc  __attribute__((section(".dtcm"))) = {0};
 static PCUnion sally_address __attribute__((section(".dtcm")));
 static uint sally_cyclesX4 __attribute__((section(".dtcm")));
 
+byte last_illegal_opcode = 0;
+
 #define _fC 0x01
 #define _fZ 0x02
 #define _fI 0x04
@@ -56,22 +58,22 @@ static const Vector SALLY_IRQ = {65535, 65534};
 
 static uint SALLY_CYCLESX4[256] __attribute__((section(".dtcm"))) = 
 {
-	7*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,0*4,4*4,6*4,0*4,
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
-	6*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,4*4,2*4,2*4,2*4,4*4,4*4,6*4,0*4,
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
-	6*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,3*4,4*4,6*4,0*4,
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
-	6*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,4*4,2*4,2*4,0*4,5*4,4*4,6*4,0*4,
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
-	0*4,6*4,0*4,0*4,3*4,3*4,3*4,0*4,2*4,0*4,2*4,0*4,4*4,4*4,4*4,0*4,
-	2*4,6*4,0*4,0*4,4*4,4*4,4*4,0*4,2*4,5*4,2*4,0*4,0*4,5*4,0*4,0*4,
-	2*4,6*4,2*4,0*4,3*4,3*4,3*4,0*4,2*4,2*4,2*4,0*4,4*4,4*4,4*4,0*4,
-	2*4,5*4,0*4,0*4,4*4,4*4,4*4,0*4,2*4,4*4,2*4,0*4,4*4,4*4,4*4,0*4,
-	2*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,2*4,2*4,2*4,0*4,4*4,4*4,6*4,0*4,
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,
-	2*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,2*4,2*4,2*4,0*4,4*4,4*4,6*4,0*4,
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4
+	7*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,0*4,4*4,6*4,0*4,    //00
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //10
+	6*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,4*4,2*4,2*4,2*4,4*4,4*4,6*4,0*4,    //20
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //30
+	6*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,3*4,4*4,6*4,0*4,    //40
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //50
+	6*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,4*4,2*4,2*4,0*4,5*4,4*4,6*4,0*4,    //60
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //70
+	0*4,6*4,0*4,6*4,3*4,3*4,3*4,3*4,2*4,0*4,2*4,0*4,4*4,4*4,4*4,4*4,    //80
+	2*4,6*4,0*4,0*4,4*4,4*4,4*4,4*4,2*4,5*4,2*4,0*4,0*4,5*4,0*4,0*4,    //90
+	2*4,6*4,2*4,6*4,3*4,3*4,3*4,3*4,2*4,2*4,2*4,0*4,4*4,4*4,4*4,4*4,    //A0
+	2*4,5*4,0*4,5*4,4*4,4*4,4*4,4*4,2*4,4*4,2*4,0*4,4*4,4*4,4*4,4*4,    //B0
+	2*4,6*4,0*4,8*4,3*4,3*4,5*4,5*4,2*4,2*4,2*4,0*4,4*4,4*4,6*4,6*4,    //C0
+	2*4,5*4,0*4,8*4,0*4,4*4,6*4,6*4,2*4,4*4,0*4,7*4,0*4,4*4,7*4,7*4,    //D0
+	2*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,2*4,2*4,2*4,0*4,4*4,4*4,6*4,0*4,    //E0
+	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4     //F0
 };
 
 
@@ -844,7 +846,7 @@ static inline void sally_STA( ) {
 // ----------------------------------------------------------------------------
 // STX
 // ----------------------------------------------------------------------------
-static inline void sally_stx( ) {
+static inline void sally_STX( ) {
   memory_Write(sally_address.w, sally_x);
 }
 
@@ -902,6 +904,18 @@ static inline void sally_TYA( ) {
   sally_Flags(sally_a);
 }
 
+
+static inline void sally_SAX( ) {
+    sally_STA();    
+    sally_STX();
+}
+
+
+static inline void sally_DCP( ) {
+    sally_DEC();    
+    sally_CMP();
+}
+
 // ----------------------------------------------------------------------------
 // Reset
 // ----------------------------------------------------------------------------
@@ -912,6 +926,7 @@ void sally_Reset( ) {
   sally_p = _fT;
   sally_s = 0;
   sally_pc.w = 0;
+  last_illegal_opcode = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1405,7 +1420,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
 
     l_0x86: 
       sally_ZeroPage( );  
-      sally_stx( ); 
+      sally_STX( ); 
       goto next_inst;
 
     l_0x88: 
@@ -1428,7 +1443,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
 
     l_0x8e: 
       sally_Absolute( );  
-      sally_stx( ); 
+      sally_STX( ); 
       goto next_inst;
 
     l_0x90: 
@@ -1453,7 +1468,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
 
     l_0x96: 
       sally_ZeroPageY( ); 
-      sally_stx( ); 
+      sally_STX( ); 
       goto next_inst;
 
     l_0x98: 
@@ -1822,6 +1837,100 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
       }    
       goto next_inst;
       
+// --------------------------------------------------------------------------------------------------
+// Here starts the "undocumented" aka "illegal" OP Codes... but they are stable and sometimes used!
+// --------------------------------------------------------------------------------------------------
+    l_0xa3:
+      sally_IndirectX( ); 
+      sally_LDA( ); 
+      sally_LDX( ); 
+      goto next_inst;
+
+    l_0xb3:
+      sally_IndirectY( ); 
+      sally_LDA( ); 
+      sally_LDX( ); 
+      goto next_inst;
+
+    l_0xaf:
+      sally_Absolute( ); 
+      sally_LDA( ); 
+      sally_LDX( ); 
+      goto next_inst;
+
+    l_0xbf:
+      sally_AbsoluteY( ); 
+      sally_LDA( ); 
+      sally_LDX( ); 
+      goto next_inst;
+      
+    l_0xa7:
+      sally_ZeroPage( ); 
+      sally_LDA( ); 
+      sally_LDX( ); 
+      goto next_inst;
+
+    l_0xb7:
+      sally_ZeroPageY( ); 
+      sally_LDA( ); 
+      sally_LDX( ); 
+      goto next_inst;
+      
+    l_0x87:
+      sally_ZeroPage( ); 
+      sally_SAX( );
+      goto next_inst;
+
+    l_0x97:
+      sally_ZeroPageY( ); 
+      sally_SAX( );
+      goto next_inst;
+
+    l_0x83:
+      sally_IndirectX( ); 
+      sally_SAX( );
+      goto next_inst;
+
+    l_0x8f:
+      sally_Absolute( ); 
+      sally_SAX( );
+      goto next_inst;
+      
+    l_0xc7:
+      sally_ZeroPage( ); 
+      sally_DCP( );
+      goto next_inst;
+
+    l_0xd7:
+      sally_ZeroPageX( ); 
+      sally_DCP( );
+      goto next_inst;
+      
+    l_0xc3:
+      sally_IndirectX( ); 
+      sally_DCP( );
+      goto next_inst;
+      
+    l_0xd3:
+      sally_IndirectY( ); 
+      sally_DCP( );
+      goto next_inst;
+
+    l_0xcf:
+      sally_Absolute( ); 
+      sally_DCP( );
+      goto next_inst;
+
+    l_0xdf:
+      sally_AbsoluteX( ); 
+      sally_DCP( );
+      goto next_inst;
+
+    l_0xdb:
+      sally_AbsoluteY( ); 
+      sally_DCP( );
+      goto next_inst;
+     
 l_0xff:
 l_0xfc:
 l_0xfb:
@@ -1835,40 +1944,23 @@ l_0xeb:
 l_0xe7:
 l_0xe3:
 l_0xe2:
-l_0xdf:
 l_0xdc:
-l_0xdb:
 l_0xda:
-l_0xd7:
 l_0xd4:
-l_0xd3:
 l_0xd2:
-l_0xcf:
 l_0xcb:
-l_0xc7:
-l_0xc3:
 l_0xc2:
-l_0xbf:
 l_0xbb:
-l_0xb7:
-l_0xb3:
 l_0xb2:
-l_0xaf:
 l_0xab:
-l_0xa7:
-l_0xa3:
 l_0x9f:
 l_0x9e:
 l_0x9c:
 l_0x9b:
-l_0x97:
 l_0x93:
 l_0x92:
-l_0x8f:
 l_0x8b:
 l_0x89:
-l_0x87:
-l_0x83:
 l_0x82:
 l_0x80:
 l_0x7f:
@@ -1924,7 +2016,7 @@ l_0x07:
 l_0x04:
 l_0x03:
 l_0x02:
-
+    last_illegal_opcode = sally_opcode;
 next_inst:
     prosystem_cycles += sally_cyclesX4;
     if (riot_and_wsync)

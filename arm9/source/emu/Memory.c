@@ -28,9 +28,10 @@
 #include "Database.h"
 
 byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
-byte memory_rom[MEMORY_SIZE] ALIGN(32) = {0};
+byte is_memory_writable[MEMORY_SIZE] ALIGN(32) = {0};
 
 extern bool ram_dirty[];
+extern bool write_only_pokey_at_4000;
 
 // ----------------------------------------------------------------------------
 // Reset
@@ -40,10 +41,10 @@ void memory_Reset( )
   uint index;
   for(index = 0; index < MEMORY_SIZE; index++) {
     memory_ram[index] = 0;
-    memory_rom[index] = 1;
+    is_memory_writable[index] = 0;
   }
   for(index = 0; index < 16384; index++) {
-    memory_rom[index] = 0;
+    is_memory_writable[index] = 0xFF;
   }
 }
 
@@ -72,7 +73,7 @@ ITCM_CODE byte memory_Read_Slower(word address)
   {
       if (myCartInfo.pokeyType == POKEY_AT_4000)
       {
-          if ((address & 0xFFF0) == 0x4000) return pokey_GetRegister(address);            
+          if (((address & 0xFFF0) == 0x4000) && (!write_only_pokey_at_4000)) return pokey_GetRegister(address);            
       }
       else
       {
@@ -119,8 +120,8 @@ ITCM_CODE void memory_Write(word address, byte data)
           }          
       }
   }
-    
-  if(!memory_rom[address]) 
+  
+  if (is_memory_writable[address]) 
   {
     if ((address & 0xF800))     // Base RAM is at 0x1800 so this will find anything that is RAM... 
     {
@@ -188,11 +189,8 @@ ITCM_CODE void memory_Write(word address, byte data)
         tia_MemoryChannel(1);
         break;
       case WSYNC:
-        if (myCartInfo.uses_wsync)
-        {
-          memory_ram[WSYNC] = true;
-          riot_and_wsync |= 0x01;
-        }
+        memory_ram[WSYNC] = true;
+        riot_and_wsync |= 0x01;
         break;
       case SWCHB:
         /*gdement:  Writing here actually writes to DRB inside the RIOT chip.
@@ -220,7 +218,7 @@ ITCM_CODE void memory_Write(word address, byte data)
         break;
       default:
         memory_ram[address] = data;
-#if 0  // Technically the RAM mirrors are here but we don't really care... we assume anyone using a mirror will read back from that same mirror location.
+#ifdef RAM_MIRRORS_ENABLED  // Technically the RAM mirrors are here but we don't really care... we assume anyone using a mirror will read back from that same mirror location.
         if (address >= 8256)
         {
           // 0x2040 -> 0x20ff    (0x2000)
@@ -263,17 +261,17 @@ ITCM_CODE void memory_Write(word address, byte data)
 ITCM_CODE void memory_WriteROM(word address, u32 size, const byte* data) 
 {
   u32* ramPtr = (u32*)&memory_ram[address];
-  u32* romPtr = (u32*)&memory_rom[address];
+  u32* romPtr = (u32*)&is_memory_writable[address];
   u32* dataPtr = (u32*)data;
   for (u32 i=0; i<(size>>2); i++)
   {
       *ramPtr++ = *dataPtr++;
-      *romPtr++ = 0x01010101;
+      *romPtr++ = 0x00000000;
   }
 }
 
 // ----------------------------------------------------------------------------
-// WriteROMFast (assumes memory_rom[] already set properly)
+// WriteROMFast (assumes is_memory_writable[] already set properly)
 // size is already in multiples of u32 dwords
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_WriteROMFast(word address, u32 size, const u32* data) 
@@ -297,5 +295,5 @@ ITCM_CODE void memory_WriteROMFast(word address, u32 size, const u32* data)
 void memory_ClearROM(word address, word size) 
 {
     memset(&memory_ram[address], 0x00, size);
-    memset(&memory_rom[address], 0x00, size);
+    memset(&is_memory_writable[address], 0xFF, size);
 }

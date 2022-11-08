@@ -26,6 +26,7 @@
 #include "Maria.h"
 
 #include "ProSystem.h"
+#include "Database.h"
 
 extern uint bRenderFrame;
 
@@ -70,11 +71,68 @@ word *framePtr                  __attribute__((section(".dtcm"))) = (word *)0;
 u32 color_lookup_160AB[256][256];
 byte color_lookup_320AC[256]    __attribute__((section(".dtcm")));
 u32  maria_charbase             __attribute__((section(".dtcm")));
+u16  banksets_mask              __attribute__((section(".dtcm"))) = 0x0000;
+
+void mariabank_RenderScanlineTOP(void);
+void mariabank_RenderScanline(void);
 
 extern u32 bg32;
 
 // ----------------------------------------------------------------------------
-//ClearCells - 4 bytes at a time
+// Reset
+// ----------------------------------------------------------------------------
+void maria_Reset( ) {
+  maria_surface = bufVideo;
+  maria_scanline = 1;
+  memset(maria_surface, 0, MARIA_SURFACE_SIZE);
+  
+   // These values need to be reset to allow switching between carts. 
+   // This appears to be a bug in the ProSystem emulator.
+   //
+   maria_cycles = 0;
+   maria_dpp.w = 0;
+   maria_dp.w = 0;
+   maria_pp.w = 0;
+   maria_horizontal = 0;
+   maria_palette = 0;
+   maria_offset = 0;
+   maria_h08 = 0;
+   maria_h16 = 0;
+   maria_h8_h16 = 0x0000;
+   maria_wmode = 0;
+   bg32 = 0x00000000;
+   bg8=0x00;
+   maria_charbase = 0;
+   banksets_mask = 0x0000;
+   if ((myCartInfo.cardtype == CARTRIDGE_TYPE_BANKSETS) || (myCartInfo.cardtype == CARTRIDGE_TYPE_BANKSETS_RAM)) banksets_mask = 0x8000;
+   if ((myCartInfo.cardtype == CARTRIDGE_TYPE_BANKSETS_HALTRAM)) banksets_mask = 0xC000;
+    
+   // ----------------------------------------------------------------------------------
+   // Build the 160 A/B color lookup table for a few frames of increased performance
+   // ----------------------------------------------------------------------------------
+   for (uint color=0; color<256; color++)
+   {
+       for (uint color1=0; color1<256; color1++)
+       {
+          color_lookup_160AB[color][color1] = color | (color<<8) | (color1<<16) | (color1<<24);
+       }
+       
+       color_lookup_320AC[color] = (color & 28) | ((color & 1) << 1);
+   }
+}
+
+
+// ----------------------------------------------------------------------------
+// Clear
+// ----------------------------------------------------------------------------
+void maria_Clear( ) 
+{
+    maria_surface = bufVideo;
+    memset(maria_surface, 0x00, MARIA_SURFACE_SIZE);
+}
+
+// ----------------------------------------------------------------------------
+// ClearCells - 4 bytes at a time
 // ----------------------------------------------------------------------------
 static inline void _maria_ClearCells4(void)
 {
@@ -152,9 +210,9 @@ static inline void maria_StoreCellWriteMode(byte data)
 
 
 // ----------------------------------------------------------------------------
-// IsHolyDMA
+// IsHoleyDMA
 // ----------------------------------------------------------------------------
-static inline bool maria_IsHolyDMA( ) 
+static inline bool maria_IsHoleyDMA( ) 
 {
     if(maria_pp.w & 0x8000)
     {
@@ -192,47 +250,6 @@ static u8 write_mode_lookup[256] __attribute__((section(".dtcm"))) =
     0x33, 0x37, 0x3B, 0x3F, 0x73, 0x77, 0x7B, 0x7F, 0xB3, 0xB7, 0xBB, 0xBF, 0xF3, 0xF7, 0xFB, 0xFF
 };
 
-// ----------------------------------------------------------------------------
-// StoreGraphic
-// ----------------------------------------------------------------------------
-static inline void maria_StoreGraphic( ) 
-{
-  byte data = memory_ram[maria_pp.w];
-  if(maria_wmode) 
-  {
-    if(maria_IsHolyDMA())
-    {
-      maria_horizontal += 2;
-    }
-    else
-    {
-      maria_StoreCellWriteMode(write_mode_lookup[data]);
-    }
-  }
-  else 
-  {
-#ifdef KANGAROO_MODE_SUPPORTED      
-    if(maria_IsHolyDMA()) 
-    {
-        maria_horizontal += 4;
-    }
-    else if (!data)
-    {
-       _maria_ClearCells4();   
-    }
-#else
-    if(maria_IsHolyDMA() || !data) 
-    {
-        maria_horizontal += 4;
-    }
-#endif      
-    else         
-    {
-      _maria_StoreCells4(data);
-    }
-  }
-  maria_pp.w++;
-}
 
 static u8 write_mode_lookup_mode2A[] __attribute__((section(".dtcm"))) =
 {
@@ -274,6 +291,7 @@ static u8 write_mode_lookup_mode2B[] __attribute__((section(".dtcm"))) =
     0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 0x00, 0x02, 0x00, 0x02, 0x01, 0x03, 0x01, 0x03, 
     0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13
 };
+
 
 // ----------------------------------------------------------------------------
 // WriteLineRAM
@@ -376,10 +394,60 @@ static inline void maria_WriteLineRAM(word* buffer)
   }
 }
 
+
+// ==============================================================================
+// Functions below this point read into the 7800 Cart Address Space... and must 
+// be handled differently for the new 'banksets' scheme - bankset versions of
+// these functions can be found further down the source code...
+// ==============================================================================
+
+// ----------------------------------------------------------------------------
+// StoreGraphic
+// ----------------------------------------------------------------------------
+static inline void maria_StoreGraphic( ) 
+{
+  byte data = memory_ram[maria_pp.w];
+  if(maria_wmode) 
+  {
+    if(maria_IsHoleyDMA())
+    {
+      maria_horizontal += 2;
+    }
+    else
+    {
+      maria_StoreCellWriteMode(write_mode_lookup[data]);
+    }
+  }
+  else 
+  {
+#ifdef KANGAROO_MODE_SUPPORTED      
+    if(maria_IsHoleyDMA()) 
+    {
+        maria_horizontal += 4;
+    }
+    else if (!data)
+    {
+       _maria_ClearCells4();   
+    }
+#else
+    if(maria_IsHoleyDMA() || !data) 
+    {
+        maria_horizontal += 4;
+    }
+#endif      
+    else         
+    {
+      _maria_StoreCells4(data);
+    }
+  }
+  maria_pp.w++;
+}
+
+
 // ----------------------------------------------------------------------------
 // StoreLineRAM
 // ----------------------------------------------------------------------------
-ITCM_CODE void maria_StoreLineRAM( ) 
+ITCM_CODE static void maria_StoreLineRAM( ) 
 {
   uint index;
 
@@ -418,7 +486,7 @@ ITCM_CODE void maria_StoreLineRAM( )
     }
     else 
     {
-      maria_cycles += 12; // Maria cycles (Header 5 byte)
+      maria_cycles += 10; // Maria cycles (Header 5 byte)
       maria_palette = (memory_ram[maria_dp.w] & 0xE0) >> 3;
       width = memory_ram[maria_dp.w++] & 31;
       width = (width == 0) ? 32: ((~width) & 31) + 1;
@@ -454,8 +522,7 @@ ITCM_CODE void maria_StoreLineRAM( )
           }
           maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
       }
-      maria_cycles += (6*width);             // Compensate Maria cycles for Indirect 1 byte
-      if (cwidth) maria_cycles += (3*width); // Compensate Maria cycles for Indirect 2 byte
+      maria_cycles += ((cwidth ? 9:6)*width);             // Maria cycles for Indirect 1 byte (6 cycles) or 2 bytes (9 cycles)
     }
       
     maria_dp.w &= 0xFFFF;   // Super Pac-Man requires that we wrap this...
@@ -464,46 +531,6 @@ ITCM_CODE void maria_StoreLineRAM( )
     mode = memory_ram[maria_dp.w++];
     maria_pp.b.h = memory_ram[maria_dp.w++];      
   }
-}
-
-// ----------------------------------------------------------------------------
-// Reset
-// ----------------------------------------------------------------------------
-void maria_Reset( ) {
-  maria_surface = bufVideo;
-  maria_scanline = 1;
-  memset(maria_surface, 0, MARIA_SURFACE_SIZE);
-  
-   // These values need to be reset to allow switching between carts. 
-   // This appears to be a bug in the ProSystem emulator.
-   //
-   maria_cycles = 0;
-   maria_dpp.w = 0;
-   maria_dp.w = 0;
-   maria_pp.w = 0;
-   maria_horizontal = 0;
-   maria_palette = 0;
-   maria_offset = 0;
-   maria_h08 = 0;
-   maria_h16 = 0;
-   maria_h8_h16 = 0x0000;
-   maria_wmode = 0;
-   bg32 = 0x00000000;
-   bg8=0x00;
-   maria_charbase = 0;
-    
-   // ----------------------------------------------------------------------------------
-   // Build the 160 A/B color lookup table for a few frames of increased performance
-   // ----------------------------------------------------------------------------------
-   for (uint color=0; color<256; color++)
-   {
-       for (uint color1=0; color1<256; color1++)
-       {
-          color_lookup_160AB[color][color1] = color | (color<<8) | (color1<<16) | (color1<<24);
-       }
-       
-       color_lookup_320AC[color] = (color & 28) | ((color & 1) << 1);
-   }
 }
 
 // ----------------------------------------------------------------------------
@@ -527,27 +554,28 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
   }
   else
   {
-      maria_cycles += 15; // Maria cycles (DMA Startup + End of VBLANK)
+      if (banksets_mask) return mariabank_RenderScanlineTOP();
+      
       maria_dpp.b.l = memory_ram[DPPL];
       maria_dpp.b.h = memory_ram[DPPH];
       maria_h08 = memory_ram[maria_dpp.w] & 32;
       maria_h16 = memory_ram[maria_dpp.w] & 64;
       maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
       maria_offset = memory_ram[maria_dpp.w] & 15;
-      maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       maria_dp.b.h = memory_ram[maria_dpp.w + 1];
+      maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       if(memory_ram[maria_dpp.w] & 128) 
       {
-        maria_cycles += 20; // Maria cycles (NMI)  /*29, 16, 20*/
         sally_ExecuteNMI( );
-        maria_dp.b.l = memory_ram[maria_dpp.w + 2];
         maria_dp.b.h = memory_ram[maria_dpp.w + 1];
+        maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       }
     
       maria_StoreLineRAM( );
+      
       if(--maria_offset < 0) 
       {
-        maria_cycles += 10; // Maria cycles (Last line of zone) ( /*20*/ 
+        maria_cycles += 15; // Maria cycles (Startup+Shutdown Last line of zone) - Techncially 24 but we know we're over estimating so....
         maria_dpp.w += 3;
         maria_h08 = memory_ram[maria_dpp.w] & 32;
         maria_h16 = memory_ram[maria_dpp.w] & 64;
@@ -555,25 +583,21 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
         maria_offset = memory_ram[maria_dpp.w] & 15;
         if(memory_ram[maria_dpp.w] & 128) 
         {
-          maria_cycles += 20; // Maria cycles (NMI) /*29, 16, 20*/
           sally_ExecuteNMI( );
         }
-      }
-      else
-      {
-         maria_cycles += 4; // Maria cycles (Other lines of zone)
-      }
+      } else maria_cycles += 10; // Maria cycles (Startup+Shutdown Other lines of zone) - Technically 16 but we know we're over estimating so....
   }
 }
 
 ITCM_CODE void maria_RenderScanline(void) 
 {
+  maria_cycles = 0;
+    
   //
   // Displays the background color when Maria is disabled (if applicable)
   //
   if ((memory_ram[CTRL] & 96) != 64)
   {
-      maria_cycles = 0;
       u32 *bgstart = (u32*)framePtr;
       for(uint index = 0; index < MARIA_LINERAM_SIZE/4; index++ ) 
       {
@@ -582,7 +606,8 @@ ITCM_CODE void maria_RenderScanline(void)
   }
   else
   {
-    maria_cycles = 9; // Maria cycles (DMA Startup)
+    if (banksets_mask) return mariabank_RenderScanline();
+
     // This is where we render the video memory... 
     if (bRenderFrame)  // Skip every other frame...
     {
@@ -590,11 +615,14 @@ ITCM_CODE void maria_RenderScanline(void)
         framePtr += 256;
     }
     
-    maria_dp.b.l = memory_ram[maria_dpp.w + 2];
     maria_dp.b.h = memory_ram[maria_dpp.w + 1];
+    maria_dp.b.l = memory_ram[maria_dpp.w + 2];
+    
     maria_StoreLineRAM( );
+      
     if(--maria_offset < 0) 
     {
+      maria_cycles += 15; // Maria cycles (Startup+Shutdown Last line of zone) - Techncially 24 but we know we're over estimating so....
       maria_dpp.w += 3;
       maria_h08 = memory_ram[maria_dpp.w] & 32;
       maria_h16 = memory_ram[maria_dpp.w] & 64;
@@ -602,18 +630,228 @@ ITCM_CODE void maria_RenderScanline(void)
       maria_offset = memory_ram[maria_dpp.w] & 15;
       if(memory_ram[maria_dpp.w] & 128) 
       {
-        maria_cycles += 26; // Maria cycles (NMI) /*29, 16, 20*/
         sally_ExecuteNMI( );
       }
-      else maria_cycles += 6; // Maria cycles (Last line of zone) ( /*20*/ 
     }
+    else maria_cycles += 10; // Maria cycles (Startup+Shutdown Other lines of zone) - Techncially 16 but we know we're over estimating so....
   }
 }
-// ----------------------------------------------------------------------------
-// Clear
-// ----------------------------------------------------------------------------
-void maria_Clear( ) 
+
+
+
+// =======================================================================================
+// BANKSET Handling
+// We subsitutue out the maria_XXXX() calls with mariabank_XXXX() calls that will fetch
+// non-system memory from the Maria portion of the banksets memory.
+// =======================================================================================
+
+extern byte banksets_memory[];
+inline byte bankset_memory_read(word address)
 {
-    maria_surface = bufVideo;
-    memset(maria_surface, 0x00, MARIA_SURFACE_SIZE);
+    // -----------------------------------------------------------------------
+    // banksets_mask will be either 0x8000 (if we are only swapping in ROM) 
+    // or 0xC000 (if we are swapping in ROM and RAM). The lower memory is
+    // always system memory and we get that from memory_ram[]
+    // -----------------------------------------------------------------------
+    if (address & banksets_mask) return banksets_memory[address];
+    else return memory_ram[address];
 }
+
+// ----------------------------------------------------------------------------
+// StoreGraphic
+// ----------------------------------------------------------------------------
+static inline void mariabank_StoreGraphic( ) 
+{
+  byte data = bankset_memory_read(maria_pp.w);
+  if(maria_wmode) 
+  {
+    if(maria_IsHoleyDMA())
+    {
+      maria_horizontal += 2;
+    }
+    else
+    {
+      maria_StoreCellWriteMode(write_mode_lookup[data]);
+    }
+  }
+  else 
+  {
+#ifdef KANGAROO_MODE_SUPPORTED      
+    if(maria_IsHoleyDMA()) 
+    {
+        maria_horizontal += 4;
+    }
+    else if (!data)
+    {
+       _maria_ClearCells4();   
+    }
+#else
+    if(maria_IsHoleyDMA() || !data) 
+    {
+        maria_horizontal += 4;
+    }
+#endif      
+    else         
+    {
+      _maria_StoreCells4(data);
+    }
+  }
+  maria_pp.w++;
+}
+
+
+// ----------------------------------------------------------------------------
+// StoreLineRAM
+// ----------------------------------------------------------------------------
+ITCM_CODE static void mariabank_StoreLineRAM( ) 
+{
+  uint index;
+
+  if (bRenderFrame)  // Skip every other frame...
+  {
+    u32 *ptr=(u32*)maria_lineRAM;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0; *ptr = 0;
+      
+    write_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
+    write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;      
+  }    
+
+  maria_pp.b.l = bankset_memory_read(maria_dp.w++);
+  uint mode = bankset_memory_read(maria_dp.w++);
+  maria_pp.b.h = bankset_memory_read(maria_dp.w++);
+  while(mode & 0x5f) 
+  {
+    uint width;
+    uint indirect = 0;
+ 
+    if(mode & 31) 
+    { 
+      maria_cycles += 8; // Maria cycles (Header 4 byte)
+      maria_palette = (mode & 0xE0) >> 3;
+      maria_horizontal = bankset_memory_read(maria_dp.w++);
+      width = (~mode & 31) + 1;
+    }
+    else 
+    {
+      maria_cycles += 10; // Maria cycles (Header 5 byte)
+      maria_palette = (bankset_memory_read(maria_dp.w) & 0xE0) >> 3;
+      width = bankset_memory_read(maria_dp.w++) & 31;
+      width = (width == 0) ? 32: ((~width) & 31) + 1;
+      maria_horizontal = bankset_memory_read(maria_dp.w++);
+      indirect = mode & 32;
+      maria_wmode = mode & 128;
+    }
+
+    if(!indirect) 
+    {
+      if (bRenderFrame)
+      {
+          maria_pp.b.h += maria_offset;
+          for(index = 0; index < width; index++) 
+          {
+             mariabank_StoreGraphic();
+          }
+          maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
+      }
+      maria_cycles += (3*width); // Maria cycles (Direct graphic read)
+    }
+    else 
+    {
+      uint cwidth = (memory_ram[CTRL] & 16);
+      if (bRenderFrame)
+      {
+          lpair basePP = maria_pp;
+          for(index = 0; index < width; index++) 
+          {
+            maria_pp.w = ((maria_charbase + maria_offset) << 8) | bankset_memory_read(basePP.w++);
+            mariabank_StoreGraphic( );              //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
+            if(cwidth) mariabank_StoreGraphic( );   //maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
+          }
+          maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
+      }
+      maria_cycles += ((cwidth ? 9:6)*width);             // Maria cycles for Indirect 1 byte (6 cycles) or 2 bytes (9 cycles)
+    }
+      
+    maria_dp.w &= 0xFFFF;   // Super Pac-Man requires that we wrap this...
+    
+    maria_pp.b.l = bankset_memory_read(maria_dp.w++);
+    mode = bankset_memory_read(maria_dp.w++);
+    maria_pp.b.h = bankset_memory_read(maria_dp.w++);
+  }
+}
+
+
+ITCM_CODE void mariabank_RenderScanlineTOP(void) 
+{
+    maria_dpp.b.l = bankset_memory_read(DPPL);
+    maria_dpp.b.h = bankset_memory_read(DPPH);
+    maria_h08 = bankset_memory_read(maria_dpp.w) & 32;
+    maria_h16 = bankset_memory_read(maria_dpp.w) & 64;
+    maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
+    maria_offset = bankset_memory_read(maria_dpp.w) & 15;
+    maria_dp.b.h = bankset_memory_read(maria_dpp.w + 1);
+    maria_dp.b.l = bankset_memory_read(maria_dpp.w + 2);
+    if(bankset_memory_read(maria_dpp.w) & 128) 
+    {
+        sally_ExecuteNMI( );
+        maria_dp.b.h = bankset_memory_read(maria_dpp.w + 1);
+        maria_dp.b.l = bankset_memory_read(maria_dpp.w + 2);
+    }
+
+    mariabank_StoreLineRAM( );
+    
+    if(--maria_offset < 0) 
+    {
+        maria_cycles += 15; // Maria cycles (Startup+Shutdown Last line of zone) - Techncially 24 but we know we're over estimating so....
+        maria_dpp.w += 3;
+        maria_h08 = bankset_memory_read(maria_dpp.w) & 32;
+        maria_h16 = bankset_memory_read(maria_dpp.w) & 64;
+        maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
+        maria_offset = bankset_memory_read(maria_dpp.w) & 15;
+        if(bankset_memory_read(maria_dpp.w) & 128) 
+        {
+          sally_ExecuteNMI( );
+        }
+    }
+    else maria_cycles += 10; // Maria cycles (Startup+Shutdown Other lines of zone) - Techncially 16 but we know we're over estimating so....
+}
+
+ITCM_CODE void mariabank_RenderScanline(void) 
+{
+    // This is where we render the video memory... 
+    if (bRenderFrame)  // Skip every other frame...
+    {
+        maria_WriteLineRAM(framePtr);
+        framePtr += 256;
+    }
+    
+    maria_dp.b.h = bankset_memory_read(maria_dpp.w + 1);
+    maria_dp.b.l = bankset_memory_read(maria_dpp.w + 2);
+    
+    mariabank_StoreLineRAM( );
+    
+    if(--maria_offset < 0) 
+    {
+      maria_cycles += 15; // Maria cycles (Startup+Shutdown Last line of zone) - Techncially 24 but we know we're over estimating so....
+      maria_dpp.w += 3;
+      maria_h08 = bankset_memory_read(maria_dpp.w) & 32;
+      maria_h16 = bankset_memory_read(maria_dpp.w) & 64;
+      maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
+      maria_offset = bankset_memory_read(maria_dpp.w) & 15;
+      if(bankset_memory_read(maria_dpp.w) & 128) 
+      {
+        sally_ExecuteNMI( );
+      }
+    }
+    else maria_cycles += 10; // Maria cycles (Startup+Shutdown Other lines of zone) - Techncially 16 but we know we're over estimating so....
+}
+

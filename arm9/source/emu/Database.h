@@ -37,19 +37,19 @@ typedef struct {
   u8    diff1;
   u8    diff2;
   u8    region;
-  u8    steals_cycles;
-  u8    uses_wsync;
   u8    hsc;
-  short xOffset;
-  short yOffset;
-  short xScale;
-  short yScale;
+  s16   dma_adjust;
+  s16   xOffset;
+  s16   yOffset;
+  s16   xScale;
+  s16   yScale;
   u8    frameSkip;
   u8    hasHeader;
   u8    spare1;
   u8    spare2;
   u8    spare3;
   u8    spare4;
+  s16   spare16;
 } Database_Entry;
 
 

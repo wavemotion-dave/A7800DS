@@ -81,22 +81,20 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   // ------------------------------------------------------------
   for (maria_scanline = 1; maria_scanline <= 16; maria_scanline++) 
   {
-    if (myCartInfo.steals_cycles == STEAL_CYCLE) 
-        prosystem_cycles = 0;                       // Some fudge for Maria Cycle counting which is not exact. This buys us a few more cycles.
-    else
-        prosystem_cycles %= CYCLES_PER_SCANLINE;    // Otherwise cycle "exact"
+    prosystem_cycles = 0;
       
     if (maria_scanline & 0x10) 
     {
       memory_ram[MSTAT] = 0;
       framePtr = (word*)(maria_surface);
       sally_Execute(HBLANK);
+        
       maria_RenderScanlineTOP( );
-      if(myCartInfo.steals_cycles == STEAL_CYCLE) 
-      {
-        prosystem_cycles += maria_cycles;
-        if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
-      }
+      
+      // Cycle Stealing happens here... with a fudge adjustment...
+      if (maria_cycles > 0) maria_cycles += (int)myCartInfo.dma_adjust;
+      prosystem_cycles += maria_cycles;
+      if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
     }
     else
     {    
@@ -113,24 +111,20 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   }
     
   // ------------------------------------------------------------
-  // Up to line 26 is "off-screen" so we don't bother to render
+  // Up to line 25 is "off-screen" so we don't bother to render
   // ------------------------------------------------------------
-  for (; maria_scanline < 26; maria_scanline++) 
+  for (; maria_scanline < 25; maria_scanline++) 
   {
-    if (myCartInfo.steals_cycles == STEAL_CYCLE) 
-        prosystem_cycles = 0;                       // Some fudge for Maria Cycle counting which is not exact. This buys us a few more cycles.
-    else
-        prosystem_cycles %= CYCLES_PER_SCANLINE;    // Otherwise cycle "exact"
+    prosystem_cycles = 0;
       
     sally_Execute(HBLANK);
 
     maria_RenderScanline( );
     
-    if(myCartInfo.steals_cycles == STEAL_CYCLE) 
-    {
-      prosystem_cycles += maria_cycles;
-      if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
-    }
+    // Cycle Stealing happens here... with a fudge adjustment...
+    if (maria_cycles > 0) maria_cycles += (int)myCartInfo.dma_adjust;
+    prosystem_cycles += maria_cycles;
+    if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
  
     sally_Execute(CYCLES_PER_SCANLINE);
       
@@ -142,7 +136,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   }
     
   // -----------------------------------------------------------------------------------
-  // At line 26 we can start to render the scanlines if we are not skipping this frame.
+  // At line 25 we can start to render the scanlines if we are not skipping this frame.
   // -----------------------------------------------------------------------------------
   bRenderFrame = gTotalAtariFrames & frameSkipMask;
     
@@ -151,10 +145,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   // ------------------------------------------------------------
   for (; maria_scanline < 258; maria_scanline++) 
   {
-    if (myCartInfo.steals_cycles == STEAL_CYCLE) 
-        prosystem_cycles = 0;                       // Some fudge for Maria Cycle counting which is not exact. This buys us a few more cycles.
-    else
-        prosystem_cycles %= CYCLES_PER_SCANLINE;    // Otherwise cycle "exact"
+    prosystem_cycles = 0;
       
     if (maria_scanline == 247) 
     {
@@ -165,11 +156,10 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 
     maria_RenderScanline( );
     
-    if(myCartInfo.steals_cycles == STEAL_CYCLE) 
-    {
-      prosystem_cycles += maria_cycles;
-      if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
-    }
+    // Cycle Stealing happens here... with a fudge adjustment...
+    if (maria_cycles > 0) maria_cycles += (int)myCartInfo.dma_adjust;
+    prosystem_cycles += maria_cycles;
+    if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
  
     sally_Execute(CYCLES_PER_SCANLINE);
       
@@ -184,10 +174,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   
   for (; maria_scanline < 262; maria_scanline++) 
   {
-    if (myCartInfo.steals_cycles == STEAL_CYCLE) 
-        prosystem_cycles = 0;                       // Some fudge for Maria Cycle counting which is not exact. This buys us a few more cycles.
-    else
-        prosystem_cycles %= CYCLES_PER_SCANLINE;    // Otherwise cycle "exact"
+    prosystem_cycles = 0;
       
     sally_Execute(HBLANK);
 

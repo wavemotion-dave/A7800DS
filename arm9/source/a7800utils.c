@@ -59,7 +59,7 @@ int bg2;
 int bg3;             // BG pointers 
 int bg0s, bg1s;      // sub BG pointers 
 
-#define MAX_DEBUG 16
+#define MAX_DEBUG 6
 int debug[MAX_DEBUG]={0};
 u8 DEBUG_DUMP = 0;
 
@@ -81,36 +81,19 @@ static void DumpDebugData(void)
 {
     if (DEBUG_DUMP)
     {
-        char dbgbuf[32];
         for (int i=0; i<MAX_DEBUG; i++)
         {
-            int idx=0;
-            int val = debug[i];
-            if (val < 0)
-            {
-                dbgbuf[idx++] = '-';
-                val = val * -1;
-            }
-            else
-            {
-                dbgbuf[idx++] = '0' + (int)val/10000000;
-            }
-            val = val % 10000000;
-            dbgbuf[idx++] = '0' + (int)val/1000000;
-            val = val % 1000000;
-            dbgbuf[idx++] = '0' + (int)val/100000;
-            val = val % 100000;
-            dbgbuf[idx++] = '0' + (int)val/10000;
-            val = val % 10000;
-            dbgbuf[idx++] = '0' + (int)val/1000;
-            val= val % 1000;
-            dbgbuf[idx++] = '0' + (int)val/100;
-            val = val % 100;
-            dbgbuf[idx++] = '0' + (int)val/10;
-            dbgbuf[idx++] = '0' + (int)val%10;
-            dbgbuf[idx++] = 0;
-            dsPrintValue(0,3+i,0, dbgbuf);
+            sprintf(fpsbuf, "D%-2d: %08ld %08XH", i, debug[i], debug[i]);
+            dsPrintValue(0,2+i,0, fpsbuf);
         }
+        
+        extern byte last_illegal_opcode;
+        if (last_illegal_opcode >= 0)
+        {
+            sprintf(fpsbuf, "ILLOP=%02X", last_illegal_opcode);
+            dsPrintValue(24,21,0, fpsbuf);
+        }
+            
     }
 }
 
@@ -216,14 +199,13 @@ void dsInitScreenMain(void)
     if (isDSiMode()) isDS_LITE = false; 
     else isDS_LITE = true;    
 
-    vramSetBankB(VRAM_B_LCD );                // Need to do this early so we can steal a bit of this RAM for bank swap...
+    vramSetBankB(VRAM_B_LCD );                // We're stealing 64K at 0x06830000
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
     vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 -   ..
     vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 -   ..
-    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 -   ..
-    
+    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 -   ..    
 }
 
 void dsInitTimer(void) 
@@ -237,7 +219,7 @@ void dsShowScreenEmu(void)
     // Change vram
     videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
     vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
-    vramSetBankB(VRAM_B_LCD );                // Need to do this early so we can steal a bit of this RAM for bank swap...
+    vramSetBankB(VRAM_B_LCD );                // We're stealing 64K at 0x06830000
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
@@ -246,9 +228,6 @@ void dsShowScreenEmu(void)
     vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 -   ..
     bg0 = bgInit(3, BgType_Bmp8, BgSize_B8_512x512, 0,0);
     bg1 = bgInit(2, BgType_Bmp8, BgSize_B8_512x512, 0,0);
-
-    REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG2 | BLEND_DST_BG3;
-    REG_BLDALPHA = (8 << 8) | 8; // 50% / 50% 
 
     // Setup video scaling...
     bufVideo = BG_GFX;   
@@ -339,6 +318,10 @@ void dsLoadGame(char *filename)
       
     if (DEBUG_DUMP)
     {
+        char dbgbuf[32];
+        extern word cardtype;
+        sprintf(dbgbuf, "CARDTYPE:  %04X", cardtype);
+        dsPrintValue(0,21,0, (char*)dbgbuf);
         dsPrintValue(0,22,0, (char*)cartridge_digest);
     }
       

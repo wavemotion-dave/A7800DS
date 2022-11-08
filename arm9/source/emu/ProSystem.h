@@ -41,6 +41,7 @@
 #include "shared.h"
 
 //#define KANGAROO_MODE_SUPPORTED 1   // Uncomment this for KANGAROO support. Slightly slower and virtually no game uses it... but more accurate
+//#define RAM_MIRRORS_ENABLED     1   // Uncomment if you want to have RAM mirrors handled (slower and no games need it as of this writing)
 
 extern int debug[];
 extern u8 isDS_LITE;
