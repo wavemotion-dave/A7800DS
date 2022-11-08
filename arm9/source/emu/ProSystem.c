@@ -85,12 +85,11 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles = 0;
       
-    sally_Execute(HBLANK_BEFORE_DMA);
-      
-    if (maria_scanline & 0x10)  // Line 16 we start the rendering....
+    if (maria_scanline & 0x10) 
     {
       memory_ram[MSTAT] = 0;
       framePtr = (word*)(maria_surface);
+      sally_Execute(HBLANK_BEFORE_DMA);
         
       maria_RenderScanlineTOP( );
       
@@ -98,6 +97,10 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       if (maria_cycles > 0) maria_cycles += (int)myCartInfo.dma_adjust;
       prosystem_cycles += maria_cycles;
       if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
+    }
+    else
+    {    
+        sally_Execute(HBLANK_BEFORE_DMA);
     }
     
     sally_Execute(CYCLES_PER_SCANLINE);
@@ -107,9 +110,8 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
         pokey_Process();
         pokey_Scanline();
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
-  }
+  }   
     
-   
   // ------------------------------------------------------------
   // Now handle the Main display area...
   // ------------------------------------------------------------
