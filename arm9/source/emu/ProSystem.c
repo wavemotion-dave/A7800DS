@@ -34,7 +34,7 @@ uint32 bg32           __attribute__((section(".dtcm"))) = 0;
 uint bRenderFrame     __attribute__((section(".dtcm"))) = 0;
 
 
-#define HBLANK_BEFORE_DMA   28      // Number of cycles in a HBLANK (really 7 CPU cycles before Maria DMA)
+#define HBLANK_BEFORE_DMA   34      // Number of cycles in a HBLANK 
 #define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system (really 113.5 CPU cycles)
 
 
