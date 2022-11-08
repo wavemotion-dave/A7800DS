@@ -85,11 +85,12 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles = 0;
       
-    if (maria_scanline & 0x10) 
+    sally_Execute(HBLANK_BEFORE_DMA);
+      
+    if (maria_scanline & 0x10)  // Line 16 we start the rendering....
     {
       memory_ram[MSTAT] = 0;
       framePtr = (word*)(maria_surface);
-      sally_Execute(HBLANK_BEFORE_DMA);
         
       maria_RenderScanlineTOP( );
       
@@ -98,10 +99,6 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
       prosystem_cycles += maria_cycles;
       if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
     }
-    else
-    {    
-        sally_Execute(HBLANK_BEFORE_DMA);
-    }
     
     sally_Execute(CYCLES_PER_SCANLINE);
       
@@ -112,44 +109,22 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
   }
     
+   
   // ------------------------------------------------------------
-  // Up to line 25 is "off-screen" so we don't bother to render
-  // ------------------------------------------------------------
-  for (; maria_scanline < 25; maria_scanline++) 
-  {
-    prosystem_cycles = 0;
-      
-    sally_Execute(HBLANK_BEFORE_DMA);
-
-    maria_RenderScanline( );
-    
-    // Cycle Stealing happens here... with a fudge adjustment...
-    if (maria_cycles > 0) maria_cycles += (int)myCartInfo.dma_adjust;
-    prosystem_cycles += maria_cycles;
-    if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
- 
-    sally_Execute(CYCLES_PER_SCANLINE);
-      
-    if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
-    {
-        pokey_Process();
-        pokey_Scanline();
-    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
-  }
-    
-  // -----------------------------------------------------------------------------------
-  // At line 25 we can start to render the scanlines if we are not skipping this frame.
-  // -----------------------------------------------------------------------------------
-  bRenderFrame = gTotalAtariFrames & frameSkipMask;
-    
-  // ------------------------------------------------------------
-  // Now handle the REST of the display area...
+  // Now handle the Main display area...
   // ------------------------------------------------------------
   for (; maria_scanline < 258; maria_scanline++) 
   {
     prosystem_cycles = 0;
       
-    if (maria_scanline == 247) 
+    if (maria_scanline == 25) 
+    {
+       // -----------------------------------------------------------------------------------
+       // At line 25 we can start to render the scanlines if we are not skipping this frame.
+       // -----------------------------------------------------------------------------------
+       bRenderFrame = gTotalAtariFrames & frameSkipMask;
+    } 
+    else if (maria_scanline == 247)
     {
        bRenderFrame = 0;    // At line 247 we can stop rendering frames...
     }
@@ -174,6 +149,9 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     
   memory_ram[MSTAT] = 128;
   
+  // ---------------------------------------------------------------------------
+  // And at the bottom, we no longer have to render anything Maria-related...
+  // ---------------------------------------------------------------------------
   for (; maria_scanline < 262; maria_scanline++) 
   {
     prosystem_cycles = 0;
