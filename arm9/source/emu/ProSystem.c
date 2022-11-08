@@ -34,6 +34,10 @@ uint32 bg32           __attribute__((section(".dtcm"))) = 0;
 uint bRenderFrame     __attribute__((section(".dtcm"))) = 0;
 
 
+#define HBLANK_BEFORE_DMA   28      // Number of cycles in a HBLANK (really 7 CPU cycles before Maria DMA)
+#define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system (really 113.5 CPU cycles)
+
+
 // ----------------------------------------------------------------------------
 // Reset
 // ----------------------------------------------------------------------------
@@ -58,8 +62,6 @@ void prosystem_Reset( )
   }
 }
 
-
-#define HBLANK 34       // Number of cycles in a HBLANK
 
 // ----------------------------------------------------------------------------
 // ExecuteFrame - this is hand-tuned for NTSC output with hard-coded
@@ -87,7 +89,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     {
       memory_ram[MSTAT] = 0;
       framePtr = (word*)(maria_surface);
-      sally_Execute(HBLANK);
+      sally_Execute(HBLANK_BEFORE_DMA);
         
       maria_RenderScanlineTOP( );
       
@@ -98,7 +100,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     }
     else
     {    
-        sally_Execute(HBLANK);
+        sally_Execute(HBLANK_BEFORE_DMA);
     }
     
     sally_Execute(CYCLES_PER_SCANLINE);
@@ -117,7 +119,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles = 0;
       
-    sally_Execute(HBLANK);
+    sally_Execute(HBLANK_BEFORE_DMA);
 
     maria_RenderScanline( );
     
@@ -152,7 +154,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
        bRenderFrame = 0;    // At line 247 we can stop rendering frames...
     }
       
-    sally_Execute(HBLANK);
+    sally_Execute(HBLANK_BEFORE_DMA);
 
     maria_RenderScanline( );
     
@@ -176,7 +178,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles = 0;
       
-    sally_Execute(HBLANK);
+    sally_Execute(HBLANK_BEFORE_DMA);
 
     sally_Execute(CYCLES_PER_SCANLINE);
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.

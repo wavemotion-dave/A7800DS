@@ -46,9 +46,6 @@
 extern int debug[];
 extern u8 isDS_LITE;
 
-// The number of cycles per scan line
-#define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system
-
 // Difficulty switches... 
 #define DIFF_A      0
 #define DIFF_B      1

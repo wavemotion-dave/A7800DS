@@ -123,6 +123,13 @@ ITCM_CODE void memory_Write(word address, byte data)
   
   if (is_memory_writable[address]) 
   {
+    // ---------------------------------------------------------------------------------------
+    // If this write would be in normal (non bankset) memory, we need to keep the bankset 
+    // memory up to date as well... This speeds up processing in Maria for banksets handling.
+    // ---------------------------------------------------------------------------------------
+    extern byte banksets_memory[]; extern u16 banksets_mask;
+    if (!(address & banksets_mask)) banksets_memory[address] = data;
+      
     if ((address & 0xF800))     // Base RAM is at 0x1800 so this will find anything that is RAM... 
     {
         // For banking RAM we need to keep the shadow up to date.

@@ -71,12 +71,18 @@ word *framePtr                  __attribute__((section(".dtcm"))) = (word *)0;
 u32 color_lookup_160AB[256][256];
 byte color_lookup_320AC[256]    __attribute__((section(".dtcm")));
 u32  maria_charbase             __attribute__((section(".dtcm")));
-u16  banksets_mask              __attribute__((section(".dtcm"))) = 0x0000;
+u16 banksets_mask               __attribute__((section(".dtcm"))) = 0x0000;
 
 void mariabank_RenderScanlineTOP(void);
 void mariabank_RenderScanline(void);
 
 extern u32 bg32;
+
+#define MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE        24
+#define MARIA_CYCLES_STARTUP_SHUTDOWN_OTHER_LINES_ZONE      16
+#define MARIA_CYCLES_4_BYTE_HEADER                           8
+#define MARIA_CYCLES_5_BYTE_HEADER                          10
+
 
 // ----------------------------------------------------------------------------
 // Reset
@@ -299,7 +305,7 @@ static u8 write_mode_lookup_mode2B[] __attribute__((section(".dtcm"))) =
 static inline void maria_WriteLineRAM(word* buffer) 
 {
   union ColorUnion colors; 
-  unsigned int *pix=(unsigned int *) buffer;
+  uint32 *pix=(uint32 *) buffer;
   uint32 *ptr = (uint32 *)&maria_lineRAM[0];
   byte rmode = memory_ram[CTRL] & 3;
     
@@ -479,14 +485,14 @@ ITCM_CODE static void maria_StoreLineRAM( )
  
     if(mode & 31) 
     { 
-      maria_cycles += 8; // Maria cycles (Header 4 byte)
+      maria_cycles += MARIA_CYCLES_4_BYTE_HEADER; // Maria cycles (Header 4 byte)
       maria_palette = (mode & 0xE0) >> 3;
       maria_horizontal = memory_ram[maria_dp.w++];
       width = (~mode & 31) + 1;
     }
     else 
     {
-      maria_cycles += 10; // Maria cycles (Header 5 byte)
+      maria_cycles += MARIA_CYCLES_5_BYTE_HEADER; // Maria cycles (Header 5 byte)
       maria_palette = (memory_ram[maria_dp.w] & 0xE0) >> 3;
       width = memory_ram[maria_dp.w++] & 31;
       width = (width == 0) ? 32: ((~width) & 31) + 1;
@@ -566,7 +572,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       if(memory_ram[maria_dpp.w] & 128) 
       {
-        sally_ExecuteNMI( );
+        maria_cycles += sally_ExecuteNMI( ) << 2;
         maria_dp.b.h = memory_ram[maria_dpp.w + 1];
         maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       }
@@ -575,7 +581,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       
       if(--maria_offset < 0) 
       {
-        maria_cycles += 15; // Maria cycles (Startup+Shutdown Last line of zone) - Techncially 24 but we know we're over estimating so....
+        maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
         maria_dpp.w += 3;
         maria_h08 = memory_ram[maria_dpp.w] & 32;
         maria_h16 = memory_ram[maria_dpp.w] & 64;
@@ -583,9 +589,10 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
         maria_offset = memory_ram[maria_dpp.w] & 15;
         if(memory_ram[maria_dpp.w] & 128) 
         {
-          sally_ExecuteNMI( );
+          maria_cycles += sally_ExecuteNMI( ) << 2;
         }
-      } else maria_cycles += 10; // Maria cycles (Startup+Shutdown Other lines of zone) - Technically 16 but we know we're over estimating so....
+      } 
+      else maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_OTHER_LINES_ZONE;
   }
 }
 
@@ -622,7 +629,7 @@ ITCM_CODE void maria_RenderScanline(void)
       
     if(--maria_offset < 0) 
     {
-      maria_cycles += 15; // Maria cycles (Startup+Shutdown Last line of zone) - Techncially 24 but we know we're over estimating so....
+      maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
       maria_dpp.w += 3;
       maria_h08 = memory_ram[maria_dpp.w] & 32;
       maria_h16 = memory_ram[maria_dpp.w] & 64;
@@ -630,10 +637,10 @@ ITCM_CODE void maria_RenderScanline(void)
       maria_offset = memory_ram[maria_dpp.w] & 15;
       if(memory_ram[maria_dpp.w] & 128) 
       {
-        sally_ExecuteNMI( );
+        maria_cycles += sally_ExecuteNMI( ) << 2;
       }
     }
-    else maria_cycles += 10; // Maria cycles (Startup+Shutdown Other lines of zone) - Techncially 16 but we know we're over estimating so....
+    else maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_OTHER_LINES_ZONE;
   }
 }
 
@@ -644,18 +651,8 @@ ITCM_CODE void maria_RenderScanline(void)
 // We subsitutue out the maria_XXXX() calls with mariabank_XXXX() calls that will fetch
 // non-system memory from the Maria portion of the banksets memory.
 // =======================================================================================
-
 extern byte banksets_memory[];
-inline byte bankset_memory_read(word address)
-{
-    // -----------------------------------------------------------------------
-    // banksets_mask will be either 0x8000 (if we are only swapping in ROM) 
-    // or 0xC000 (if we are swapping in ROM and RAM). The lower memory is
-    // always system memory and we get that from memory_ram[]
-    // -----------------------------------------------------------------------
-    if (address & banksets_mask) return banksets_memory[address];
-    else return memory_ram[address];
-}
+#define bankset_memory_read(address) banksets_memory[(address)]
 
 // ----------------------------------------------------------------------------
 // StoreGraphic
@@ -735,14 +732,14 @@ ITCM_CODE static void mariabank_StoreLineRAM( )
  
     if(mode & 31) 
     { 
-      maria_cycles += 8; // Maria cycles (Header 4 byte)
+      maria_cycles += MARIA_CYCLES_4_BYTE_HEADER; // Maria cycles (Header 4 byte)
       maria_palette = (mode & 0xE0) >> 3;
       maria_horizontal = bankset_memory_read(maria_dp.w++);
       width = (~mode & 31) + 1;
     }
     else 
     {
-      maria_cycles += 10; // Maria cycles (Header 5 byte)
+      maria_cycles += MARIA_CYCLES_5_BYTE_HEADER; // Maria cycles (Header 5 byte)
       maria_palette = (bankset_memory_read(maria_dp.w) & 0xE0) >> 3;
       width = bankset_memory_read(maria_dp.w++) & 31;
       width = (width == 0) ? 32: ((~width) & 31) + 1;
@@ -802,7 +799,7 @@ ITCM_CODE void mariabank_RenderScanlineTOP(void)
     maria_dp.b.l = bankset_memory_read(maria_dpp.w + 2);
     if(bankset_memory_read(maria_dpp.w) & 128) 
     {
-        sally_ExecuteNMI( );
+        maria_cycles += sally_ExecuteNMI( ) << 2;
         maria_dp.b.h = bankset_memory_read(maria_dpp.w + 1);
         maria_dp.b.l = bankset_memory_read(maria_dpp.w + 2);
     }
@@ -811,7 +808,7 @@ ITCM_CODE void mariabank_RenderScanlineTOP(void)
     
     if(--maria_offset < 0) 
     {
-        maria_cycles += 15; // Maria cycles (Startup+Shutdown Last line of zone) - Techncially 24 but we know we're over estimating so....
+        maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
         maria_dpp.w += 3;
         maria_h08 = bankset_memory_read(maria_dpp.w) & 32;
         maria_h16 = bankset_memory_read(maria_dpp.w) & 64;
@@ -819,10 +816,10 @@ ITCM_CODE void mariabank_RenderScanlineTOP(void)
         maria_offset = bankset_memory_read(maria_dpp.w) & 15;
         if(bankset_memory_read(maria_dpp.w) & 128) 
         {
-          sally_ExecuteNMI( );
+          maria_cycles += sally_ExecuteNMI( ) << 2;
         }
     }
-    else maria_cycles += 10; // Maria cycles (Startup+Shutdown Other lines of zone) - Techncially 16 but we know we're over estimating so....
+    else maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_OTHER_LINES_ZONE;
 }
 
 ITCM_CODE void mariabank_RenderScanline(void) 
@@ -841,7 +838,7 @@ ITCM_CODE void mariabank_RenderScanline(void)
     
     if(--maria_offset < 0) 
     {
-      maria_cycles += 15; // Maria cycles (Startup+Shutdown Last line of zone) - Techncially 24 but we know we're over estimating so....
+      maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
       maria_dpp.w += 3;
       maria_h08 = bankset_memory_read(maria_dpp.w) & 32;
       maria_h16 = bankset_memory_read(maria_dpp.w) & 64;
@@ -849,9 +846,9 @@ ITCM_CODE void mariabank_RenderScanline(void)
       maria_offset = bankset_memory_read(maria_dpp.w) & 15;
       if(bankset_memory_read(maria_dpp.w) & 128) 
       {
-        sally_ExecuteNMI( );
+        maria_cycles += sally_ExecuteNMI( ) << 2;
       }
     }
-    else maria_cycles += 10; // Maria cycles (Startup+Shutdown Other lines of zone) - Techncially 16 but we know we're over estimating so....
+    else maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_OTHER_LINES_ZONE; // Maria cycles (Startup+Shutdown Other lines of zone) - Techncially 16 but we know we're over estimating so....
 }
 

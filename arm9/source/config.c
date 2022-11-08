@@ -175,7 +175,7 @@ const struct options_t Game_Option_Table[] =
     {"HIGHSCORE",   0, {"DISABLED", "ENABLED"},                                                                                                                &myCartInfo.hsc,                 2},
     {"FRAMESKIP",   0, {"DISABLED", "MEDIUM 3/4", "HIGH 1/2"},                                                                                                 &myCartInfo.frameSkip,           3},
     {"POKEY",       0, {"NONE", "AT 4000", "AT 450", "AT 800"},                                                                                                &myCartInfo.pokeyType,           4},
-    {"DMA ADJUST",  2, {"-25","+25"},                                                                                                                     (u8*)&myCartInfo.dma_adjust,          2},    
+    {"DMA ADJUST",  2, {"-25","+50"},                                                                                                                     (u8*)&myCartInfo.dma_adjust,          2},    
     {"LEFT DIFF",   0, {"A", "B"}   ,                                                                                                                          &myCartInfo.diff1,               2},
     {"RIGHT DIFF",  0, {"A", "B"}   ,                                                                                                                          &myCartInfo.diff2,               2},
     {"LEFT JOY",    0, {"NONE", "JOYSTICK", "LIGHTGUN", "PADDLES", "TWIN STICKS", "SOTA"},                                                                     &myCartInfo.cardctrl1,           6},
