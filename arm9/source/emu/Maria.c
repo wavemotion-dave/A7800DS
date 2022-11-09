@@ -61,8 +61,6 @@ static lpair maria_pp           __attribute__((section(".dtcm")));
 static byte maria_horizontal    __attribute__((section(".dtcm")));
 static byte maria_palette       __attribute__((section(".dtcm")));
 static int maria_offset         __attribute__((section(".dtcm"))); 
-static byte maria_h08           __attribute__((section(".dtcm")));
-static byte maria_h16           __attribute__((section(".dtcm")));
 static uint maria_h8_h16        __attribute__((section(".dtcm")));
 static u32 maria_wmode          __attribute__((section(".dtcm")));
 
@@ -102,8 +100,6 @@ void maria_Reset( ) {
    maria_horizontal = 0;
    maria_palette = 0;
    maria_offset = 0;
-   maria_h08 = 0;
-   maria_h16 = 0;
    maria_h8_h16 = 0x0000;
    maria_wmode = 0;
    bg32 = 0x00000000;
@@ -149,7 +145,6 @@ static inline void _maria_ClearCells4(void)
           *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
       }
   }
-  maria_horizontal += 4;
 }
 
 // ----------------------------------------------------------------------------
@@ -177,7 +172,6 @@ static inline void _maria_StoreCells4(byte data)
         if (data & 0x03) *ptr   = maria_palette | (data & 0x03); 
     }
   }
-  maria_horizontal += 4;
 }
 
 // ----------------------------------------------------------------------------
@@ -187,18 +181,15 @@ static inline void maria_StoreCellWriteMode(byte data)
 {
   if(maria_horizontal < MARIA_LINERAM_SIZE) 
   {
-      if (data)
+      byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
+      if (data & write_mask_high)  // high
       {
-          byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
-          if (data & write_mask_high)  // high
-          {
-              *ptr = (maria_palette & 0x10) | (data >> 4);
-          }
-          if (data & write_mask_low)  // low
-          {
-            ptr++;
-            *ptr = (maria_palette & 0x10) | (data & 0x0F);
-          }
+          *ptr = (maria_palette & 0x10) | (data >> 4);
+      }
+      if (data & write_mask_low)  // low
+      {
+        ptr++;
+        *ptr = (maria_palette & 0x10) | (data & 0x0F);
       }
 #ifdef KANGAROO_MODE_SUPPORTED
       else
@@ -211,7 +202,6 @@ static inline void maria_StoreCellWriteMode(byte data)
       }
 #endif      
   }
-  maria_horizontal += 2;
 }
 
 
@@ -226,6 +216,16 @@ static inline bool maria_IsHoleyDMA( )
     }
     return false;
 }
+
+static inline bool maria_IsNotHoleyDMA( ) 
+{
+    if(maria_pp.w & 0x8000)
+    {
+        if (maria_pp.w & maria_h8_h16) return false;
+    }
+    return true;
+}
+
 
 // ----------------------------------------------------------------------------
 // GetColor
@@ -415,36 +415,26 @@ static inline void maria_StoreGraphic( )
   byte data = memory_ram[maria_pp.w];
   if(maria_wmode) 
   {
-    if(maria_IsHoleyDMA())
+    if (data)
     {
-      maria_horizontal += 2;
+        if(maria_IsNotHoleyDMA()) maria_StoreCellWriteMode(write_mode_lookup[data]);
     }
-    else
-    {
-      maria_StoreCellWriteMode(write_mode_lookup[data]);
-    }
+    maria_horizontal += 2;
   }
   else 
   {
-#ifdef KANGAROO_MODE_SUPPORTED      
-    if(maria_IsHoleyDMA()) 
+    if (data)
     {
-        maria_horizontal += 4;
+        if (maria_IsNotHoleyDMA()) _maria_StoreCells4(data);
     }
-    else if (!data)
+#ifdef KANGAROO_MODE_SUPPORTED
+    else 
     {
        _maria_ClearCells4();   
     }
-#else
-    if(maria_IsHoleyDMA() || !data) 
-    {
-        maria_horizontal += 4;
-    }
-#endif      
-    else         
-    {
-      _maria_StoreCells4(data);
-    }
+#endif
+    maria_horizontal += 4;
+
   }
   maria_pp.w++;
 }
@@ -564,10 +554,11 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       
       maria_dpp.b.l = memory_ram[DPPL];
       maria_dpp.b.h = memory_ram[DPPH];
-      maria_h08 = memory_ram[maria_dpp.w] & 32;
-      maria_h16 = memory_ram[maria_dpp.w] & 64;
-      maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
-      maria_offset = memory_ram[maria_dpp.w] & 15;
+      
+      u8 dl_mode = memory_ram[maria_dpp.w];
+      maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
+      maria_offset = dl_mode & 15;
+
       maria_dp.b.h = memory_ram[maria_dpp.w + 1];
       maria_dp.b.l = memory_ram[maria_dpp.w + 2];
       if(memory_ram[maria_dpp.w] & 128) 
@@ -583,11 +574,10 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       {
         maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
         maria_dpp.w += 3;
-        maria_h08 = memory_ram[maria_dpp.w] & 32;
-        maria_h16 = memory_ram[maria_dpp.w] & 64;
-        maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
-        maria_offset = memory_ram[maria_dpp.w] & 15;
-        if(memory_ram[maria_dpp.w] & 128) 
+        u8 dl_mode = memory_ram[maria_dpp.w];
+        maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
+        maria_offset = dl_mode & 15;
+        if(dl_mode & 128) 
         {
           maria_cycles += sally_ExecuteNMI( ) << 2;
         }
@@ -631,11 +621,10 @@ ITCM_CODE void maria_RenderScanline(void)
     {
       maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
       maria_dpp.w += 3;
-      maria_h08 = memory_ram[maria_dpp.w] & 32;
-      maria_h16 = memory_ram[maria_dpp.w] & 64;
-      maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
-      maria_offset = memory_ram[maria_dpp.w] & 15;
-      if(memory_ram[maria_dpp.w] & 128) 
+      u8 dl_mode = memory_ram[maria_dpp.w];
+      maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
+      maria_offset = dl_mode & 15;
+      if(dl_mode & 128) 
       {
         maria_cycles += sally_ExecuteNMI( ) << 2;
       }
@@ -662,40 +651,29 @@ static inline void mariabank_StoreGraphic( )
   byte data = bankset_memory_read(maria_pp.w);
   if(maria_wmode) 
   {
-    if(maria_IsHoleyDMA())
+    if (data)
     {
-      maria_horizontal += 2;
+        if(maria_IsNotHoleyDMA()) maria_StoreCellWriteMode(write_mode_lookup[data]);
     }
-    else
-    {
-      maria_StoreCellWriteMode(write_mode_lookup[data]);
-    }
+    maria_horizontal += 2;
   }
   else 
   {
-#ifdef KANGAROO_MODE_SUPPORTED      
-    if(maria_IsHoleyDMA()) 
+    if (data)
     {
-        maria_horizontal += 4;
+        if (maria_IsNotHoleyDMA()) _maria_StoreCells4(data);
     }
-    else if (!data)
+#ifdef KANGAROO_MODE_SUPPORTED
+    else 
     {
        _maria_ClearCells4();   
     }
-#else
-    if(maria_IsHoleyDMA() || !data) 
-    {
-        maria_horizontal += 4;
-    }
-#endif      
-    else         
-    {
-      _maria_StoreCells4(data);
-    }
+#endif
+    maria_horizontal += 4;
+
   }
   maria_pp.w++;
 }
-
 
 // ----------------------------------------------------------------------------
 // StoreLineRAM
@@ -791,10 +769,9 @@ ITCM_CODE void mariabank_RenderScanlineTOP(void)
 {
     maria_dpp.b.l = bankset_memory_read(DPPL);
     maria_dpp.b.h = bankset_memory_read(DPPH);
-    maria_h08 = bankset_memory_read(maria_dpp.w) & 32;
-    maria_h16 = bankset_memory_read(maria_dpp.w) & 64;
-    maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
-    maria_offset = bankset_memory_read(maria_dpp.w) & 15;
+    u8 dl_mode = bankset_memory_read(maria_dpp.w);
+    maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
+    maria_offset = dl_mode & 15;
     maria_dp.b.h = bankset_memory_read(maria_dpp.w + 1);
     maria_dp.b.l = bankset_memory_read(maria_dpp.w + 2);
     if(bankset_memory_read(maria_dpp.w) & 128) 
@@ -810,11 +787,10 @@ ITCM_CODE void mariabank_RenderScanlineTOP(void)
     {
         maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
         maria_dpp.w += 3;
-        maria_h08 = bankset_memory_read(maria_dpp.w) & 32;
-        maria_h16 = bankset_memory_read(maria_dpp.w) & 64;
-        maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
-        maria_offset = bankset_memory_read(maria_dpp.w) & 15;
-        if(bankset_memory_read(maria_dpp.w) & 128) 
+        u8 dl_mode = bankset_memory_read(maria_dpp.w);
+        maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
+        maria_offset = dl_mode & 15;
+        if(dl_mode & 128) 
         {
           maria_cycles += sally_ExecuteNMI( ) << 2;
         }
@@ -840,11 +816,10 @@ ITCM_CODE void mariabank_RenderScanline(void)
     {
       maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
       maria_dpp.w += 3;
-      maria_h08 = bankset_memory_read(maria_dpp.w) & 32;
-      maria_h16 = bankset_memory_read(maria_dpp.w) & 64;
-      maria_h8_h16 = (maria_h08 ? 2048:0) | (maria_h16 ? 4096:0);
-      maria_offset = bankset_memory_read(maria_dpp.w) & 15;
-      if(bankset_memory_read(maria_dpp.w) & 128) 
+      u8 dl_mode = bankset_memory_read(maria_dpp.w);
+      maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
+      maria_offset = dl_mode & 15;
+      if(dl_mode & 128) 
       {
         maria_cycles += sally_ExecuteNMI( ) << 2;
       }
