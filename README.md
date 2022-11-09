@@ -14,14 +14,19 @@ Features :
 ----------
  Most things you should expect from an emulator. Speed is excellent on the DSi and 
  a little less great on the older DS-LITE. For the DS-LITE you can expect full speed on
- about three-quarters of the 7800 library. The more traditional games (think: Asteroids,
+ a very large chunk of the 7800 library. The more traditional games (think: Asteroids,
  Astro Blaster, Robotron, Food Fight, Centipede, Pac-Man Collection, etc) will 
  all run great. The really big bankswitched games may struggle on the older 
  DS-LITE/PHAT hardware - try the game and see!
  
  The emulator will support ROMs up to 1024K (1MB!) in size + the 128 byte .a78 header.
  All popular bank-switching schemes are supported including an extra 16K of RAM at 4000h.
- Pokey support at 4000h and 450h - change this in Configuration if it's not auto-detected.
+ Pokey support at 4000h, 800h and 450h - change this in Configuration if it's not auto-detected.
+ 
+ Starting with version 4.3, the new Banksets schme is supported - this new banking scheme
+ provides for a very dense packing of graphics and code to the two processors of the 
+ Atari 7800 - allowing for games that would have been impossible without the schme.
+ See http://7800.8bitdev.org/index.php/Bankset_Bankswitching for more details.
   
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.  It's worth the effort!
@@ -46,12 +51,12 @@ perfect emulation - if you're looking for a highly accurate emulator for the 780
 7800 ProSystem, this isn't it - try MAME/MESS or A7800. But if you're looking to enjoy 
 some classic 7800 console goodness on your DS/DSi then you've come to the right place!
 
-Known Issues :
+Known Issues and Limitations:
 ----------
 - Lightgun is not supported.
 - Paddles are not supported.
 - Games greater than 1MB (1024K + 128b header) are not supported.
-- Pokey is only supported at 4000h and 450h.
+- Only one Pokey is supported at 4000h, 800h and 450h (no Dual Pokey)
 - XM is not supported (beyond HSC and Pokey)
    
 --------------------------------------------------------------------------------
@@ -87,15 +92,19 @@ Controls :
 Generally you would use this to select a bankswitching scheme if the proper type wasn't auto-detected. 
 The following schemes are supported:
 
-* NORMAL           Anything 48K or less... fits into memory (0xffff downwards) without switching.
-* SUPERCART        Games that are 128+K in size with nothing mapped in at 0x4000
-* SUPERCART_LARGE  Games that are 144+K in size with the extra 16K bank 0 fixed at 0x4000
-* SUPERCART_RAM    Games that are 128+K in size with extra 16K of RAM at 0x4000
-* SUPERCART_ROM    Games that are 128+K in size with bank 6 fixed at 0x4000
-* SUPERCART_RAMX2  Games that are 128+K in size with extra 32K of RAM at 0x4000 (bankswitched in 16K chunks)
-* ACTIVISION       Mostly for Double Dragon and Rampage by Activision
-* ABSOLETE         Only for the F-18 Hornet game by Absolete Entertainment
-* FRACTALUS        Only for the Rescue on Fractalus prototype (not a complete game but neat to see)
+* NORMAL              Anything 48K or less... fits into memory (0xffff downwards) without switching.
+* SUPERCART           Games that are 128+K in size with nothing mapped in at 0x4000
+* SUPERCART_LARGE     Games that are 144+K in size with the extra 16K bank 0 fixed at 0x4000
+* SUPERCART_RAM       Games that are 128+K in size with extra 16K of RAM at 0x4000
+* SUPERCART_ROM       Games that are 128+K in size with bank 6 fixed at 0x4000
+* SUPERCART_RAMX2     Games that are 128+K in size with extra 32K of RAM at 0x4000 (bankswitched in 16K chunks)
+* FLAT WITH RAM       Games that are 16K or 32K in size and utilize 16K of RAM at 0x4000
+* BANKSETS            Games that use the new Banksets handling (2x32, 2x48, 2x52, 2x128, 2x256 and 2x512 supported).
+* BANKSETS RAM        Games that use the new Banksets handling with 16K of RAM at 0x4000 (same RAM for Maria and Sally).
+* BANKSETS HALT RAM   Games that use the new Banksets handling with 16K of RAM at 0x4000 (Maria and Sally see different 16K RAM).
+* ACTIVISION          Mostly for Double Dragon and Rampage by Activision
+* ABSOLETE            Only for the F-18 Hornet game by Absolete Entertainment
+* FRACTALUS           Only for the Rescue on Fractalus prototype (not a complete game but neat to see)
 
 The X/Y settings can be tweaked to position the 7800 emulated screen on the DS screen as best you can. Unfortunately 
 the 7800 screen resolution isn't a perfect match for the DS 256x192 so you'll have to stretch and offset a bit. Most
