@@ -78,10 +78,7 @@ static uint SALLY_CYCLESX4[256] __attribute__((section(".dtcm"))) =
 
 
 // For when you know it's an opcode or operand and, therefore, just a normal RAM/ROM fetch
-static inline byte memory_Read_Fast(word addr)
-{
-    return memory_ram[addr];
-}
+#define memory_Read_Fast(addr) memory_ram[(addr)]
 
 // ----------------------------------------------------------------------------
 // Push
@@ -106,12 +103,12 @@ static inline byte sally_Pop( )
 // ----------------------------------------------------------------------------
 static inline void sally_Flags(byte data) 
 {
-  sally_p = (sally_p & ~(_fN | _fZ)) |  ((data) & _fN) | (((data) == 0) ? _fZ : 0);
+  sally_p = (sally_p & ~(_fN | _fZ)) | (data ? (data & _fN) : _fZ);
 }
 
 static inline void sally_FlagsFastCmp(byte data)   // For faster compare handling...
 {
-  sally_p = (sally_p & 0x7C) | ((data) & _fN) | (((data) == 0) ? (_fZ|_fC) : 0);
+  sally_p = (sally_p & 0x7C) | (data ? (data & _fN) : (_fZ|_fC));
 }
 
 // ----------------------------------------------------------------------------
@@ -137,7 +134,7 @@ static inline void sally_Delay(byte delta) {
 // Absolute
 // ----------------------------------------------------------------------------
 static inline void sally_Absolute( ) {
-  sally_address.b.l = memory_Read_Fast(sally_pc.w++);
+  sally_address.w = memory_Read_Fast(sally_pc.w++);
   sally_address.b.h = memory_Read_Fast(sally_pc.w++);
 }
 
@@ -145,7 +142,7 @@ static inline void sally_Absolute( ) {
 // AbsoluteX
 // ----------------------------------------------------------------------------
 static inline void sally_AbsoluteX( ) {
-  sally_address.b.l = memory_Read_Fast(sally_pc.w++);
+  sally_address.w = memory_Read_Fast(sally_pc.w++);
   sally_address.b.h = memory_Read_Fast(sally_pc.w++);
   sally_address.w += sally_x;
 }
@@ -154,7 +151,7 @@ static inline void sally_AbsoluteX( ) {
 // AbsoluteY
 // ----------------------------------------------------------------------------
 static inline void sally_AbsoluteY( ) {
-  sally_address.b.l = memory_Read_Fast(sally_pc.w++);
+  sally_address.w = memory_Read_Fast(sally_pc.w++);
   sally_address.b.h = memory_Read_Fast(sally_pc.w++);
   sally_address.w += sally_y;
 }
@@ -171,9 +168,9 @@ static inline void sally_Immediate( ) {
 // ----------------------------------------------------------------------------
 static inline void sally_Indirect( ) {
   lpair base;
-  base.b.l = memory_Read_Fast(sally_pc.w++);
+  base.w = memory_Read_Fast(sally_pc.w++);
   base.b.h = memory_Read_Fast(sally_pc.w++);
-  sally_address.b.l = memory_Read_Fast(base.w);
+  sally_address.w = memory_Read_Fast(base.w);
   sally_address.b.h = memory_Read_Fast(base.w + 1);
 }
 
@@ -181,7 +178,7 @@ static inline void sally_Indirect( ) {
 // IndirectX
 // ----------------------------------------------------------------------------
 static inline void sally_IndirectX( ) {
-  sally_address.b.l = memory_Read_Fast(sally_pc.w++) + sally_x;
+  sally_address.w = memory_Read_Fast(sally_pc.w++) + sally_x;
   sally_address.b.h = memory_Read_Fast(sally_address.b.l + 1);
   sally_address.b.l = memory_Read_Fast(sally_address.b.l);
 }
@@ -190,7 +187,7 @@ static inline void sally_IndirectX( ) {
 // IndirectY
 // ----------------------------------------------------------------------------
 static inline void sally_IndirectY( ) {
-  sally_address.b.l = memory_Read_Fast(sally_pc.w++);
+  sally_address.w = memory_Read_Fast(sally_pc.w++);
   sally_address.b.h = memory_Read_Fast(sally_address.b.l + 1);
   sally_address.b.l = memory_Read_Fast(sally_address.b.l);
   sally_address.w += sally_y;
@@ -1837,7 +1834,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
         sally_p |= _fC;
       }
       else {
-        sally_p = (sally_p & ~_fC) & 0xFF;
+        sally_p = (sally_p & ~_fC);
       }    
       goto next_inst;
       

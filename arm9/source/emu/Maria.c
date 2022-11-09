@@ -570,7 +570,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
     
       maria_StoreLineRAM( );
       
-      if(--maria_offset < 0) 
+      if(!maria_offset--) 
       {
         maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
         maria_dpp.w += 3;
@@ -617,7 +617,7 @@ ITCM_CODE void maria_RenderScanline(void)
     
     maria_StoreLineRAM( );
       
-    if(--maria_offset < 0) 
+    if(!maria_offset--) 
     {
       maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
       maria_dpp.w += 3;
@@ -783,7 +783,7 @@ ITCM_CODE void mariabank_RenderScanlineTOP(void)
 
     mariabank_StoreLineRAM( );
     
-    if(--maria_offset < 0) 
+    if(!maria_offset--) 
     {
         maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
         maria_dpp.w += 3;
@@ -812,7 +812,7 @@ ITCM_CODE void mariabank_RenderScanline(void)
     
     mariabank_StoreLineRAM( );
     
-    if(--maria_offset < 0) 
+    if(!maria_offset--) 
     {
       maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
       maria_dpp.w += 3;
