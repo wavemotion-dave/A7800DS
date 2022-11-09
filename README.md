@@ -23,10 +23,10 @@ Features :
  All popular bank-switching schemes are supported including an extra 16K of RAM at 4000h.
  Pokey support at 4000h, 800h and 450h - change this in Configuration if it's not auto-detected.
  
- Starting with version 4.3, the new Banksets schme is supported - this new banking scheme
- provides for a very dense packing of graphics and code to the two processors of the 
- Atari 7800 - allowing for games that would have been impossible without the schme.
- See http://7800.8bitdev.org/index.php/Bankset_Bankswitching for more details.
+ Starting with version 4.3, the new Banksets scheme is fully supported - this new banking/memory handling 
+ is designed for homebrew authors to provide increased ROM density and improved packing and access
+ of graphics data vs code.  This allows for games that would have been difficult or impossible without 
+ the scheme. See http://7800.8bitdev.org/index.php/Bankset_Bankswitching for more details.
   
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.  It's worth the effort!
