@@ -113,7 +113,7 @@ games have defaults that look good enough.
 Frame Skipping can be OFF (show all frames), Moderate (Show 3/4 frames) or Agressive (only show 1/2 frames).  The latter is
 only really needed for the DS-Lite/Phat where the faster DSi CPU isn't available.
 
-Don't touch the WSYNC and Cycle Stealing options unless you understand them... and most people don't :)
+Don't touch the DMA Cycle Adjustment unless you understand them... and most people don't :)
 
 Press START to save off your configuration - if you made changes you should re-load the game to ensure all settings are applied.
 
@@ -139,6 +139,12 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.3 : 11-Nov-2022 by wavemotion-dave
+  * Full support for the new Banksets scheme including the upcoming Attack of the Petscii Robots game!
+  * Added the stable "illegal" opcode support for the 6502 CPU to ensure all games run properly.
+  * New Maria cycle handling is more accurate than it's been in any previous version. More games run closer to perfect.
+  * Improved rendering and a bit more optmization to make almost every game playable on the older DS-Lite. 
+
 V4.2 : 06-Nov-2022 by wavemotion-dave
   * Added support for bankswitched RAM (32K of RAM swiched in 16K chunks). This makes the Ex version of 1942 playable.
   * Added alternate way of handling bankswitched RAM the same way as the DragonFly cart or SN board: via writes to 0xFFFF.
