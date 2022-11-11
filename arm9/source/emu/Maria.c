@@ -440,6 +440,45 @@ static inline void maria_StoreGraphic( )
 }
 
 
+// ---------------------------------------------------------------------------
+// For when cwidth == 2 and we are storing graphics which are 2 chars wide...
+// ---------------------------------------------------------------------------
+static inline void maria_StoreGraphicX2( ) 
+{
+  byte data1 = memory_ram[maria_pp.w++];
+  byte data2 = memory_ram[maria_pp.w];
+  if(maria_wmode) 
+  {
+    if (data1 || data2)
+    {
+        if(maria_IsNotHoleyDMA()) 
+        {
+            maria_StoreCellWriteMode(write_mode_lookup[data1]);
+            maria_horizontal += 2;
+            maria_StoreCellWriteMode(write_mode_lookup[data2]);
+            maria_horizontal += 2;
+        }
+    }
+    else maria_horizontal += 4;
+  }
+  else 
+  {
+    if (data1 || data2)
+    {
+        if (maria_IsNotHoleyDMA()) 
+        {
+            _maria_StoreCells4(data1);
+            maria_horizontal += 4;
+            _maria_StoreCells4(data2);
+            maria_horizontal += 4;
+        }
+    }
+    else maria_horizontal += 8;
+  }
+  maria_pp.w++;
+}
+
+
 // ----------------------------------------------------------------------------
 // StoreLineRAM
 // ----------------------------------------------------------------------------
@@ -510,11 +549,12 @@ ITCM_CODE static void maria_StoreLineRAM( )
       if (bRenderFrame)
       {
           lpair basePP = maria_pp;
+          u16 charbase_plus_offset = ((maria_charbase + maria_offset) << 8);
           for(index = 0; index < width; index++) 
           {
-            maria_pp.w = ((maria_charbase + maria_offset) << 8) | memory_ram[basePP.w++];
-            maria_StoreGraphic( );              //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
-            if(cwidth) maria_StoreGraphic( );   //maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
+            maria_pp.w = charbase_plus_offset | memory_ram[basePP.w++];
+            if(cwidth) maria_StoreGraphicX2( );     //maria_cycles += 9; // Maria cycles (Indirect, 2 bytes)
+            else maria_StoreGraphic( );             //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
           }
           maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
       }
@@ -555,17 +595,17 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       maria_dpp.b.l = memory_ram[DPPL];
       maria_dpp.b.h = memory_ram[DPPH];
       
-      u8 dl_mode = memory_ram[maria_dpp.w];
+      u8 dl_mode = memory_ram[maria_dpp.w++];
       maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
       maria_offset = dl_mode & 15;
 
-      maria_dp.b.h = memory_ram[maria_dpp.w + 1];
-      maria_dp.b.l = memory_ram[maria_dpp.w + 2];
-      if(memory_ram[maria_dpp.w] & 128) 
+      maria_dp.b.h = memory_ram[maria_dpp.w];
+      maria_dp.b.l = memory_ram[maria_dpp.w + 1];
+      if(dl_mode & 128) 
       {
         maria_cycles += sally_ExecuteNMI( ) << 2;
-        maria_dp.b.h = memory_ram[maria_dpp.w + 1];
-        maria_dp.b.l = memory_ram[maria_dpp.w + 2];
+        maria_dp.b.h = memory_ram[maria_dpp.w + 0];
+        maria_dp.b.l = memory_ram[maria_dpp.w + 1];
       }
     
       maria_StoreLineRAM( );
@@ -573,8 +613,8 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
       if(!maria_offset--) 
       {
         maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
-        maria_dpp.w += 3;
-        u8 dl_mode = memory_ram[maria_dpp.w];
+        maria_dpp.w += 2;
+        u8 dl_mode = memory_ram[maria_dpp.w++];
         maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
         maria_offset = dl_mode & 15;
         if(dl_mode & 128) 
@@ -612,16 +652,16 @@ ITCM_CODE void maria_RenderScanline(void)
         framePtr += 256;
     }
     
-    maria_dp.b.h = memory_ram[maria_dpp.w + 1];
-    maria_dp.b.l = memory_ram[maria_dpp.w + 2];
+    maria_dp.b.h = memory_ram[maria_dpp.w ];
+    maria_dp.b.l = memory_ram[maria_dpp.w + 1];
     
     maria_StoreLineRAM( );
       
     if(!maria_offset--) 
     {
       maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
-      maria_dpp.w += 3;
-      u8 dl_mode = memory_ram[maria_dpp.w];
+      maria_dpp.w += 2;
+      u8 dl_mode = memory_ram[maria_dpp.w++];
       maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
       maria_offset = dl_mode & 15;
       if(dl_mode & 128) 
@@ -749,7 +789,7 @@ ITCM_CODE static void mariabank_StoreLineRAM( )
           {
             maria_pp.w = ((maria_charbase + maria_offset) << 8) | bankset_memory_read(basePP.w++);
             mariabank_StoreGraphic( );              //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
-            if(cwidth) mariabank_StoreGraphic( );   //maria_cycles += 3; // Maria cycles (Indirect, 2 bytes)
+            if(cwidth) mariabank_StoreGraphic( );   //maria_cycles += 9; // Maria cycles (Indirect, 2 bytes)
           }
           maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
       }
@@ -769,16 +809,16 @@ ITCM_CODE void mariabank_RenderScanlineTOP(void)
 {
     maria_dpp.b.l = bankset_memory_read(DPPL);
     maria_dpp.b.h = bankset_memory_read(DPPH);
-    u8 dl_mode = bankset_memory_read(maria_dpp.w);
+    u8 dl_mode = bankset_memory_read(maria_dpp.w++);
     maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
     maria_offset = dl_mode & 15;
-    maria_dp.b.h = bankset_memory_read(maria_dpp.w + 1);
-    maria_dp.b.l = bankset_memory_read(maria_dpp.w + 2);
+    maria_dp.b.h = bankset_memory_read(maria_dpp.w);
+    maria_dp.b.l = bankset_memory_read(maria_dpp.w + 1);
     if(bankset_memory_read(maria_dpp.w) & 128) 
     {
         maria_cycles += sally_ExecuteNMI( ) << 2;
-        maria_dp.b.h = bankset_memory_read(maria_dpp.w + 1);
-        maria_dp.b.l = bankset_memory_read(maria_dpp.w + 2);
+        maria_dp.b.h = bankset_memory_read(maria_dpp.w);
+        maria_dp.b.l = bankset_memory_read(maria_dpp.w + 1);
     }
 
     mariabank_StoreLineRAM( );
@@ -786,8 +826,8 @@ ITCM_CODE void mariabank_RenderScanlineTOP(void)
     if(!maria_offset--) 
     {
         maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
-        maria_dpp.w += 3;
-        u8 dl_mode = bankset_memory_read(maria_dpp.w);
+        maria_dpp.w += 2;
+        u8 dl_mode = bankset_memory_read(maria_dpp.w++);
         maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
         maria_offset = dl_mode & 15;
         if(dl_mode & 128) 
@@ -807,16 +847,16 @@ ITCM_CODE void mariabank_RenderScanline(void)
         framePtr += 256;
     }
     
-    maria_dp.b.h = bankset_memory_read(maria_dpp.w + 1);
-    maria_dp.b.l = bankset_memory_read(maria_dpp.w + 2);
+    maria_dp.b.h = bankset_memory_read(maria_dpp.w);
+    maria_dp.b.l = bankset_memory_read(maria_dpp.w + 1);
     
     mariabank_StoreLineRAM( );
     
     if(!maria_offset--) 
     {
       maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
-      maria_dpp.w += 3;
-      u8 dl_mode = bankset_memory_read(maria_dpp.w);
+      maria_dpp.w += 2;
+      u8 dl_mode = bankset_memory_read(maria_dpp.w++);
       maria_h8_h16 = ((uint)dl_mode << 6) & 0x1800;
       maria_offset = dl_mode & 15;
       if(dl_mode & 128) 

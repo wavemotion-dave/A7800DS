@@ -199,7 +199,7 @@ void dsInitScreenMain(void)
     if (isDSiMode()) isDS_LITE = false; 
     else isDS_LITE = true;    
 
-    vramSetBankB(VRAM_B_LCD );                // We're stealing 64K at 0x06830000
+    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06820000 -   ..
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
@@ -219,7 +219,7 @@ void dsShowScreenEmu(void)
     // Change vram
     videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
     vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
-    vramSetBankB(VRAM_B_LCD );                // We're stealing 64K at 0x06830000
+    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06820000 -   ..
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..

@@ -28,7 +28,7 @@
 #include "Database.h"
 
 byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
-byte is_memory_writable[MEMORY_SIZE] ALIGN(32) = {0};
+u8 *is_memory_writable = (u8*)0x06820000;
 
 extern bool ram_dirty[];
 extern bool write_only_pokey_at_4000;
@@ -43,8 +43,9 @@ void memory_Reset( )
     memory_ram[index] = 0;
     is_memory_writable[index] = 0;
   }
-  for(index = 0; index < 16384; index++) {
-    is_memory_writable[index] = 0xFF;
+  u16 *ptr = (u16*)is_memory_writable;
+  for(index = 0; index < 16384/2; index++) {
+    ptr[index] = 0xFFFF;
   }
 }
 
@@ -121,7 +122,7 @@ ITCM_CODE void memory_Write(word address, byte data)
       }
   }
   
-  if (is_memory_writable[address]) 
+  if (((u8*)0x06820000)[address]) // We use 64K of faster VRAM to hold the bits to tell us if this area is writable... speeds up things slightly...
   {
     // ---------------------------------------------------------------------------------------
     // If this write would be in normal (non bankset) memory, we need to keep the bankset 
@@ -137,6 +138,12 @@ ITCM_CODE void memory_Write(word address, byte data)
         { 
             extern u8 *shadow_ram;
             shadow_ram[address] = data;
+            
+            if (myCartInfo.cardtype == CARTRIDGE_TYPE_FRACTALUS)
+            {
+                // Special EXRAM/A8 handling... mirror ram
+                memory_ram[address ^0x0100] = data;        
+            }
         }
         memory_ram[address] = data;
         return;

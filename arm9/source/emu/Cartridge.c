@@ -504,8 +504,14 @@ ITCM_CODE void cartridge_Write(word address, byte data) {
     case CARTRIDGE_TYPE_BANKSETS_RAM:
       if ((address & 0xC000) == 0x8000) // Is this a bankswitching write?
       {
-        cartridge_WriteBank(0x8000, data);
-        memcpy(&banksets_memory[0x8000], &cartridge_buffer[(cartridge_size/2) + (data*0x4000)], 0x4000);
+          // We need to swap in the main Sally memory...
+          cartridge_WriteBank(0x8000, data);
+          // And also swap in the Maria memory... this ROM starts half-way up the main cartridge_buffer[]
+          u32 offset = (cartridge_size/2) + (data*0x4000);
+          if (offset < (272*1024))    // If we are in fast VRAM memory
+              memcpy(&banksets_memory[0x8000], (u32*)(0x06860000 + offset), 0x4000);
+          else
+              memcpy(&banksets_memory[0x8000], &cartridge_buffer[offset], 0x4000);
       }
       break;
           
@@ -515,7 +521,11 @@ ITCM_CODE void cartridge_Write(word address, byte data) {
           // We need to swap in the main Sally memory...
           cartridge_WriteBank(0x8000, data);
           // And also swap in the Maria memory... this ROM starts half-way up the main cartridge_buffer[]
-          memcpy(&banksets_memory[0x8000], &cartridge_buffer[(cartridge_size/2) + (data*0x4000)], 0x4000);
+          u32 offset = (cartridge_size/2) + (data*0x4000);
+          if (offset < (272*1024))    // If we are in fast VRAM memory
+              memcpy(&banksets_memory[0x8000], (u32*)(0x06860000 + offset), 0x4000);
+          else
+              memcpy(&banksets_memory[0x8000], &cartridge_buffer[offset], 0x4000);
       }
       else if ((address & 0xC000) == 0xC000) // Are we writing to MARIA HALT RAM?
       {
