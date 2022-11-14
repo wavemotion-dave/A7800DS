@@ -48,7 +48,7 @@ typedef struct {
   u8    spare1;
   u8    spare2;
   u8    spare3;
-  u8    spare4;
+  u8    palette;
   s16   spare16;
 } Database_Entry;
 

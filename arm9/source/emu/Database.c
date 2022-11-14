@@ -224,6 +224,7 @@ bool database_Load(byte *digest)
           {
             memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
             if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
+            myCartInfo.palette = 1; // Force this if not specifically found by md5
             bFound = true;          
             break;
           }
@@ -247,6 +248,7 @@ bool database_Load(byte *digest)
             memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
             strcpy(myCartInfo.digest, (char *)digest); 
             if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
+            myCartInfo.palette = 1; // Force this if not specifically found by md5
             bFound = true;
             break;
           }
@@ -272,7 +274,7 @@ bool database_Load(byte *digest)
         myCartInfo.spare1        = 0;
         myCartInfo.spare2        = 0;
         myCartInfo.spare3        = 0;
-        myCartInfo.spare4        = 1;
+        myCartInfo.palette       = 1;
         myCartInfo.spare16       = 0x0000;
         myCartInfo.dma_adjust    = 0;
         

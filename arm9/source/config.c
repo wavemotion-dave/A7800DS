@@ -10,6 +10,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include "config.h"
+#include "Region.h"
 #include "bgBottom.h"
 #include "bgFileSel.h"
 #include "printf.h"
@@ -105,6 +106,8 @@ static void ApplyOptions(void)
     frameSkipMask = 0xFF;   // Assume frameskip disabled until proven otherwise directly below
     if (myCartInfo.frameSkip == FRAMESKIP_MEDIUM)     frameSkipMask = 0x03;
     if (myCartInfo.frameSkip == FRAMESKIP_AGGRESSIVE) frameSkipMask = 0x01;
+    
+    region_Reset();
 }
 
 
@@ -176,8 +179,9 @@ const struct options_t Game_Option_Table[] =
     {"FRAMESKIP",   0, {"DISABLED", "MEDIUM 3/4", "HIGH 1/2"},                                                                                                 &myCartInfo.frameSkip,           3},
     {"POKEY",       0, {"NONE", "AT 4000", "AT 450", "AT 800"},                                                                                                &myCartInfo.pokeyType,           4},
     {"DMA ADJUST",  2, {"-25","+50"},                                                                                                                     (u8*)&myCartInfo.dma_adjust,          2},    
-    {"LEFT DIFF",   0, {"A", "B"}   ,                                                                                                                          &myCartInfo.diff1,               2},
-    {"RIGHT DIFF",  0, {"A", "B"}   ,                                                                                                                          &myCartInfo.diff2,               2},
+    {"LEFT DIFF",   0, {"A", "B"},                                                                                                                             &myCartInfo.diff1,               2},
+    {"RIGHT DIFF",  0, {"A", "B"},                                                                                                                             &myCartInfo.diff2,               2},
+    {"PALETTE",     0, {"CRT V2 COOL", "CRT V2 WARM", "CRT V2 HOT"},                                                                                           &myCartInfo.palette,             3},
     {"LEFT JOY",    0, {"NONE", "JOYSTICK", "LIGHTGUN", "PADDLES", "TWIN STICKS", "SOTA"},                                                                     &myCartInfo.cardctrl1,           6},
     {"RIGHT JOY",   0, {"NONE", "JOYSTICK", "LIGHTGUN", "PADDLES", "TWIN STICKS", "SOTA"},                                                                     &myCartInfo.cardctrl2,           6},    
     {"X OFFSET",    2, {"-50",   "+50"},                                                                                                                  (u8*)&myCartInfo.xOffset,             2},

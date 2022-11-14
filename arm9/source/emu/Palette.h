@@ -30,11 +30,8 @@
 
 #include "shared.h"
 
-
-//extern bool palette_Load(char *filename);
 extern void palette_Load(const byte* data);
 extern char *palette_filename;
 extern byte palette_data[PALETTE_SIZE];
-extern bool palette_default;
 
 #endif
