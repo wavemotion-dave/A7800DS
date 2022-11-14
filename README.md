@@ -139,6 +139,10 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.4 : 14-Nov-2022 by wavemotion-dave
+  * New palette options from the Trebor 'Pro Pack' of colors. COOL, WARM (default), and HOT allow you to shift the color temperature slightly on a per-game basis.
+  * Improved sound channel mixing so as not to halve the volume when mixing POKEY + TIA.
+
 V4.3 : 11-Nov-2022 by wavemotion-dave
   * Full support for the new Banksets scheme including the upcoming Attack of the Petscii Robots game!
   * Added the stable "illegal" opcode support for the 6502 CPU to ensure all games run properly.

@@ -99,7 +99,7 @@ byte palette_data[PALETTE_SIZE] = {
 // Load
 // ----------------------------------------------------------------------------
 void palette_Load(const byte* data) {
-  uint index;
+  u16 index;
   for(index = 0; index < PALETTE_SIZE; index++) {
     palette_data[index] = data[index];
   }
