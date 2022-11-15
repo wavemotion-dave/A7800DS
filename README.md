@@ -2,7 +2,7 @@
 
 a7800DS is an Atari ProSystem 7800 console emulator for the DS/DSi.
 
-To use this emulator, you must use compatibles rom with a78/bin format. 
+To use this emulator, you must use compatible roms with a78/bin format. 
 Strongly recommend you use NTSC roms... PAL ones have more scanlines and will render
 more slowly and since the sound core is tied to scanlines, the sound will be wrong. 
 All the debug on this port to the DS has been done with NTSC roms - seek them out!
@@ -104,11 +104,12 @@ The following schemes are supported:
 * BANKSETS HALT RAM   Games that use the new Banksets handling with 16K of RAM at 0x4000 (Maria and Sally see different 16K RAM).
 * ACTIVISION          Mostly for Double Dragon and Rampage by Activision
 * ABSOLETE            Only for the F-18 Hornet game by Absolete Entertainment
-* FRACTALUS           Only for the Rescue on Fractalus prototype (not a complete game but neat to see)
+* FRACTALUS           Only for the Rescue on Fractalus prototype (not a complete game but neat to see). This is EXRAM/A8.
 
-The X/Y settings can be tweaked to position the 7800 emulated screen on the DS screen as best you can. Unfortunately 
+The X/Y screen settings can be tweaked to position the 7800 emulated screen on the DS screen as best you can. Unfortunately 
 the 7800 screen resolution isn't a perfect match for the DS 256x192 so you'll have to stretch and offset a bit. Most
-games have defaults that look good enough.
+games have defaults that look good enough. Some games will cut off a few pixel lines at the top and bottom - but they will
+still be perfectly playalbe. Such is life with only 192 vertical pixels to play with on the DS!
 
 Frame Skipping can be OFF (show all frames), Moderate (Show 3/4 frames) or Agressive (only show 1/2 frames).  The latter is
 only really needed for the DS-Lite/Phat where the faster DSi CPU isn't available.
