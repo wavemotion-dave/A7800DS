@@ -46,6 +46,8 @@ u16 bEmulatorRun                        __attribute__((section(".dtcm"))) = 1;
 extern u32 tiaBufIdx;
 char fpsbuf[33];
 
+u32 snes_adaptor __attribute__((section(".dtcm")))=0x0000FFFF;
+
 // -----------------------------------------------------------------
 // Some vars for listing filenames of ROMs... 1K of ROMs is plenty
 // -----------------------------------------------------------------
@@ -896,10 +898,14 @@ ITCM_CODE void dsMainLoop(void)
                 if (dsWaitOnQuit()) emu_state=A7800_QUITSTDS;
                 else SoundUnPause();
               }
-              else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper corner...
+              else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper right corner...
                  full_speed = 1-full_speed; 
                  if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");
                  dampen=60;
+              }
+              else if ((iTx>=0) && (iTx<16) && (iTy>0) && (iTy<20))  { // FPS Toggle ... upper left corner...
+                  fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");
+                  dampen=60;
               }
               else if ((iTx>63) && (iTx<105) && (iTy>154) && (iTy<171))  { // 72,160  -> 105,168   PAUSE
                 if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
@@ -950,11 +956,13 @@ ITCM_CODE void dsMainLoop(void)
           if (keys_pressed != last_keys_pressed)
           {
               last_keys_pressed = keys_pressed;
-              if ( (keys_pressed & KEY_SELECT) ) { tchepres(11); } // BUTTON SELECT
-              if (myCartInfo.cardctrl1 != TWIN)
+              if ((myCartInfo.cardctrl1 != SNES))
+              {
+                  if ( (keys_pressed & KEY_SELECT) ) { tchepres(11); } // BUTTON SELECT
+              }
+              if ((myCartInfo.cardctrl1 != TWIN) && (myCartInfo.cardctrl1 != SNES))
               {
                 if ( (keys_pressed & KEY_START) ) {tchepres(10);} // BUTTON PAUSE
-                if ( (keys_pressed & KEY_X) )  { fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");}
               }
               if (myCartInfo.cardctrl1 == SOTA)
               {
@@ -965,11 +973,13 @@ ITCM_CODE void dsMainLoop(void)
           }
         } else dampen--;
         
+        snes_adaptor = 0x0000FFFF;  // Nothing pressed to start
+            
         // manage a7800 pad 
-        if ( (keys_pressed & KEY_UP) ) { tchepres(0); } // UP
-        if ( (keys_pressed & KEY_DOWN) ) { tchepres(1); } // DOWN
-        if ( (keys_pressed & KEY_RIGHT) ) { tchepres(3); } // RIGHT
-        if ( (keys_pressed & KEY_LEFT) ) { tchepres(2); } // LEFT
+        if ( (keys_pressed & KEY_UP) )    { tchepres(0); snes_adaptor &= 0xFFEF;} // UP
+        if ( (keys_pressed & KEY_DOWN) )  { tchepres(1); snes_adaptor &= 0xFFDF;} // DOWN
+        if ( (keys_pressed & KEY_LEFT) )  { tchepres(2); snes_adaptor &= 0xFFBF;} // LEFT
+        if ( (keys_pressed & KEY_RIGHT) ) { tchepres(3); snes_adaptor &= 0xFF7F;} // RIGHT
             
         if (myCartInfo.cardctrl1 == TWIN)
         {
@@ -979,35 +989,51 @@ ITCM_CODE void dsMainLoop(void)
             if ( (keys_pressed & KEY_Y) ) { tchepres(14); }  // Left Joystick Left
             if ( (keys_pressed & KEY_START) ) { tchepres(4); }  // Fire Button (mainly to enter high scores and start game)            
         }
-        else
+        else if (myCartInfo.cardctrl1 == SNES)
         {
-            if ( (keys_pressed & KEY_A) ) { tchepres(4); }  // BUTTON #1
-            if ( (keys_pressed & KEY_B) ) { tchepres(5); }  // BUTTON #2
-            if ( (keys_pressed & KEY_Y) ) { tchepres(4); }  // BUTTON #1
+            if ( (keys_pressed & KEY_A) )       { snes_adaptor &= 0xFEFF;}  // SNES BUTTON A
+            if ( (keys_pressed & KEY_B) )       { snes_adaptor &= 0xFFFE;}  // SNES BUTTON B
+            if ( (keys_pressed & KEY_Y) )       { snes_adaptor &= 0xFFFD;}  // SNES BUTTON Y
+            if ( (keys_pressed & KEY_X) )       { snes_adaptor &= 0xFDFF;}  // SNES BUTTON X
+            
+            if ( (keys_pressed & KEY_L) )       {snes_adaptor &= 0xFBFF;}   // SNES Left Shoulder
+            if ( (keys_pressed & KEY_R) )       {snes_adaptor &= 0xF7FF;}   // SNES Right Shoulder
+            if ( (keys_pressed & KEY_START) )   {snes_adaptor &= 0xFFF7;}   // SNES Start
+            if ( (keys_pressed & KEY_SELECT) )  {snes_adaptor &= 0xFFFB;}   // SNES Select
+        }
+        else    // Just normal Proline Joystick handling
+        {
+            if ( (keys_pressed & KEY_A) ) { tchepres(4); snes_adaptor &= 0xFEFF;}  // BUTTON #1
+            if ( (keys_pressed & KEY_B) ) { tchepres(5); snes_adaptor &= 0xFFFE;}  // BUTTON #2
+            if ( (keys_pressed & KEY_Y) ) { tchepres(4); snes_adaptor &= 0xFFFD;}  // BUTTON #1
+            if ( (keys_pressed & KEY_X) ) { tchepres(5); snes_adaptor &= 0xFDFF;}  // BUTTON #2
         }
             
         if ((keys_pressed & KEY_R) || (keys_pressed & KEY_L))
         {
-          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_L))
+          if (myCartInfo.cardctrl1 != SNES)
           {
-              if (++lcd_swap_counter == 30)
+              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_L))
               {
-                  if (keys_pressed & KEY_A)   lcdSwap();
-              }
-          } 
-          if (scale_screen_dampen > 5)
-          {
-              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { myCartInfo.yOffset++; bRefreshXY = true; }
-              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { myCartInfo.yOffset--; bRefreshXY = true; }
-              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { myCartInfo.xOffset++; bRefreshXY = true; }
-              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { myCartInfo.xOffset--; bRefreshXY = true; }
+                  if (++lcd_swap_counter == 30)
+                  {
+                      if (keys_pressed & KEY_A)   lcdSwap();
+                  }
+              } 
+              if (scale_screen_dampen > 5)
+              {
+                  if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { myCartInfo.yOffset++; bRefreshXY = true; }
+                  if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { myCartInfo.yOffset--; bRefreshXY = true; }
+                  if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { myCartInfo.xOffset++; bRefreshXY = true; }
+                  if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { myCartInfo.xOffset--; bRefreshXY = true; }
 
-              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (myCartInfo.yScale <= 256) { myCartInfo.yScale++; bRefreshXY = true; }
-              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (myCartInfo.yScale > 192) { myCartInfo.yScale--; bRefreshXY = true; }
-              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT))  if (myCartInfo.xScale < 320) { myCartInfo.xScale++; bRefreshXY = true; }
-              if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (myCartInfo.xScale > 192)  { myCartInfo.xScale--; bRefreshXY = true; }                  
-              scale_screen_dampen=0;
-          } else scale_screen_dampen++;
+                  if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (myCartInfo.yScale <= 256) { myCartInfo.yScale++; bRefreshXY = true; }
+                  if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (myCartInfo.yScale > 192) { myCartInfo.yScale--; bRefreshXY = true; }
+                  if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT))  if (myCartInfo.xScale < 320) { myCartInfo.xScale++; bRefreshXY = true; }
+                  if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (myCartInfo.xScale > 192)  { myCartInfo.xScale--; bRefreshXY = true; }                  
+                  scale_screen_dampen=0;
+              } else scale_screen_dampen++;
+          }
         }  else lcd_swap_counter=0;
 
         // -------------------------------------------------------------

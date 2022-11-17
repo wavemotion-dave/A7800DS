@@ -216,9 +216,59 @@ static void cartridge_ReadHeader(const byte* header) {
   if (cardtype & 0x0040) myCartInfo.pokeyType = POKEY_AT_450;
   if (cardtype & 0x8000) myCartInfo.pokeyType = POKEY_AT_800;
   if (cardtype & 0x0001) myCartInfo.pokeyType = POKEY_AT_4000;
-  
-  myCartInfo.cardctrl1 = header[55];
-  myCartInfo.cardctrl2 = header[56];
+
+    // ========================
+    // 0 = none
+    // 1 = 7800 joystick
+    // 2 = lightgun
+    // 3 = paddle
+    // 4 = trakball
+    // 5 = 2600 joystick
+    // 6 = 2600 driving
+    // 7 = 2600 keypad
+    // 8 = ST mouse
+    // 9 = Amiga mouse
+    // 10 = AtariVox/SaveKey
+    // 11 = SNES2Atari
+    // ========================
+  switch(header[55])
+  {
+      case 1:
+          myCartInfo.cardctrl1 = CARTRIDGE_CONTROLLER_JOYSTICK;
+          break;
+      case 2:
+          myCartInfo.cardctrl1 = CARTRIDGE_CONTROLLER_LIGHTGUN;
+          break;
+      case 3:
+          myCartInfo.cardctrl1 = CARTRIDGE_CONTROLLER_PADDLES;
+          break;
+      case 11:
+          myCartInfo.cardctrl1 = CARTRIDGE_CONTROLLER_SNES2ATARI;
+          break;
+      default:
+          myCartInfo.cardctrl1 = CARTRIDGE_CONTROLLER_JOYSTICK;
+          break;
+  }
+
+  switch(header[56])
+  {
+      case 1:
+          myCartInfo.cardctrl2 = CARTRIDGE_CONTROLLER_JOYSTICK;
+          break;
+      case 2:
+          myCartInfo.cardctrl2 = CARTRIDGE_CONTROLLER_LIGHTGUN;
+          break;
+      case 3:
+          myCartInfo.cardctrl2 = CARTRIDGE_CONTROLLER_PADDLES;
+          break;
+      case 11:
+          myCartInfo.cardctrl2 = CARTRIDGE_CONTROLLER_SNES2ATARI;
+          break;
+      default:
+          myCartInfo.cardctrl2 = CARTRIDGE_CONTROLLER_JOYSTICK;
+          break;
+  }
+    
   myCartInfo.region = header[57] & 1;
   myCartInfo.hsc = (header[58]&1 ? HSC_YES:HSC_NO);
   myCartInfo.dma_adjust    = 0;

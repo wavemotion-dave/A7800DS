@@ -75,18 +75,22 @@ Controls :
  * B             : Fire button 2
  * SELECT        : SELECT Button
  * START         : PAUSE Button
- * X             : FPS Display
- * Y             : Fire Button 1 (for those that prefer not using A)
+ * X             : Fire button 2
+ * Y             : Fire Button 1
  * L/R + DPAD    : Used to Shift Offsets and Scale Screen to desired ratio
  
  Use stylus on buttons for other actions on bottom screen.  
+ 
+ The new SNES2Atari adaptor is supported as a controller type for the few new games
+ that utilize it. This allows all of the DS buttons to map into the game - exactly
+ as labeled (D-Pad plus ABXY, Left Shoulder, Right Shoulder and Start, Select).
  
  High Score Saving works if you have highscore.rom (exact name and case) in your
  roms directory where you load your games... also, you MUST press the HSC button
  if you want to snap the Saved Scores out to the flash card. It's not something 
  I want to do as the game runs... so you must do it... the high scores will also
  auto-save if you quit the emulator or select a new game.
- 
+  
  Configuration :
 ----------
 Generally you would use this to select a bankswitching scheme if the proper type wasn't auto-detected. 
@@ -140,6 +144,9 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.4a : XX-YYYY-2022 by wavemotion-dave
+  * SNES2Atari adaptor supported.
+
 V4.4 : 14-Nov-2022 by wavemotion-dave
   * New palette options from the Trebor 'Pro Pack' of colors. COOL, WARM (default), and HOT allow you to shift the color temperature slightly on a per-game basis.
   * Improved sound channel mixing so as not to halve the volume when mixing POKEY + TIA.

@@ -40,6 +40,7 @@ extern void riot_UpdateTimer(byte cycles);
 extern uint riot_and_wsync;
 extern int riot_timer;
 extern int riot_intervals;
+extern u32 snes_adaptor;
 extern void riot_SetDRA(byte data);
 extern void riot_SetDRB(byte data);
 

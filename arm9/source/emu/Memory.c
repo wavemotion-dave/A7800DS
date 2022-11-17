@@ -29,6 +29,7 @@
 
 byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
 u8 *is_memory_writable = (u8*)0x06820000;
+u32 snes_bit_pos = 0;
 
 extern bool ram_dirty[];
 extern bool write_only_pokey_at_4000;
@@ -47,6 +48,8 @@ void memory_Reset( )
   for(index = 0; index < 16384/2; index++) {
     ptr[index] = 0xFFFF;
   }
+    
+  snes_bit_pos = 0;
 }
 
 
@@ -212,6 +215,27 @@ ITCM_CODE void memory_Write(word address, byte data)
         riot_SetDRB(data);
         break;
       case SWCHA:	
+        if (myCartInfo.cardctrl1 == SNES)
+        {
+            extern byte riot_dra;
+            if ((data & 0x20) != (riot_dra & 0x20)) // Change of Latch state
+            {
+                snes_bit_pos = 0;
+                if (snes_adaptor & (1 << snes_bit_pos)) memory_ram[INPT4] |= 0x80; else memory_ram[INPT4] &= 0x7F;
+            }
+            if ((data & 0x10) != (riot_dra & 0x10)) // Change of Clock state
+            {
+                if (data & 0x10) // Clock going High
+                {
+                    snes_bit_pos++; 
+                }
+                else    // Clock going low
+                {
+                    if (snes_bit_pos >= 17) snes_bit_pos=0;
+                    if (snes_adaptor & (1 << snes_bit_pos)) memory_ram[INPT4] |= 0x80; else memory_ram[INPT4] &= 0x7F;
+                }
+            }
+        }
         riot_SetDRA(data);
         break;
       case TIM1T:
