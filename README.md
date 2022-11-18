@@ -144,8 +144,10 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V4.4a : XX-YYYY-2022 by wavemotion-dave
+V4.5 : 18-Nov-2022 by wavemotion-dave
   * SNES2Atari adaptor supported.
+  * Improved display output to smooth over the fonts a bit.
+  * Small tweaks to internal database to ensure everything looks as good as possible.
 
 V4.4 : 14-Nov-2022 by wavemotion-dave
   * New palette options from the Trebor 'Pro Pack' of colors. COOL, WARM (default), and HOT allow you to shift the color temperature slightly on a per-game basis.

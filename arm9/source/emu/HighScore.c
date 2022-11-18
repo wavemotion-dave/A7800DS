@@ -35,11 +35,12 @@
 #define HSC_CART_ROM_SIZE       4096        // The highscore.rom is exactly 4K in size and gets loaded at 7800 memory address 0x3000
 #define HSC_TITLE_SIZE          33          // Includes 32 chars for title name and 1 char for size
 
-static byte high_score_cart_loaded = false;
 static u32  last_hs_chksum = 0xFFFFEEEF;
 static byte high_score_sram[VIRTUAL_SRAM_BLOCKS][HS_SRAM_SIZE];
 static byte high_score_rom[HSC_CART_ROM_SIZE];
 static byte hs_virtual_slot = 0;
+
+byte high_score_cart_loaded = false;
 
 /*
  * Saves the high score cartridge SRAM

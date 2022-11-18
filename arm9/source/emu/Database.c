@@ -41,23 +41,23 @@ Database_Entry game_list[] = {
   {"a65f79ad4a0bbdecd59d5f7eb3623fd7",  "Asteroids Deluxe (NTSC)",          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  230, 0}, // title=Asteroids Deluxe
   {"07342c78619ba6ffcc61c10e907e3b50",  "Asteroids",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  230, 0}, // title=Asteroids
   {"3d38281ed8a8d8c7cd457a18c92c8604",  "Astro Blaster",                    CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_YES,  0,  30,  9, 320,  210, 0}, // title=Astro Blaster
-  {"a51e5df28a0fe8c52e9d28fb5f8e44a6",  "Astro Fighter",                    CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  32,  9, 320,  210, 0}, // title=Astro Fighter
+  {"a51e5df28a0fe8c52e9d28fb5f8e44a6",  "Astro Fighter",                    CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  32,  9, 320,  213, 0}, // title=Astro Fighter
   {"22e9fd9233348a572d49d80186af5d7f",  "Petscii Robots",                   CT_BANKSHALT,POKEY_AT_800,SNES,JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,   0, 10, 256,  214, 0}, // title=Attack of the Petscii Robots (full)
-  {"7cdfbe37634e7dcd4dc67db7edbcd3ba",  "Baby Pac-Man",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  32, 12, 320,  221, 0}, // title=Baby Pac Man
+  {"7cdfbe37634e7dcd4dc67db7edbcd3ba",  "Baby Pac-Man",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  32, 12, 320,  222, 0}, // title=Baby Pac Man
   {"8fc3a695eaea3984912d98ed4a543376",  "Ballblazer",                       CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  6,  12, 262,  220, 0}, // title=Ballblazer
   {"42682415906c21c6af80e4198403ffda",  "Barnyard Blaster",                 CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Barnyard Blaster
   {"f5f6b69c5eb4b55fc163158d1a6b423e",  "Basketbrawl",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 1}, // title=Basketbrawl
   {"78b1061d651ef806becac1dd3fda29a0",  "Beef Drop",                        CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,   8, 256,  220, 0}, // title=Beef Drop (Final Atariage)
   {"34483432b92f565f4ced82a141119164",  "Bentley Bear",                     CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  3,  14, 256,  220, 0}, // title=Bentley Bear's Crystal Quest
-  {"4e325918a8b3bbcf2f9405040abcfc6d",  "Older b*nQ",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES, -3,  0,  18, 256,  220, 0}, // title=BonQ (found on Atairage Age site)
-  {"9fa7743a016c9b7015ee1d386326f88e",  "b*nQ",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES, -3,  0,  18, 256,  220, 0}, // title=BonQ (final Atariage)
+  {"4e325918a8b3bbcf2f9405040abcfc6d",  "Older b*nQ",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES, -3,  0,  18, 256,  223, 0}, // title=BonQ (found on Atairage Age site)
+  {"9fa7743a016c9b7015ee1d386326f88e",  "b*nQ",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES, -3,  0,  18, 256,  223, 0}, // title=BonQ (final Atariage)
   {"4a8a22cff154f479f1ddaa386f21fc39",  "Boom",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   7, 256,  220, 0}, // title=Boom!
   {"000b5888d2489f7e256d80a0848ecd14",  "Cannon in D for Defense",          CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  223, 0}, // title=Cannon in D for Defense (demo 03)
   {"5a09946e57dbe30408a8f253a28d07db",  "Centipede",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  24, 16, 300,  230, 0}, // title=Centipede
   {"20660b667df538ec32a8e1b998438604",  "Frameless Centipede",              CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  24, 16, 300,  230, 0}, // title=Centipede - Frameless Hack
   {"a4b5d742860beb25c29def4530194c1e",  "Chase",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  8,  19, 269,  233, 0}, // title=Chase
   {"93e4387864b014c155d7c17877990d1e",  "Choplifter",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Choplifter
-  {"2e8e28f6ad8b9b9267d518d880c73ebb",  "Commando",                         CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,  20,  0,  12, 256,  220, 1}, // title=Commando
+  {"2e8e28f6ad8b9b9267d518d880c73ebb",  "Commando",                         CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,  20,  0,  12, 256,  218, 1}, // title=Commando
   {"db691469128d9a4217ec7e315930b646",  "Crack'ed",                         CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  18, 256,  229, 0}, // title=Crack'ed
   {"299d31c8e181fdd011df2014451bdf0f",  "Crazy Brix",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,   5, 256,  203, 0}, // title=Crazy Brix   
   {"2d2fe4da9f1bae102fa8ca2d8830a626",  "Crazy Otto",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   9, 256,  232, 0}, // title=Crazy Otto
@@ -75,8 +75,6 @@ Database_Entry game_list[] = {
   {"a9f29004412621f20ad9f5c51cc11486",  "Draker Quest II",                  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  230, 0}, // title=Draker Quest II
   {"fab1290f9a4c4f2b4d831c8a57f969f5",  "Draker Quest",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  230, 0}, // title=Draker Quest
   {"b3143adbbb7d7d189e918e5b29d55a72",  "Dungeon Stalker",                  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  15, 256,  220, 0}, // title=Dungeon Stalker (homebrew)  
-  {"7099cc31cbc492d525d218efe88b8685",  "xxxxx",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  230, 0}, // title=E.X.O. (Alpha)
-  {"faea27017447dd8bae677d91125a8135",  "xxxxx",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  230, 0}, // title=E.X.O. (Beta)
   {"a44e8b7b7881beb0fe3c71a1a04441c8",  "EXO",                              CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  234, 0}, // title=E.X.O. (RC Demo)
   {"2251a6a0f3aec84cc0aff66fc9fa91e8",  "F-18 Hornet",                      CT_ABSOLU,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=F-18 Hornet
   {"6287727ab36391a62f728bbdee88675c",  "Failsafe",                         CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  14, 257,  220, 0}, // title=Failsafe (homebrew)
@@ -88,7 +86,7 @@ Database_Entry game_list[] = {
   {"6053233cb59c0b4ca633623fd76c4576",  "Froggie",                          CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  34,  8, 320,  205, 0}, // title=Froggie (homebrew)
   {"4b8f22fc4b022a7ea1b4148195b85d4a",  "Frogus",                           CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  224, 0}, // title=Frogus
   {"fb8d803b328b2e442548f7799cfa9a4a",  "Galaga",                           CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  229, 0}, // title=Galaga
-  {"2f4ae1015a345652b36004a8c62a4ac6",  "Galaxian",                         CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  14,  5, 282,  200, 0}, // title=Galaxian
+  {"2f4ae1015a345652b36004a8c62a4ac6",  "Galaxian",                         CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  14,  5, 282,  211, 0}, // title=Galaxian
   {"06204dadc975be5e5e37e7cc66f984cf",  "Gato",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Gato   
   {"e443f7fb5be3283dd44c0f5d80c3a7b3",  "GoSub",                            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  13, 12, 280,  234, 0}, // title=GoSub
   {"1e21bf1d9d7b3c0cebaac576964c9eb2",  "Graze Suit Alpha",                 CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  11, 256,  220, 1}, // title=Graze Suit Alpha
@@ -172,7 +170,7 @@ Database_Entry game_list[] = {
   {"c3903ab01a51222a52197dbfe6538ecf",  "Tomcat F-14 Simulator",            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Tomcat F-14 Simulator
   {"208ef955fa90a29815eb097bce89bace",  "Touchdown Football",               CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Touchdown Football
   {"8d64763db3100aadc552db5e6868506a",  "Tower Toppler",                    CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   8, 256,  230, 0}, // title=Tower Toppler
-  {"79df20ee86a989e669158bcb9d113e8a",  "UniWarS",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  9,   5, 282,  200, 0}, // title=UniWarS
+  {"79df20ee86a989e669158bcb9d113e8a",  "UniWarS",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  9,   5, 282,  202, 0}, // title=UniWarS
   {"acf63758ecf3f3dd03e9d654ae6b69b7",  "Water Ski",                        CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   3, 256,  197, 0}, // title=Water Ski
   {"427cb05d0a1abb068998e2760d77f4fb",  "Water Ski",                        CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   3, 256,  197, 0}, // title=Water Ski
   {"3799d72f78dda2ee87b0ef8bf7b91186",  "Winter Games",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  13, 256,  220, 0}, // title=Winter Games
@@ -224,6 +222,8 @@ bool database_Load(byte *digest)
             memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
             if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
             myCartInfo.palette = 1; // Force this if not specifically found by md5
+            myCartInfo.xJiggle = 64;
+            myCartInfo.yJiggle = 16;
             bFound = true;          
             break;
           }
@@ -248,6 +248,8 @@ bool database_Load(byte *digest)
             strcpy(myCartInfo.digest, (char *)digest); 
             if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
             myCartInfo.palette = 1; // Force this if not specifically found by md5
+            myCartInfo.xJiggle = 64;
+            myCartInfo.yJiggle = 16;
             bFound = true;
             break;
           }
@@ -273,9 +275,12 @@ bool database_Load(byte *digest)
         myCartInfo.spare1        = 0;
         myCartInfo.spare2        = 0;
         myCartInfo.spare3        = 0;
+        myCartInfo.spare4        = 1;
+        myCartInfo.spare5        = 0;
         myCartInfo.palette       = 1;
-        myCartInfo.spare16       = 0x0000;
         myCartInfo.dma_adjust    = 0;
+        myCartInfo.xJiggle       = 64;
+        myCartInfo.yJiggle       = 16;
         
         // -------------------------------------------------------------------
         // If the game has no .a78 header, do our best to guess these...

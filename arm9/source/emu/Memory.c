@@ -31,7 +31,6 @@ byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
 u8 *is_memory_writable = (u8*)0x06820000;
 u32 snes_bit_pos = 0;
 
-extern bool ram_dirty[];
 extern bool write_only_pokey_at_4000;
 
 // ----------------------------------------------------------------------------

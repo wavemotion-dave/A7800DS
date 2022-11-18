@@ -45,11 +45,15 @@ typedef struct {
   s16   yScale;
   u8    frameSkip;
   u8    hasHeader;
+  u8    palette;
+  u8    xJiggle;
+  u8    yJiggle;
+  u8    spare0;
   u8    spare1;
   u8    spare2;
   u8    spare3;
-  u8    palette;
-  s16   spare16;
+  u8    spare4;
+  s16   spare5;
 } Database_Entry;
 
 

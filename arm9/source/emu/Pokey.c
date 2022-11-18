@@ -472,7 +472,7 @@ ITCM_CODE void pokey_Process(void)
           currentValue = (currentValue << 2) + 8;
           currentValue += TIA_Sample();        
           //currentValue = (currentValue >> 1);
-          if (currentValue > 127) {debug[0]++; currentValue = 127;}   // Clip
+          if (currentValue > 127) {currentValue = 127;}   // Clip
 
           tia_buffer[tiaBufIdx++] = (u16)((currentValue<<8) | currentValue);
           tiaBufIdx &= (SNDLENGTH-1);
@@ -550,7 +550,7 @@ ITCM_CODE u16 pokey_ProcessNow(void)
           currentValue = (currentValue << 2) + 8;
           currentValue += TIA_Sample();        
           //currentValue = (currentValue >> 1);
-          if (currentValue > 127) {debug[0]++; currentValue = 127;}   // Clip
+          if (currentValue > 127) {currentValue = 127;}   // Clip
 
           return (u16)((currentValue << 8) | currentValue);
         }

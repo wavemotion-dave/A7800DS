@@ -188,6 +188,10 @@ const struct options_t Game_Option_Table[] =
     {"Y OFFSET",    2, {"-50",   "+50"},                                                                                                                  (u8*)&myCartInfo.yOffset,             2},
     {"X SCALE",     2, {"+200",  "+320"},                                                                                                                 (u8*)&myCartInfo.xScale,              2},
     {"Y SCALE",     2, {"+180",  "+256"},                                                                                                                 (u8*)&myCartInfo.yScale,              2},
+    {"X JIGGLE",    1, {"+1",    "+256"},                                                                                                                 (u8*)&myCartInfo.xJiggle,             2},
+    {"Y JIGGLE",    1, {"+1",    "+256"},                                                                                                                 (u8*)&myCartInfo.yJiggle,             2},
+    
+    
     
     {NULL,          0, {"",      ""},                                                                                                                          NULL,                            1},
 };

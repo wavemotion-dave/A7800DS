@@ -159,8 +159,6 @@ void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr,
 
 ITCM_CODE void vblankIntr() 
 {
-  static uint xx=0;
-
   if (bRefreshXY)
   {
     cxBG = (myCartInfo.xOffset << 8); 
@@ -170,8 +168,8 @@ ITCM_CODE void vblankIntr()
 
     REG_BG2X = cxBG; 
     REG_BG2Y = cyBG; 
-    REG_BG3X = cxBG; 
-    REG_BG3Y = cyBG; 
+    REG_BG3X = cxBG+myCartInfo.xJiggle; 
+    REG_BG3Y = cyBG+myCartInfo.yJiggle; 
 
     REG_BG2PA = xdxBG; 
     REG_BG2PD = ydyBG; 
@@ -179,16 +177,6 @@ ITCM_CODE void vblankIntr()
     REG_BG3PD = ydyBG; 
 
     bRefreshXY = false;
-  }
-  if (xx++ & 1)
-  {
-    REG_BG2X = cxBG+0x48; 
-    REG_BG2Y = cyBG+0x22; 
-  }
-  else
-  {
-    REG_BG2X = cxBG+0x40; 
-    REG_BG2Y = cyBG+0x44; 
   }
 }
 
@@ -201,7 +189,7 @@ void dsInitScreenMain(void)
     if (isDSiMode()) isDS_LITE = false; 
     else isDS_LITE = true;    
 
-    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06820000 -   ..
+    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 64K used for the is_memory_writable[] check and 64K for extra RAM
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
@@ -221,7 +209,7 @@ void dsShowScreenEmu(void)
     // Change vram
     videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
     vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
-    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06820000 -   ..
+    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 64K used for the is_memory_writable[] check and 64K for extra RAM
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
@@ -231,6 +219,9 @@ void dsShowScreenEmu(void)
     bg0 = bgInit(3, BgType_Bmp8, BgSize_B8_512x512, 0,0);
     bg1 = bgInit(2, BgType_Bmp8, BgSize_B8_512x512, 0,0);
 
+    REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG2 | BLEND_DST_BG3;
+    REG_BLDALPHA = (8 << 8) | 8; // 50% / 50% 
+    
     // Setup video scaling...
     bufVideo = BG_GFX;   
     cxBG = (myCartInfo.xOffset << 8); 
@@ -243,8 +234,8 @@ void dsShowScreenEmu(void)
     REG_BG3PB = 0;
     REG_BG3PC = 0;
 
-    REG_BG2X = cxBG; 
-    REG_BG2Y = cyBG; 
+    REG_BG2X = cxBG+myCartInfo.xJiggle; 
+    REG_BG2Y = cyBG+myCartInfo.yJiggle; 
     REG_BG3X = cxBG; 
     REG_BG3Y = cyBG; 
 
@@ -432,7 +423,7 @@ bool dsWaitOnQuit(void) {
   return bRet;
 }
 
-void _putchar(char character) {};
+void _putchar(char character) {};   // Not used but needed to link printf()
 
 void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel) 
 {
@@ -651,7 +642,7 @@ unsigned int dsWaitForRom(void)
 unsigned int dsWaitOnMenu(unsigned int actState) {
   unsigned int uState=A7800_PLAYINIT;
   bool bDone=false, romSel;
-  int iTx,iTy;
+  short iTx,iTy;
   
   while (bDone==false) 
   {
@@ -923,11 +914,14 @@ ITCM_CODE void dsMainLoop(void)
                 special_hsc_entry=70; 
               }
               else if ((iTx>115) && (iTx<144) && (iTy>154) && (iTy<171))  { // Snap HSC Sram
-                dsPrintValue(13,0,0, "SAVING");
-                mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
-                WAITVBL;WAITVBL;
-                cartridge_SaveHighScoreSram();
-                dsPrintValue(13,0,0, "      ");
+                if (high_score_cart_loaded)
+                {
+                    dsPrintValue(13,0,0, "SAVING");
+                    mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
+                    WAITVBL;WAITVBL;
+                    cartridge_SaveHighScoreSram();
+                    dsPrintValue(13,0,0, "      ");
+                }
                 dampen=60;
                 continue;
               }
