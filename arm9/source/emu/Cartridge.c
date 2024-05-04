@@ -127,7 +127,7 @@ ITCM_CODE void cartridge_WriteBank(word address, byte bank)
   }
 }
 
-ITCM_CODE void cartridge_SwapRAM_DragonFlyStyle(u8 data)
+void cartridge_SwapRAM_DragonFlyStyle(u8 data)
 {
     ex_ram_bank_df = data & 0x01;
 
@@ -421,11 +421,11 @@ void cartridge_Store( )
   switch(myCartInfo.cardtype) 
   {
     case CARTRIDGE_TYPE_NORMAL:
-      memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
+      if (cartridge_size <= 49152) memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
       break;
           
     case CARTRIDGE_TYPE_FLAT_WITH_RAM:
-      memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
+      if (cartridge_size <= 49152) memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
       memory_ClearROM(16384, 16384);
       break;
           
@@ -473,7 +473,7 @@ void cartridge_Store( )
       break;
           
     case CARTRIDGE_TYPE_FRACTALUS:
-      memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
+      if (cartridge_size <= 49152) memory_WriteROM(65536 - cartridge_size, cartridge_size, cartridge_buffer);
       memory_ClearROM(0x4000, 0x4000);
       break;
           
@@ -590,7 +590,7 @@ ITCM_CODE void cartridge_Write(word address, byte data) {
 // IsLoaded
 // ----------------------------------------------------------------------------
 bool cartridge_IsLoaded( ) {
-  return (cartridge_buffer != NULL)? true: false;
+  return true; //TODO: find a better way to know if a cart has been loaded
 }
 
 // ----------------------------------------------------------------------------

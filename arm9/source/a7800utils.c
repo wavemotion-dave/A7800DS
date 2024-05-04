@@ -799,6 +799,16 @@ void dsInstallSoundEmuFIFO(void)
     setupStream();    
 }
 
+__attribute__ ((noinline)) void timer_reset(void)
+{
+    // Timers are fed with 33.513982 MHz clock.
+    // With DIV_1024 the clock is 32,728.5 ticks per sec...
+    TIMER0_DATA=0;
+    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+    TIMER1_DATA=0;
+    TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;  
+}
+
 // ----------------------------------------------------------------------------------
 // This is where the action happens!  The main loop runs continually and clocks
 // out the 60 frames per second of the 7800 Prosystem
@@ -812,12 +822,7 @@ ITCM_CODE void dsMainLoop(void)
   short iTx,iTy;
   static int scale_screen_dampen=0;
   
-    // Timers are fed with 33.513982 MHz clock.
-    // With DIV_1024 the clock is 32,728.5 ticks per sec...
-    TIMER0_DATA=0;
-    TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
-    TIMER1_DATA=0;
-    TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;  
+  timer_reset();
   
   while(emu_state != A7800_QUITSTDS) {
     switch (emu_state) {

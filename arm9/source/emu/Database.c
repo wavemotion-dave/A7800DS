@@ -66,8 +66,9 @@ Database_Entry game_list[] = {
   {"95ac811c7d27af0032ba090f28c107bd",  "Desert Falcon",                    CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  6,  19, 261,  234, 0}, // title=Desert Falcon
   {"731879ea82fc0ca245e39e036fe293e6",  "Dig Dug",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  220, 0}, // title=Dig Dug
   {"5e332fbfc1e0fc74223d2e73271ce650",  "Donkey Kong Jr",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  14, 256,  220, 0}, // title=Donkey Kong Jr
-  {"19f1ee292a23636bd57d408b62de79c7",  "Donkey Kong",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  14, 256,  220, 0}, // title=Donkey Kong
-  {"c3107d3e3e17d67e3a11d47a5946a4f3",  "DONKEY KONG XM",                   CT_SUPLRG, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  210, 0}, // title=Donkey Kong XM Demo (purposely set HSC to false - game HSC is buggy)
+  {"19f1ee292a23636bd57d408b62de79c7",  "Donkey Kong Orig",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  14, 256,  220, 0}, // title=Donkey Kong
+  {"c3107d3e3e17d67e3a11d47a5946a4f3",  "DONKEY KONG XM DEMO",              CT_SUPLRG, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  210, 0}, // title=Donkey Kong XM Demo (purposely set HSC to false - game HSC is buggy)  
+  {"f1bc3b44aec04aac8fce6f2f37e8bb33",  "DONKEY KONG PK-XM",                CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  210, 0}, // title=Donkey Kong PK-XM Demo 1.2 (newer)
   {"543484c00ba233736bcaba2da20eeea9",  "Double Dragon",                    CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 1}, // title=Double Dragon
   {"94009ccfdcd4f55d24033ca06269ba6a",  "Dragon's Descent",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  234, 0}, // title=Dragon's Descent 1.7
   {"cad9b532a4ced6793e18ba7237e44d40",  "Dragon's Havoc",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  6,  15, 256,  232, 0}, // title=Dragon's Havoc    
@@ -251,6 +252,18 @@ bool database_Load(byte *digest)
             myCartInfo.xJiggle = 64;
             myCartInfo.yJiggle = 16;
             bFound = true;
+            
+            // --------------------------------------------------------------------------------------
+            // As a sanity check... if the card type ended up as 'NORMAL' but the ROM is larger 
+            // than NORMAL would support - we adjust it here. This prevents soft matches in 
+            // the database from causing problems (I'm looking at you various flavors of Donkey Kong)
+            // --------------------------------------------------------------------------------------
+            if (myCartInfo.cardtype == CT_NORMAL)
+            {
+                if (cartridge_size == (144*1024)) myCartInfo.cardtype = CT_SUPLRG;
+                else myCartInfo.cardtype = (cartridge_size <= (52*1024)) ? CT_NORMAL:CT_SUPROM;
+            }
+
             break;
           }
         }
