@@ -855,7 +855,7 @@ __attribute__ ((noinline))  void toggle_zoom(void)
       myCartInfo.xScale  = 320;
       myCartInfo.yScale  = 234;
       myCartInfo.xOffset = 32;
-      myCartInfo.yOffset = 32;
+      myCartInfo.yOffset = 21;
   }
   else
   {
