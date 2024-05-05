@@ -36,7 +36,6 @@
 
 extern bool cartridge_LoadHighScoreCart(void);
 extern bool cartridge_SaveHighScoreSram(void);
-extern bool cartridge_SaveHighScoreSram(void);
 
 extern byte high_score_cart_loaded;
 

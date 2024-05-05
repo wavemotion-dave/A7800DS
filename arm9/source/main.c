@@ -1,3 +1,13 @@
+// =====================================================================================
+// Copyright (c) 2022-2024 Dave Bernazzani (wavemotion-dave)
+//
+// Copying and distribution of this emulator, it's source code and associated 
+// readme files, with or without modification, are permitted in any medium without 
+// royalty provided this copyright notice is used and wavemotion-dave (Phoenix-Edition),
+// Alekmaul (original port) and Greg Stanton (ProSystem Emulator) are thanked profusely.
+//
+// A7800DS emulator is offered as-is, without any warranty.
+// =====================================================================================
 #include <stdio.h>
 #include <fat.h>
 #include <nds.h>

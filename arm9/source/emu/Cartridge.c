@@ -268,9 +268,18 @@ static void cartridge_ReadHeader(const byte* header) {
           myCartInfo.cardctrl2 = CARTRIDGE_CONTROLLER_JOYSTICK;
           break;
   }
-    
+  
+  // Region:  
+  //  bit 0 : 0=NTSC, 1=PAL
+  //  bit 1 : 0=component, 1=composite
+  //  bit 2 : 0=single region, 1=multi-region
   myCartInfo.region = header[57] & 1;
-  myCartInfo.hsc = (header[58]&1 ? HSC_YES:HSC_NO);
+  
+  // High Score Support
+  //  bit 0 : HSC
+  //  bit 1 : AtariVox/SaveKey 
+  myCartInfo.hsc = (header[58]&1 ? HSC_YES:HSC_NO); 
+  
   myCartInfo.dma_adjust    = 0;
   last_bank = 255;
   last_ex_ram_bank = 0;
@@ -590,11 +599,11 @@ ITCM_CODE void cartridge_Write(word address, byte data) {
 // IsLoaded
 // ----------------------------------------------------------------------------
 bool cartridge_IsLoaded( ) {
-  return true; //TODO: find a better way to know if a cart has been loaded
+  return (cartridge_size > 0) ? true:false;
 }
 
 // ----------------------------------------------------------------------------
-// Release
+// Release cart, save SRAM if used, set common vars back to system default.
 // ----------------------------------------------------------------------------
 void cartridge_Release( ) 
 {

@@ -133,7 +133,7 @@ ITCM_CODE void memory_Write(word address, byte data)
     extern byte banksets_memory[]; extern u16 banksets_mask;
     if (!(address & banksets_mask)) banksets_memory[address] = data;
       
-    if ((address & 0xF800))     // Base RAM is at 0x1800 so this will find anything that is RAM... 
+    if ((address & 0xF800))     // Base RAM is at 0x1800 and HSC SRAM is at 0x1000 so this will find anything that is RAM... 
     {
         // For banking RAM we need to keep the shadow up to date.
         if ((address & 0xC000) == 0x4000)
@@ -147,6 +147,8 @@ ITCM_CODE void memory_Write(word address, byte data)
                 memory_ram[address ^0x0100] = data;        
             }
         }
+        //else if ((address & 0xF800) == 0x1000)  // HSC RAM - someday we might trigger on this and auto-save the .hsc SRAM file
+
         memory_ram[address] = data;
         return;
     }

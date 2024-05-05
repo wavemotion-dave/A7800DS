@@ -33,7 +33,7 @@ Features :
  
 Copyright :
 ----------
-A7800DS is Copyright 2021-2022 by Dave Bernazzani (wavemotion-dave).
+A7800DS is Copyright 2021-2024 by Dave Bernazzani (wavemotion-dave).
 
 Copying and distribution of this emulator, it's source code and associated 
 readme files, with or without modification, are permitted in any medium without 
@@ -78,7 +78,8 @@ Controls :
  * X             : Fire button 2
  * Y             : Fire Button 1
  * L/R + DPAD    : Used to Shift Offsets and Scale Screen to desired ratio
- 
+ * L + R + X     : Hold for 1 second to swap LCD screens top/bottom
+  
  Use stylus on buttons for other actions on bottom screen.  
  
  The new SNES2Atari adaptor is supported as a controller type for the few new games
@@ -128,7 +129,7 @@ Credits:
  * Thanks Wintermute for devkitpro and libnds (http://www.devkitpro.org).
  * Greg Stanton for ProSystem source code (https://home.comcast.net/~gscottstanton/) an Atari 7800 emulator.
  * zx81 (http://zx81.zx81.free.fr/serendipity_fr/) for PSP A7800 version (that helped me a lot to understand ProSystem).
- * raz0red (http://www.twitchasylum.com/forum/viewtopic.php?t=519) for WII7800  (that helped me a lot to fix some timing problems).
+ * raz0red (http://www.twitchasylum.com/forum/viewtopic.php?t=519) for WII7800  (that helped me to fix some timing problems).
  * The folks at AtariAge who helped weed out many of the old ProSystem Maria rendering bugs.
  * The MAXMOD audio library is Copyright (c) 2008, Mukunda Johnson (mukunda@maxmod.org). See https://github.com/devkitPro/maxmod
 
@@ -144,6 +145,12 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.5b : 05-May-2024 by wavemotion-dave
+  * Each game that utilizes a High Score Cart (HSC) gets its own 2K .hsc file 
+  * Sanity checks added so that carts marked as 'NORMAL' (or selected as such) but are larger than 48K will not corrupt memory.
+  * New magnifying glass icon to ZOOM (and center) the display 1:1 with real 7800 output. This will crop on a DS/DSi since it only has 256x192 but very useful to toggle the 1:1 zoom for High Score Entries, etc.
+  * Starting to lay groundwork support for .a78 V4 headers...
+
 V4.5 : 18-Nov-2022 by wavemotion-dave
   * SNES2Atari adaptor supported.
   * Improved display output to smooth over the fonts a bit.
@@ -247,7 +254,7 @@ V2.8 : 02-Nov-2021 by wavemotion-dave
   
 V2.7 : 02-Apr-2021 by wavemotion-dave
   * New support for the latest homebrews: Galaxian final
-  * Added ability to swap screens using L+R+A 
+  * Added ability to swap screens using L+R+A
 
 V2.6 : 02-Apr-2021 by wavemotion-dave
   * Faster directory/file listing.

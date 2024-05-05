@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2022 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2022-2024 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, it's source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -809,19 +809,77 @@ __attribute__ ((noinline)) void timer_reset(void)
     TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;  
 }
 
+static u8 lcd_swap_counter=0;
+static int scale_screen_dampen=0;
+
+__attribute__ ((noinline))  void handle_LR_keys(unsigned int keys_pressed)
+{
+  if (myCartInfo.cardctrl1 != SNES)
+  {
+      if ((keys_pressed & KEY_R) && (keys_pressed & KEY_L))
+      {
+          if (++lcd_swap_counter == 30)
+          {
+              if (keys_pressed & (KEY_X))   lcdSwap();
+          }
+      } 
+      if (scale_screen_dampen > 5)
+      {
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { myCartInfo.yOffset++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { myCartInfo.yOffset--; bRefreshXY = true; }
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { myCartInfo.xOffset++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { myCartInfo.xOffset--; bRefreshXY = true; }
+
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (myCartInfo.yScale  < 234) { myCartInfo.yScale++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (myCartInfo.yScale  > 192) { myCartInfo.yScale--; bRefreshXY = true; }
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT)) if (myCartInfo.xScale < 320) { myCartInfo.xScale++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (myCartInfo.xScale  > 192) { myCartInfo.xScale--; bRefreshXY = true; }                  
+          scale_screen_dampen=0;
+      } else scale_screen_dampen++;
+  }
+}
+
+// Toggle full 320x256
+__attribute__ ((noinline))  void toggle_zoom(void)
+{
+  static s16 last_xScale = 0;
+  static s16 last_yScale = 0;
+  static s16 last_xOffset = 0;
+  static s16 last_yOffset = 0;
+  if (last_xScale == 0)
+  {
+      last_xScale  = myCartInfo.xScale; 
+      last_yScale  = myCartInfo.yScale; 
+      last_xOffset = myCartInfo.xOffset;
+      last_yOffset = myCartInfo.yOffset;
+      myCartInfo.xScale  = 320;
+      myCartInfo.yScale  = 234;
+      myCartInfo.xOffset = 32;
+      myCartInfo.yOffset = 32;
+  }
+  else
+  {
+      myCartInfo.xScale = last_xScale;
+      myCartInfo.yScale = last_yScale;
+      myCartInfo.xOffset = last_xOffset;
+      myCartInfo.yOffset = last_yOffset;
+      last_xScale = last_yScale = 0;
+      last_xOffset = last_yOffset = 0;
+  }
+  bRefreshXY = true; 
+}
+
 // ----------------------------------------------------------------------------------
 // This is where the action happens!  The main loop runs continually and clocks
 // out the 60 frames per second of the 7800 Prosystem
 // ----------------------------------------------------------------------------------
 ITCM_CODE void dsMainLoop(void) 
 {
-  static u8 lcd_swap_counter=0;
   static u8 special_hsc_entry=0;    
   static short int last_keys_pressed = 999;
   unsigned int keys_pressed,keys_touch=0, romSel;
   short iTx,iTy;
-  static int scale_screen_dampen=0;
-  
+ 
   timer_reset();
   
   while(emu_state != A7800_QUITSTDS) {
@@ -948,6 +1006,10 @@ ITCM_CODE void dsMainLoop(void)
                 ShowConfig();
                 SoundUnPause();
               }
+              else if ((iTx>10) && (iTx<58) && (iTy>22) && (iTy<62))   // Magnifying Glass (zoom)
+              {
+                  toggle_zoom();
+              }
               
               keys_touch=1;
           } else keys_touch=0;
@@ -1010,29 +1072,7 @@ ITCM_CODE void dsMainLoop(void)
             
         if ((keys_pressed & KEY_R) || (keys_pressed & KEY_L))
         {
-          if (myCartInfo.cardctrl1 != SNES)
-          {
-              if ((keys_pressed & KEY_R) && (keys_pressed & KEY_L))
-              {
-                  if (++lcd_swap_counter == 30)
-                  {
-                      if (keys_pressed & KEY_A)   lcdSwap();
-                  }
-              } 
-              if (scale_screen_dampen > 5)
-              {
-                  if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { myCartInfo.yOffset++; bRefreshXY = true; }
-                  if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { myCartInfo.yOffset--; bRefreshXY = true; }
-                  if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { myCartInfo.xOffset++; bRefreshXY = true; }
-                  if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { myCartInfo.xOffset--; bRefreshXY = true; }
-
-                  if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (myCartInfo.yScale <= 256) { myCartInfo.yScale++; bRefreshXY = true; }
-                  if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (myCartInfo.yScale > 192) { myCartInfo.yScale--; bRefreshXY = true; }
-                  if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT))  if (myCartInfo.xScale < 320) { myCartInfo.xScale++; bRefreshXY = true; }
-                  if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (myCartInfo.xScale > 192)  { myCartInfo.xScale--; bRefreshXY = true; }                  
-                  scale_screen_dampen=0;
-              } else scale_screen_dampen++;
-          }
+            handle_LR_keys(keys_pressed);
         }  else lcd_swap_counter=0;
 
         // -------------------------------------------------------------
@@ -1101,10 +1141,14 @@ void proFindFiles(void) {
       strcpy(filenametmp,pent->d_name);
       if (pent->d_type == DT_DIR)
       {
-        if (!( (filenametmp[0] == '.') && (strlen(filenametmp) == 1))) {
-          proromlist[countpro].directory = true;
-          strcpy(proromlist[countpro].filename,filenametmp);
-          countpro++;
+        if (!( (filenametmp[0] == '.') && (strlen(filenametmp) == 1))) 
+        {
+            if (strcasecmp(filenametmp, "sav") != 0)
+            {
+              proromlist[countpro].directory = true;
+              strcpy(proromlist[countpro].filename,filenametmp);
+              countpro++;
+            }
         }
       }
       else {
