@@ -29,7 +29,7 @@ Features :
  the scheme. See http://7800.8bitdev.org/index.php/Bankset_Bankswitching for more details.
   
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
- or in the same directory as the emulator.  It's worth the effort!
+ or in the same directory as the emulator.  It's worth the effort to track down the highscore.rom file!
  
 Copyright :
 ----------
@@ -116,10 +116,14 @@ the 7800 screen resolution isn't a perfect match for the DS 256x192 so you'll ha
 games have defaults that look good enough. Some games will cut off a few pixel lines at the top and bottom - but they will
 still be perfectly playalbe. Such is life with only 192 vertical pixels to play with on the DS!
 
+Recent versions of the emulator have a magnifying glass icon that will zoom and center the display to 1:1 of the actual 7800 output.
+This will crop some pixels off the sides and top/bottom but is useful to temporarily zoom up to enter things like high scores
+where the text may be hard to read when shrunk down.
+
 Frame Skipping can be OFF (show all frames), Moderate (Show 3/4 frames) or Agressive (only show 1/2 frames).  The latter is
 only really needed for the DS-Lite/Phat where the faster DSi CPU isn't available.
 
-Don't touch the DMA Cycle Adjustment unless you understand them... and most people don't :)
+Don't touch the DMA Cycle Adjustment unless you understand them... and most people don't - sometimes including the developer :)
 
 Press START to save off your configuration - if you made changes you should re-load the game to ensure all settings are applied.
 
