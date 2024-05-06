@@ -64,7 +64,7 @@ problematic in terms of accuracy - often resulting in small graphical glitches a
 other artifacts on screen. However, in the past year I've worked out many of those
 issues and most of the games look, sound and play great now. However, do not expect
 perfect emulation - if you're looking for a highly accurate emulator for the 7800
-7800 ProSystem, this isn't it - try MAME/MESS or A7800. But if you're looking to enjoy 
+ProSystem, this isn't it - try MAME/MESS or A7800. But if you're looking to enjoy 
 some classic 7800 console goodness on your DS/DSi then you've come to the right place!
 
 Known Issues and Limitations:
