@@ -21,6 +21,18 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 // ----------------------------------------------------------------------------
 // HighScore.cpp
+//
+// The HSC hardware uses the Toshiba TC5516APL chip which is 2048 x 8bit (2K)
+// and is maintained by a battery CR2032 at 3V
+//
+// With an SRAM of this vintage, the contents of an uninitialized / freshly
+// powered up chip would likely be random values. For emulation purposes, we
+// are initializing the SRAM contents on a fresh board as if they were zeros.
+//
+// With this emulation, each game gets their own private 2K SRAM for the 
+// HSC memory. Further, to avoid problems with some games that do not initialize
+// the SRAM, we are going to use a fresh snapshot of the full 2K of SRAM right
+// after a known good cart (Asteroids - NTSC) has initialized the memory.
 // ----------------------------------------------------------------------------
 #include <fat.h>
 #include <dirent.h>
@@ -32,7 +44,6 @@
 #define HS_SRAM_START           0x1000          // The 7800 RAM memory location of the high score cartridge SRAM
 #define HS_SRAM_SIZE            2048            // The size of the high score cartridge SRAM and gets loaded at 7800 memory address 0x1000
 #define HSC_CART_ROM_SIZE       4096            // The highscore.rom is exactly 4K in size and gets loaded at 7800 memory address 0x3000
-#define HSC_TITLE_SIZE          33              // Includes 32 chars for title name and 1 char for size (strlen)
 
 static byte high_score_sram[HS_SRAM_SIZE];      // Buffer for the actual 2K of HSC data
 static byte high_score_rom[HSC_CART_ROM_SIZE];  // Buffer for the 4K of high score ROM (highscore.rom)
@@ -41,7 +52,7 @@ byte   high_score_cart_loaded = false;          // Flips to true if the High Sco
 // -----------------------------------------------------------------------------------------------------
 // This is a snapshot of an initialized HSC after Asteroids (NTSC) initialized it with the name "HSC"
 // A few of the modern homebrews don't do a good job of initializing the HSC and so we use this as
-// as default starting SRAM which is squeaky clean and ready for use by the game.
+// as default starting SRAM (of 0x00 before init) which is squeaky clean and ready for use by the game.
 // -----------------------------------------------------------------------------------------------------
 unsigned char A7800DS_00_sram[HS_SRAM_SIZE] = {
   0x00, 0x00, 0x68, 0x83, 0xaa, 0x55, 0x9c, 0x02, 0x07, 0x12, 0x02, 0x1f, 0x00, 0x00, 0x00, 0x00,
@@ -255,7 +266,7 @@ static bool cartridge_LoadHighScoreSram(void)
         memory_Write(HS_SRAM_START + i, high_score_sram[i]);
     }
     
-    return true;    // We at least made the attempt to write out the .hsc save file
+    return true;    // HSC SRAM is ready to go!
 }
 
 /*
@@ -285,7 +296,7 @@ bool cartridge_LoadHighScoreCart(void)
         }
         high_score_cart_loaded = true;
         
-        // Now read in the associated .hsc SRAM file
+        // Now read in the associated .hsc SRAM file (or set SRAM to defaults)
         cartridge_LoadHighScoreSram();
     }
     else

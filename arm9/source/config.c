@@ -1,9 +1,29 @@
-// =====================================================================================================
-// Stella DSi - Improved Version by Dave Bernazzani (wavemotion)
+// =====================================================================================
+// Copyright (c) 2022-2024 Dave Bernazzani (wavemotion-dave)
 //
-// See readme.txt for a list of everything that has changed in the baseline 1.0 code.
-// =====================================================================================================
-
+// Copying and distribution of this emulator, it's source code and associated 
+// readme files, with or without modification, are permitted in any medium without 
+// royalty provided this copyright notice is used and wavemotion-dave (Phoenix-Edition),
+// Alekmaul (original port) and Greg Stanton (ProSystem Emulator) are thanked profusely.
+//
+// A7800DS emulator is offered as-is, without any warranty.
+//
+// The original GPL license:
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+// =====================================================================================
 #include <nds.h>
 #include <stdio.h>
 #include <fat.h>
@@ -25,6 +45,8 @@ static int display_options_list(bool bFullDisplay);
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 extern void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr);
 extern void dsShowScreenMain(bool);
+
+char strBuf[35];
 
 // ---------------------------------------------------------------------------
 // Write out the A7800DS.DAT configuration file to capture the settings for
@@ -187,7 +209,7 @@ const struct options_t Game_Option_Table[] =
     {"X OFFSET",    2, {"-50",   "+50"},                                                                                                                  (u8*)&myCartInfo.xOffset,             2},
     {"Y OFFSET",    2, {"-50",   "+50"},                                                                                                                  (u8*)&myCartInfo.yOffset,             2},
     {"X SCALE",     2, {"+200",  "+320"},                                                                                                                 (u8*)&myCartInfo.xScale,              2},
-    {"Y SCALE",     2, {"+180",  "+256"},                                                                                                                 (u8*)&myCartInfo.yScale,              2},
+    {"Y SCALE",     2, {"+180",  "+234"},                                                                                                                 (u8*)&myCartInfo.yScale,              2},
     {"X JIGGLE",    1, {"+1",    "+256"},                                                                                                                 (u8*)&myCartInfo.xJiggle,             2},
     {"Y JIGGLE",    1, {"+1",    "+256"},                                                                                                                 (u8*)&myCartInfo.yJiggle,             2},
     
@@ -198,7 +220,6 @@ const struct options_t Game_Option_Table[] =
 
 void display_line(u8 idx, u8 highlight)
 {
-    char strBuf[35];
     if (Game_Option_Table[idx].isNumeric == 1)  // Unsigned 8 bit
     {
         sprintf(strBuf, " %-11s : %-15d", Game_Option_Table[idx].label, *(Game_Option_Table[idx].option_val));

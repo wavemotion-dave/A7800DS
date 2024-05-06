@@ -29,14 +29,13 @@
 Database_Entry myCartInfo __attribute__((section(".dtcm")));
 extern uint cartridge_size;
 
-
 Database_Entry game_list[] = {
   {"f5150c0fc1948832211e57852abb0c6e",  "Utility Cart",                     CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  220, 0}, // title=7800 Utility Cart
   {"4332c24e4f3bc72e7fe1b77adf66c2b7",  "3D Asteroids",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=3D Asteroids
   {"0be996d25144966d5541c9eb4919b289",  "Ace of Aces",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Ace Of Aces
   {"877dcc97a775ed55081864b2dbf5f1e2",  "Alien Brigade",                    CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  7,  22, 264,  230, 1}, // title=Alien Brigade
-  {"d99bff88cd3cce191c26f5755842eb21",  "Arkanoid",                         CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   9, 256,  200, 0}, // title=Arkanoid 78b Demo (purposely set HSC to false - game HSC is buggy)
-  {"212ee2a6e66d8bb7fbf26f343cc8dc19",  "Arkanoid",                         CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   9, 256,  200, 0}, // title=Arkanoid 78b Demo (purposely set HSC to false - game HSC is buggy)
+  {"d99bff88cd3cce191c26f5755842eb21",  "Arkanoid (ChunkyPixel Games)",     CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   9, 256,  200, 0}, // title=Arkanoid 78b Demo (purposely set HSC to false - game HSC is buggy)
+  {"212ee2a6e66d8bb7fbf26f343cc8dc19",  "Arkanoid (ChunkyPixel Games)",     CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   9, 256,  200, 0}, // title=Arkanoid 78b Demo (purposely set HSC to false - game HSC is buggy)
   {"89b8b3df46733e0c4d57aeb9bb245e6f",  "Armor Attack II",                  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  220, 0}, // title=Armor Attack II
   {"a65f79ad4a0bbdecd59d5f7eb3623fd7",  "Asteroids Deluxe (NTSC)",          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  230, 0}, // title=Asteroids Deluxe
   {"07342c78619ba6ffcc61c10e907e3b50",  "Asteroids",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  230, 0}, // title=Asteroids
@@ -326,4 +325,4 @@ bool database_Load(byte *digest)
     return true;
 }
 
-
+// End of file

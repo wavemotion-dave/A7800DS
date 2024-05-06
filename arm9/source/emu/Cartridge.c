@@ -30,6 +30,7 @@
 char cartridge_title[256];
 byte cartridge_digest[256];
 char cartridge_filename[256];
+byte header[128] = {0};                   // We might have a header... this will buffer it
 
 word cardtype = 0x0000;
 bool write_only_pokey_at_4000 = false;
@@ -158,10 +159,21 @@ void cartridge_SwapRAM_DragonFlyStyle(u8 data)
 
 // ----------------------------------------------------------------------------
 // ReadHeader
+// Atari 7800 carts come in two major flavors... .bin is just the flat
+// binary of the game ROM and does not contain any information about 
+// what kind of cartridge it is - we can only guess by using the internal
+// database and/or the size of the ROM (i.e. 128K ROMs are usually SUPERCART).
+//
+// But .a78 files add a 128 byte header at the front of the game ROM and give
+// information about what kind of ROM mapper is used, sound options, controller
+// options, etc. And there are multiple versions of the header - we currently
+// support the long-standing V3 header and the newer (2023) V4 specifications.
 // ----------------------------------------------------------------------------
+char temp[33] = {0};
 static void cartridge_ReadHeader(const byte* header) {
   uint index;
-  char temp[33] = {0};
+  
+  memset(temp, 0x00, sizeof(temp));
   for(index = 0; index < 32; index++) {
     temp[index] = header[index + 17];  
   }
@@ -180,7 +192,7 @@ static void cartridge_ReadHeader(const byte* header) {
   //  bit 2     = ram at $4000
   //  bit 3     = rom at $4000
     
-  //  bit 4     = second to last bank at $4000
+  //  bit 4     = second to last bank at $4000 (EXFIX)
   //  bit 5     = banked ram
   //  bit 6     = pokey at $450
   //  bit 7     = mirror ram at $4000
@@ -201,8 +213,8 @@ static void cartridge_ReadHeader(const byte* header) {
     
   if (cardtype & 0x0002) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART;
   if (cardtype & 0x0004) myCartInfo.cardtype  = ((cardtype & 0x0002) ? CARTRIDGE_TYPE_SUPERCART_RAM : CARTRIDGE_TYPE_FLAT_WITH_RAM);
-  if (cardtype & 0x0008) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_LARGE;
-  if (cardtype & 0x0010) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_ROM;
+  if (cardtype & 0x0008) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_LARGE;     // EXROM
+  if (cardtype & 0x0010) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_ROM;       // EXFIX
   if (cardtype & 0x0020) myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_RAMX2;
   if (cardtype & 0x0100) myCartInfo.cardtype  = CARTRIDGE_TYPE_ACTIVISION;
   if (cardtype & 0x0200) myCartInfo.cardtype  = CARTRIDGE_TYPE_ABSOLUTE;
@@ -280,13 +292,112 @@ static void cartridge_ReadHeader(const byte* header) {
   //  bit 1 : AtariVox/SaveKey 
   myCartInfo.hsc = (header[58]&1 ? HSC_YES:HSC_NO); 
   
-  myCartInfo.dma_adjust    = 0;
-  last_bank = 255;
-  last_ex_ram_bank = 0;
-  ex_ram_bank = 0;
-  last_ex_ram_bank_df = 0;
-  write_only_pokey_at_4000 = false;
-  ex_ram_bank_df = 0;
+  
+  // ----------------------------------------------------------------------------
+  // Now check for the V4 extended header which overrides anything done above...
+  // The V4 header is mainly for mappers and audio support. Everything else
+  // is handled by the fields in V3 above.
+  // ----------------------------------------------------------------------------
+  if (header[0] == 0x04)
+  {
+    // Mapper:
+    //   0 = Linear
+    //   1 = SuperGame
+    //   2 = Activision
+    //   3 = Absolute
+    //   4 = Souper
+    switch (header[64])
+    {
+        case 0:  // Linear
+            // Mapper Options:
+            //   bit 7    : Bankset ROM
+            //   bits 0-1 : Option at @4000 (0=none, 1=16K RAM, 2=8K EXRAM/A8, 3=32K EXRAM/M2)        
+            if (header[65] & 0x80)
+            {
+                switch (header[65] & 0x03)
+                {
+                    case 0: myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS;         break;
+                    case 1: myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS_RAM;     break;
+                    case 2: myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS;         break;
+                    case 3: myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS_HALTRAM; break;
+                }
+            }
+            else
+            {
+                switch (header[65] & 0x03)
+                {
+                    case 0: myCartInfo.cardtype  = CARTRIDGE_TYPE_NORMAL;        break;
+                    case 1: myCartInfo.cardtype  = CARTRIDGE_TYPE_FLAT_WITH_RAM; break;
+                    case 2: myCartInfo.cardtype  = CARTRIDGE_TYPE_FRACTALUS;     break;
+                    case 3:                                                      break; // There is no 32K of EXRAM/M2 for non Bankset (not supported - don't change anything detected by V3 header)
+                }
+            }
+            break;
+        case 1: // Super Game
+            // Mapper Options:
+            //   bit 7    : Bankset ROM
+            //   bits 0-2 : Option at @4000 (0=none, 1=16K RAM, 2=8K EXRAM/A8, 3=32K EXRAM/M2, 4=EXROM, 5=EXFIX, 6=32k EXRAM/X2)
+            if (header[65] & 0x80)
+            {
+                switch (header[65] & 0x07)
+                {
+                    case 0:  myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS;         break; // No option
+                    case 1:  myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS_RAM;     break; // 16K RAM
+                    case 2:  myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS;         break; // 8K EXRAM/A8
+                    case 3:  myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS_HALTRAM; break; // 32K EXRAM/M2
+                    case 6:  myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS_HALTRAM; break; // 32K EXRAM/X2
+                    default: myCartInfo.cardtype  = CARTRIDGE_TYPE_BANKSETS;         break; // Best we can do - mapper option doesn't make sense to us
+                }
+            }
+            else
+            {
+                switch (header[65] & 0x07)
+                {
+                    case 0:  myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART;        break; // No option
+                    case 1:  myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_RAM;    break; // 16K RAM
+                    case 2:                                                          break; // 8K EXRAM/A8 (not supported - don't change anything detected by V3 header)
+                    case 3:  myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_RAMX2;  break; // 32K EXRAM/M2
+                    case 4:  myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_LARGE;  break; // EXROM
+                    case 5:  myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_ROM;    break; // EXFIX
+                    case 6:  myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_RAMX2;  break; // 32K EXRAM/X2
+                    default:                                                         break; // Unused (not supported - don't change anything detected by V3 header)
+                }
+            }
+            break;
+        case 2: // Activision
+            myCartInfo.cardtype  = CARTRIDGE_TYPE_ACTIVISION; 
+            break;
+        case 3: // Absolute
+            myCartInfo.cardtype  = CARTRIDGE_TYPE_ABSOLUTE; 
+            break;
+        case 4: // Souper (Ricky & Vicky)
+            myCartInfo.cardtype  = CARTRIDGE_TYPE_SUPERCART_RAM;    // TODO: This is wrong. Should be SOUPER but not yet supported.
+            break;
+    }
+    
+    // v4+ audio:
+    //   bit 5    : ADPCM Audio Stream @420
+    //   bit 4    : COVOX @430
+    //   bit 3    : YM2151 @460
+    //   bits 0-2 : POKEY (0=none, 1=@440, 2=@450, 3=@450+@440, 4=@800, 5=@4000)
+    switch (header[67] & 0x07)
+    {
+        case 0: myCartInfo.pokeyType = POKEY_NONE;      break;
+        case 1: myCartInfo.pokeyType = POKEY_NONE;      break;  // Pokey at 440 not supported
+        case 2: myCartInfo.pokeyType = POKEY_AT_450;    break;
+        case 3: myCartInfo.pokeyType = POKEY_AT_450;    break;  // Dual pokey not supported
+        case 4: myCartInfo.pokeyType = POKEY_AT_800;    break;
+        case 5: myCartInfo.pokeyType = POKEY_AT_4000;   break;
+    }  
+  }
+  
+  myCartInfo.dma_adjust     = 0;
+  last_bank                 = 255;
+  last_ex_ram_bank          = 0;
+  ex_ram_bank               = 0;
+  last_ex_ram_bank_df       = 0;
+  write_only_pokey_at_4000  = false;
+  ex_ram_bank_df            = 0;
   if (isDS_LITE) shadow_ram = ex_ram_bank ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // for DS-Lite
   else shadow_ram = ex_ram_bank ? (u8*)0x06830000 : (u8*)0x06834000;   // // Only for the DSi.. see DS_LITE handling above
   shadow_ram -= 0x4000; // Makes for faster indexing in Memory.c
@@ -309,7 +420,6 @@ static bool _cartridge_Load(uint size)
   memset(banksets_memory, 0xFF, sizeof(banksets_memory));   // Clear the banksets ROM memory area
   memset(banksets_memory+0x4000, 0x00, 0x4000);             // Clear banksets RAM memory area
   
-  static byte header[128] = {0};                   // We might have a header... this will buffer it
   for(index = 0; index < 128; index++) 
   {
     header[index] = cartridge_buffer[index];
@@ -614,20 +724,20 @@ void cartridge_Release( )
     // These values need to be reset so that moving between carts works
     // consistently. This seems to be a ProSystem emulator bug.
     //
-    myCartInfo.cardtype = CT_NORMAL;
-    myCartInfo.region = NTSC;
-    myCartInfo.pokeyType = POKEY_NONE;
-    myCartInfo.hsc = false;
-    myCartInfo.cardctrl1 = 0;
-    myCartInfo.cardctrl2 = 0;
-    myCartInfo.hasHeader = false;
-    myCartInfo.dma_adjust = 0;
-    last_bank = 255;
-    last_ex_ram_bank = 0;
-    ex_ram_bank = 0;
-    last_ex_ram_bank_df = 0;
-    ex_ram_bank_df = 0;
-    write_only_pokey_at_4000 = false;
+    myCartInfo.cardtype       = CT_NORMAL;
+    myCartInfo.region         = NTSC;
+    myCartInfo.pokeyType      = POKEY_NONE;
+    myCartInfo.hsc            = false;
+    myCartInfo.cardctrl1      = 0;
+    myCartInfo.cardctrl2      = 0;
+    myCartInfo.hasHeader      = false;
+    myCartInfo.dma_adjust     = 0;
+    last_bank                 = 255;
+    last_ex_ram_bank          = 0;
+    ex_ram_bank               = 0;
+    last_ex_ram_bank_df       = 0;
+    ex_ram_bank_df            = 0;
+    write_only_pokey_at_4000  = false;
     if (isDS_LITE) shadow_ram = ex_ram_bank ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // for DS-Lite
     else shadow_ram = ex_ram_bank ? (u8*)0x06830000 : (u8*)0x06834000;   // // Only for the DSi.. see DS_LITE handling above
     shadow_ram -= 0x4000; // Makes for faster indexing in Memory.c

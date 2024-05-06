@@ -24,17 +24,17 @@
 // ----------------------------------------------------------------------------
 #include "Riot.h"
 
-uint riot_and_wsync __attribute__((section(".dtcm"))) = 0x00;
-int  riot_timer __attribute__((section(".dtcm"))) = TIM64T;
-int  riot_intervals __attribute__((section(".dtcm")));
+uint riot_and_wsync     __attribute__((section(".dtcm"))) = 0x00;
+int  riot_timer         __attribute__((section(".dtcm"))) = TIM64T;
+int  riot_intervals     __attribute__((section(".dtcm"))) = 0;
 
-byte riot_dra __attribute__((section(".dtcm"))) = 0;
-byte riot_drb __attribute__((section(".dtcm"))) = 0;
+byte riot_dra           __attribute__((section(".dtcm"))) = 0;
+byte riot_drb           __attribute__((section(".dtcm"))) = 0;
 
-uint riot_elapsed __attribute__((section(".dtcm")));
-int riot_currentTime __attribute__((section(".dtcm")));
-uint riot_clocks __attribute__((section(".dtcm")));
-uint riot_shift __attribute__((section(".dtcm")))=0;
+uint riot_elapsed       __attribute__((section(".dtcm"))) = 0;
+int riot_currentTime    __attribute__((section(".dtcm"))) = 0;
+uint riot_clocks        __attribute__((section(".dtcm"))) = 0;
+uint riot_shift         __attribute__((section(".dtcm"))) = 0;
 
 void riot_Reset(void) {
     riot_SetDRA(0);

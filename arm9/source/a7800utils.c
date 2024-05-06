@@ -7,6 +7,22 @@
 // Alekmaul (original port) and Greg Stanton (ProSystem Emulator) are thanked profusely.
 //
 // A7800DS emulator is offered as-is, without any warranty.
+//
+// The original GPL license:
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 // =====================================================================================
 #include <nds.h>
 #include <nds/fifomessages.h>
@@ -90,10 +106,10 @@ static void DumpDebugData(void)
         }
         
         extern byte last_illegal_opcode;
-        if (last_illegal_opcode >= 0)
+        if (last_illegal_opcode > 0)
         {
-            sprintf(fpsbuf, "ILLOP=%02X", last_illegal_opcode);
-            dsPrintValue(24,21,0, fpsbuf);
+            sprintf(fpsbuf, "ILLEGAL OP=%02X", last_illegal_opcode);
+            dsPrintValue(10,23,0, fpsbuf);
         }
             
     }
@@ -281,7 +297,7 @@ void dsFreeEmu(void)
 
 void dsLoadGame(char *filename) 
 {
-  unsigned int index;
+  u16 index;
   
   SoundPause();  
     
@@ -311,9 +327,10 @@ void dsLoadGame(char *filename)
       
     if (DEBUG_DUMP)
     {
-        char dbgbuf[32];
+        char dbgbuf[33];
+        extern char header[];
         extern word cardtype;
-        sprintf(dbgbuf, "CARDTYPE:  %04X", cardtype);
+        sprintf(dbgbuf, "V%c CTV3: %04X  V4MT: %04X AUD:%02X", '0'+header[0], cardtype, ((u16)header[64]<<8)|header[65], header[67]);
         dsPrintValue(0,21,0, (char*)dbgbuf);
         dsPrintValue(0,22,0, (char*)cartridge_digest);
     }
@@ -427,7 +444,7 @@ void _putchar(char character) {};   // Not used but needed to link printf()
 
 void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel) 
 {
-  unsigned int ucGame;
+  u16 ucGame;
   u8 maxLen;
   
   // Display all games if possible
@@ -461,9 +478,9 @@ void dsDisplayFiles(unsigned int NoDebGame,u32 ucSel)
 
 unsigned int dsWaitForRom(void) 
 {
-  bool bDone=false, bRet=false;
-  u32 ucHaut=0x00, ucBas=0x00,ucSHaut=0x00, ucSBas=0x00,romSelected= 0, firstRomDisplay=0,nbRomPerPage, uNbRSPage, uLenFic=0;
-  s32 ucFlip=0, ucFlop=0;
+  u8 bDone=false, bRet=false;
+  u16 ucHaut=0x00, ucBas=0x00,ucSHaut=0x00, ucSBas=0x00,romSelected= 0, firstRomDisplay=0,nbRomPerPage, uNbRSPage, uLenFic=0;
+  s16 ucFlip=0, ucFlop=0;
 
   decompress(bgFileSelTiles, bgGetGfxPtr(bg0b), LZ77Vram);
   decompress(bgFileSelMap, (void*) bgGetMapPtr(bg0b), LZ77Vram);
@@ -825,27 +842,27 @@ __attribute__ ((noinline))  void handle_LR_keys(unsigned int keys_pressed)
       } 
       if (scale_screen_dampen > 5)
       {
-          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))   { myCartInfo.yOffset++; bRefreshXY = true; }
-          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN)) { myCartInfo.yOffset--; bRefreshXY = true; }
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_UP))    { myCartInfo.yOffset++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_R) && (keys_pressed & KEY_DOWN))  { myCartInfo.yOffset--; bRefreshXY = true; }
           if ((keys_pressed & KEY_R) && (keys_pressed & KEY_LEFT))  { myCartInfo.xOffset++; bRefreshXY = true; }
           if ((keys_pressed & KEY_R) && (keys_pressed & KEY_RIGHT)) { myCartInfo.xOffset--; bRefreshXY = true; }
 
-          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))   if (myCartInfo.yScale  < 234) { myCartInfo.yScale++; bRefreshXY = true; }
-          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN)) if (myCartInfo.yScale  > 192) { myCartInfo.yScale--; bRefreshXY = true; }
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_UP))    if (myCartInfo.yScale < 234) { myCartInfo.yScale++; bRefreshXY = true; }
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_DOWN))  if (myCartInfo.yScale > 192) { myCartInfo.yScale--; bRefreshXY = true; }
           if ((keys_pressed & KEY_L) && (keys_pressed & KEY_RIGHT)) if (myCartInfo.xScale < 320) { myCartInfo.xScale++; bRefreshXY = true; }
-          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT)) if (myCartInfo.xScale  > 192) { myCartInfo.xScale--; bRefreshXY = true; }                  
+          if ((keys_pressed & KEY_L) && (keys_pressed & KEY_LEFT))  if (myCartInfo.xScale > 192) { myCartInfo.xScale--; bRefreshXY = true; }                  
           scale_screen_dampen=0;
       } else scale_screen_dampen++;
   }
 }
 
 // Toggle full 320x256
-__attribute__ ((noinline))  void toggle_zoom(void)
+static s16 last_xScale = 0;
+static s16 last_yScale = 0;
+static s16 last_xOffset = 0;
+static s16 last_yOffset = 0;
+__attribute__ ((noinline)) void toggle_zoom(void)
 {
-  static s16 last_xScale = 0;
-  static s16 last_yScale = 0;
-  static s16 last_xOffset = 0;
-  static s16 last_yOffset = 0;
   if (last_xScale == 0)
   {
       last_xScale  = myCartInfo.xScale; 
@@ -896,6 +913,7 @@ ITCM_CODE void dsMainLoop(void)
       case A7800_PLAYINIT:
         dsShowScreenEmu();
         emu_state = A7800_PLAYGAME;
+        last_xScale = 0;
         break;
         
       case A7800_PLAYGAME:
@@ -904,7 +922,7 @@ ITCM_CODE void dsMainLoop(void)
         // 655 -> 50 fps and 546 -> 60 fps
         if (!full_speed)
         {
-            while(TIMER0_DATA < (546*atari_frames))
+            while(TIMER0_DATA < (546*atari_frames)) // We are only supporting NTSC timing
                 ;
         }
 
@@ -976,7 +994,7 @@ ITCM_CODE void dsMainLoop(void)
               else if ((iTx>90) && (iTx<110) && (iTy>90) && (iTy<110))  { // Atari Logo - Activate HSC Maintenence Mode (only on High Score screen)
                 special_hsc_entry=70; 
               }
-              else if ((iTx>115) && (iTx<144) && (iTy>154) && (iTy<171))  { // Snap HSC Sram
+              else if ((iTx>115) && (iTx<144) && (iTy>154) && (iTy<171))  { // Snap HSC SRAM file
                 if (high_score_cart_loaded)
                 {
                     dsPrintValue(13,0,0, "SAVING");
