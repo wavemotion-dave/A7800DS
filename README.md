@@ -6,7 +6,7 @@ To use this emulator, you must use compatible roms with a78/bin format.
 Strongly recommend you use NTSC roms... PAL ones have more scanlines and will render
 more slowly and since the sound core is tied to scanlines, the sound will be wrong. 
 All the debug on this port to the DS has been done with NTSC roms - seek them out!
-Do not ask me about such files, I don't have them. A search with Google will certainly 
+Do not ask me about such files, I only supply the emulator. A search with Google will certainly 
 help you. The emulator was developed using Trebor's "7800 ProPack" of well-curated games.
 The emulator will auto-start in /roms/a7800 or /roms/a78 if those directories exist.
 
