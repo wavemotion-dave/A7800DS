@@ -91,8 +91,8 @@ Controls :
  * B             : Fire button 2
  * SELECT        : SELECT Button
  * START         : PAUSE Button
- * X             : Fire button 2
- * Y             : Fire Button 1
+ * X             : Pan Screen Down
+ * Y             : Pan Screen Up
  * L/R + DPAD    : Used to Shift Offsets and Scale Screen to desired ratio
  * L + R + X     : Hold for 1 second to swap LCD screens top/bottom
   
