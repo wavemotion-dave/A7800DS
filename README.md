@@ -108,7 +108,7 @@ Controls :
  I want to do as the game runs... so you must do it... the high scores will also
  auto-save if you quit the emulator or select a new game.
   
- Configuration :
+Configuration :
 ----------
 Generally you would use this to select a bankswitching scheme if the proper type wasn't auto-detected. 
 The following schemes are supported:
@@ -127,21 +127,49 @@ The following schemes are supported:
 * ABSOLETE            Only for the F-18 Hornet game by Absolete Entertainment
 * FRACTALUS           Only for the Rescue on Fractalus prototype (not a complete game but neat to see). This is EXRAM/A8.
 
-The X/Y screen settings can be tweaked to position the 7800 emulated screen on the DS screen as best you can. Unfortunately 
-the 7800 screen resolution isn't a perfect match for the DS 256x192 so you'll have to stretch and offset a bit. Most
-games have defaults that look good enough. Some games will cut off a few pixel lines at the top and bottom - but they will
-still be perfectly playalbe. Such is life with only 192 vertical pixels to play with on the DS!
-
-Recent versions of the emulator have a magnifying glass icon that will zoom and center the display to 1:1 of the actual 7800 output.
-This will crop some pixels off the sides and top/bottom but is useful to temporarily zoom up to enter things like high scores
-where the text may be hard to read when shrunk down.
-
 Frame Skipping can be OFF (show all frames), Moderate (Show 3/4 frames) or Agressive (only show 1/2 frames).  The latter is
 only really needed for the DS-Lite/Phat where the faster DSi CPU isn't available.
 
 Don't touch the DMA Cycle Adjustment unless you understand them... and most people don't - sometimes including the developer :)
 
 Press START to save off your configuration - if you made changes you should re-load the game to ensure all settings are applied.
+
+Of Mice, Men and Screen Resolutions :
+----------
+The DS/DSi has a native screen resolution of 256x192. This is not ideal for the Atari 7800 where many of the games are 320 
+pixels across and often more than 192 scanlines. The original Atari NTSC spec called for 192 vertical scanlines and a few
+of the early games (Asteroids, Ms. Pac-Man, etc.) did stick to that but most later games utilize more vertical scanlines. 
+A typical NTSC TV can handle 230+ scanlines fairly well and so many of the Atari 7800 games utilize some number of extra
+scanlines to pack as much awesome gameplay as possible onto the screen.
+
+This is a problem for our hero, the DS/DSi. Fortunately the DS has the ability to scale/stretch as needed. But when doing
+so, there will be missing scanlines. For example, if the game utilizes 200 scalines but the DS can only show 192, there are 
+8 scanlines that must go missing... if scaled down to 192 pixels to fit the screen, these extra scalines might be in the
+middle of the playfield which is not great. If you scale the screen up (using Configuration options or the L/R shoulder 
+buttons in conjunction with the D-PAD to shift/scale the sceren), then some of the pixels (left or right, up or down) will
+be cropped off the screen. This might not be a big deal - sometimes the very top and bottom of a game are just clouds or 
+ground that can be safely cropped without any loss in gameplay. For many games, the top 16 pixels are the score / lives
+remaining.
+
+Most games have scaling defaults that look good enough. Some games will cut off a few pixel lines at the top and bottom - but
+they will still be perfectly playalbe.  However there are some thigns you can (and should!) do to help.
+
+Recent versions of the emulator have a magnifying glass icon that will zoom and center the display to 1:1 of the actual 7800 output.
+This will crop some pixels off the sides and top/bottom but is useful to temporarily zoom up to enter things like high scores
+where the text may be hard to read when shrunk down.
+
+More importantly, you can utilize the X and Y buttons as a pan down/up. This is massively useful for games that have a score at
+the top of the display (Galaxian, Space Invaders, Popeye, bonQ, etc).  Here you can stretch up the screen in the Y direction so
+that it is nearly 1:1 and shift the score off the top of the screen. Then, during gameplay, you can tap the X button to temporarily
+pan the display down so the score comes into view briefly... and it will magically shift back up after a half second. You can do
+this while you are playing - usually when you lose a life you can tap the X button to quickly glace at your score. This gives 
+more useable scanlines for actual gameplay. Think of this like you're at the arcade and you have to glance up to see your 
+score when focused on the field of play. It takes a little getting used to but this mechanism really helps map the more complicated
+game graphics onto the small sceren. Of course youc an always scale the screen down to it's totally visible - but there will be
+some loss of scanline information. Experiment and determine what works best for you.
+
+And remember - once you get your screen settings the way you want, be sure to go into the GEAR icon and hit START to save out
+your current configuration (which includes your screen offset/scaling tweaks on a per-game basis).
 
 --------------------------------------------------------------------------------
 Credits:
