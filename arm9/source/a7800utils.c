@@ -175,6 +175,7 @@ void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr,
 
 int16_t temp_shift __attribute__((section(".dtcm"))) = 0;
 uint8_t shiftTime = 0;
+uint8_t shift_dampen = 0;
 
 ITCM_CODE void vblankIntr() 
 {
@@ -197,7 +198,11 @@ ITCM_CODE void vblankIntr()
 
     bRefreshXY = false;
     
-    if (temp_shift)
+    if (shift_dampen)
+    {
+        shift_dampen--;
+    }
+    else if (temp_shift)
     {
         ++shiftTime;
         if (shiftTime > 40) 
@@ -1101,8 +1106,8 @@ ITCM_CODE void dsMainLoop(void)
         {
             if ( (keys_pressed & KEY_A) ) { tchepres(4); snes_adaptor &= 0xFEFF;}  // BUTTON #1
             if ( (keys_pressed & KEY_B) ) { tchepres(5); snes_adaptor &= 0xFFFE;}  // BUTTON #2
-            if ( (keys_pressed & KEY_Y) ) { temp_shift = 16;}  // Shift Screen Down
-            if ( (keys_pressed & KEY_X) ) { temp_shift = -16;} // Shift Screen Up
+            if ( (keys_pressed & KEY_Y) ) { temp_shift = 16; shift_dampen = 1;}  // Shift Screen Down
+            if ( (keys_pressed & KEY_X) ) { temp_shift = -16; shift_dampen = 1;} // Shift Screen Up
         }
             
         if ((keys_pressed & KEY_R) || (keys_pressed & KEY_L))

@@ -161,6 +161,7 @@ Database_Entry game_list[] = {
   {"79df20ee86a989e669158bcb9d113e8a",  "UniWarS",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  9,   5, 282,  202, 0}, // title=UniWarS
   {"0db69825c81171e62fd2bda526665c22",  "UniWarS",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  9,   5, 282,  202, 0}, // title=UniWarS (v1.1)
 
+
   // Other homebrews  
   {"fd9353d42cca5f81fe7af866592b94c3",  "1942",                             CT_SUPRAMX2,POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,   6, 256,  203, 1}, // title=1942 (Standard Banking RAM)
   {"e1b290ee690c0cd6525773a2025177d5",  "1942",                             CT_SUPRAMX2,POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,   6, 256,  203, 1}, // title=1942 (Standard Banking RAM)
@@ -195,7 +196,7 @@ Database_Entry game_list[] = {
   {"33dbb58f9ee73e9f476b4ebbc8190c88",  "Knight Guy In Low Res",            CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   0,  0,  12, 256,  233, 0}, // title=Knight Guy In Low Res World - Castle Days (RC 01-1)
   {"3ec728e116017be89c552a85a8f86d90",  "Knight Guy - Quest",               CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   0,  0,  12, 256,  233, 0}, // title=Knight Guy - Quest For Something (20210423)
   {"7abd9e0a6321e813d7528aa7f2c8fb40",  "Knight Guy In Another",            CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   0,  0,  12, 256,  233, 0}, // title=Knight Guy - In Another Castle (RC1b)
-  {"271864e0978278a3e2fb04273db69d57",  "Legend of Silverpeak",             CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   7, 256,  201, 1}, // title=Legend of Silverpeak (1.01)
+  {"271864e0978278a3e2fb04273db69d57",  "Legend of Silverpeak",             CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,   7, 256,  201, 1}, // title=Legend of Silverpeak (1.01)
   {"181a9978d9da7a7e21f770808cc681f2",  "Merlain",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 320,  234, 0}, // title=Merlain
   {"3f80432f156088bf328cff15842766ee",  "Millie and Molly",                 CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  14, 256,  220, 0}, // title=Millie And Molly (Demo) (POKEY 450) (20230305)
   {"1c860298a8966cc8e176ab8453b172c3",  "Monster Maze",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  14, 256,  220, 0}, // title=Monster Maze (20220306)
@@ -204,26 +205,21 @@ Database_Entry game_list[] = {
   {"3d9c52142f9e53f516d3408daad376f3",  "Oozy The Goo - Gaiden",            CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  17, 256,  234, 0}, // title=Oozy The Goo - Gaiden (20231001)
   {"6ac5a7f8b6a3198ed08abb9866753763",  "PentaGo",                          CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  2,  17, 260,  234, 0}, // title=PentaGo (Demo) (20230422)
   {"a662862f20362fc5eb5c651065cbd51c",  "Petscii Robots",                   CT_BANKSHALT,POKEY_AT_800,SNES,JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  10, 256,  214, 0}, // title=Attack of the Petscii Robots (Demo) (POKEY 800)
+  {"0254afa887fcfc8c4b1a63b41b9ba613",  "Plumb Luck DX",                    CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  16, 17, 289,  220, 0}, // title=Plumb Luck DX (RC2) (20230410)
   {"61e6a16889b62216116eea136269a4c0",  "Popeye",                           CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  10, 256,  210, 0}, // title=Popeye 2.40 Demo
   {"b6561537290e6e25e1249394366c3c63",  "Robbo",                            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Robbo (20160513)
   {"fc525819ec2bdc4a30bb2e55524f8d81",  "Robot's Rumble",                   CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  11, 256,  217, 0}, // title=Robots Rumble (20220217)
   {"9bd70c06d3386f76f8162881699a777a",  "Serpentine",                       CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  220, 0}, // title=Serpentine (20161029)
   {"96f69b85e0b43bbebbbd59bb8276a372",  "Sick Pickles",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  233, 0}, // title=Sick Pickles (20171202)
   {"40567f50c569a60cc461cdf0e2853ff4",  "Slide Boy in Maze Land",           CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  230, 0}, // title=Slide Boy in Maze Land (RC1) (20210515)
+  {"91f4cb1f642ff1de936a74672dce7198",  "Space Peril",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  230, 0}, // title=Space Peril (NTSC) (v8) (20210907)
   {"19844117863cd38d4e1e4cbc867ae599",  "Spire of the Ancients",            CT_SUPLRG,    POKEY_NONE, SOTA,SOTA, DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  31, 17, 320,  230, 1}, // title=Spire of the Ancients (NTSC) (20201223)
   {"81cee326b99d6831de10a566e338bd25",  "Super Circus AA-NTSC-joy-4000",    CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  13, 256,  220, 0}, // title=Super Circus Atari Age (NTSC) (Joystick) (POKEY 4000)
   {"a60e4b608505d1fb201703b266f754a7",  "Time Salvo",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  230, 0}, // title=Time Salvo
+  {"23ac803eabfb8c6118b600a8177c94a4",  "Lyra the Tenrec",                  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  234, 0}, // title=Lyra the Tenrec (20240104)
   {"ff825fcbed9bf6993edd422fcc592673",  "Touchdown Challenge",              CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  1,  30, 258,  234, 0}, // title=Touchdown Challenge (v2_21) (20230225)
   {"f5150c0fc1948832211e57852abb0c6e",  "Utility Cart",                     CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  220, 0}, // title=7800 Utility Cart
   {"846751861993b907c512cc9c10c67035",  "Wizards Dungeon",                  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  18, 256,  224, 0}, // title=Wizards Dungeon (20211111)
-  {"0254afa887fcfc8c4b1a63b41b9ba613",  "Plumb Luck DX",                    CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  16, 17, 289,  220, 0}, // title=Plumb Luck DX (RC2) (20230410)
-
-//[a541b16e95619afa4960487c23a9a9ff] [Binary Land (20210208) (AD20DEAA).a78]
-//[0d05659a7d0eef02e7fa2cb686c816e7] [A R T I (Public Demo 3) (20230916) (35BF82F0).a78]
-//[b11b1a2bae8a1d0cd1c180798c6e6169] [Bernie and the Cubic Conundrum (Alpha 10) (20211225) (EEDB9115).a78]
-//[4a8a22cff154f479f1ddaa386f21fc39] [Boom (v1_5) (20150526) (DBD45794).a78]
-//[23ac803eabfb8c6118b600a8177c94a4] [Lyra the Tenrec (20240104) (E754D211).a78]
-//[91f4cb1f642ff1de936a74672dce7198] [Space Peril (NTSC) (v8) (20210907) (FA11DA80).a78]
 
   {"","",CT_NORMAL,0,0,0,0,0,0,0,0,0,0,0},
 };

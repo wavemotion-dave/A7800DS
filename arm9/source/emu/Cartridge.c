@@ -551,6 +551,7 @@ void cartridge_Store( )
     case CARTRIDGE_TYPE_SUPERCART:
       offset = cartridge_size - 16384;
       memory_WriteROM(49152, 16384, cartridge_buffer + offset);
+      memory_WriteROM(32768, 16384, cartridge_buffer);
       break;
           
     case CARTRIDGE_TYPE_SUPERCART_LARGE: 
