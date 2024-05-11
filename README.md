@@ -71,6 +71,7 @@ Known Issues and Limitations:
 ----------
 - Lightgun is not supported.
 - Paddles are not supported.
+- Atarivox (including Savekey) is not supported.
 - Artifacting is not supported which means Tower Toppler is unplayable.
 - Games greater than 1MB (1024K + 128b header) are not supported.
 - Only one Pokey is supported at 4000h, 800h or 450h (no Dual Pokey).
