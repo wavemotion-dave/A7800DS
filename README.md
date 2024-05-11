@@ -71,12 +71,12 @@ Known Issues and Limitations:
 ----------
 - Lightgun is not supported.
 - Paddles are not supported.
-- Atarivox (including Savekey) is not supported.
 - Artifacting is not supported which means Tower Toppler is unplayable.
+- Souper mapper (Ricky & Vicky) is not supported.
+- Keystone Koppers and ARTI have slight sound issues as Pokey emulation is not perfect.
 - Games greater than 1MB (1024K + 128b header) are not supported.
 - Only one Pokey is supported at 4000h, 800h or 450h (no Dual Pokey).
 - XM is not supported (beyond HSC and Pokey).
-- Keystone Koppers and ARTI have slight sound issues as Pokey emulation is not perfect.
    
 --------------------------------------------------------------------------------
 How to use a7800DS :
@@ -196,6 +196,12 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.7 : 11-May-2024 by wavemotion-dave
+  * X and Y buttons now shift the screen down/up by 16 pixels so you can position the score off-screen and use these to pan up/down to see it.
+  * Fix for Supercarts so that they start in bank 0 (Legend of Silverpeak should now load)
+  * Internal database tweaks for the latest homebrews and ports.
+  * Other minor tweaks and improvements as time permitted.
+
 V4.6 : 06-May-2024 by wavemotion-dave
   * Each game that utilizes a High Score Cart (HSC) gets its own 2K .hsc file 
   * Improved High Score Cart (HSC) emulation - improved initialization of the SRAM contents.
