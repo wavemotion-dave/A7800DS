@@ -71,6 +71,7 @@ Known Issues and Limitations:
 ----------
 - Lightgun is not supported.
 - Paddles are not supported.
+- PAL is not supported - use NTSC instead.
 - Artifacting is not supported which means Tower Toppler is unplayable.
 - Souper mapper (Ricky & Vicky) is not supported.
 - Keystone Koppers and ARTI have slight sound issues as Pokey emulation is not perfect.
