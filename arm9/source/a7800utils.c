@@ -54,15 +54,16 @@ int atari_frames                        __attribute__((section(".dtcm"))) = 0;
 u8 bRefreshXY                           __attribute__((section(".dtcm"))) = false;
 u16 dampen                              __attribute__((section(".dtcm"))) = 0;
 unsigned char keyboard_data[20]         __attribute__((section(".dtcm"))) ALIGN(32);
-u16 full_speed                          __attribute__((section(".dtcm"))) = 0;
 short int emu_state                     __attribute__((section(".dtcm"))) = 0;
-u16 fpsDisplay                          __attribute__((section(".dtcm"))) = 0;
-u16 bEmulatorRun                        __attribute__((section(".dtcm"))) = 1;
+u8  full_speed                           __attribute__((section(".dtcm"))) = 0;
+u8  fpsDisplay                          __attribute__((section(".dtcm"))) = 0;
+u8  bEmulatorRun                        __attribute__((section(".dtcm"))) = 1;
+u8  bNoDatabase                         __attribute__((section(".dtcm"))) = 0;
+u32 snes_adaptor                        __attribute__((section(".dtcm"))) = 0x0000FFFF;
 
 extern u32 tiaBufIdx;
-char fpsbuf[33];
-
-u32 snes_adaptor __attribute__((section(".dtcm")))=0x0000FFFF;
+char fpsbuf[34];
+char dbgbuf[40];
 
 // -----------------------------------------------------------------
 // Some vars for listing filenames of ROMs... 1K of ROMs is plenty
@@ -349,12 +350,14 @@ void dsLoadGame(char *filename)
       
     if (DEBUG_DUMP)
     {
-        char dbgbuf[33];
         extern char header[];
         extern word cardtype;
-        sprintf(dbgbuf, "V%c CTV3: %04X  V4MT: %04X AUD:%02X", '0'+header[0], cardtype, ((u16)header[64]<<8)|header[65], header[67]);
+        sprintf(dbgbuf, "V%c CTV3: %04X  V4MT: %04X AUD:%02X", '0'+header[0], cardtype, (((u16)header[64]<<8)|header[65])&0xFFFF, header[67]);
         dsPrintValue(0,21,0, (char*)dbgbuf);
-        dsPrintValue(0,22,0, (char*)cartridge_digest);
+        for (u8 i=0; i<31; i++) dbgbuf[i] = header[17+i];
+        dbgbuf[31] = 0;        
+        dsPrintValue(0,22,0, (char*)dbgbuf);
+        dsPrintValue(0,23,0, (char*)cartridge_digest);
     }
       
     if (myCartInfo.region != NTSC)
@@ -618,16 +621,17 @@ unsigned int dsWaitForRom(void)
       while (keysCurrent() & KEY_B);
     }
 
-    if (keysCurrent() & (KEY_A | KEY_Y)) 
+    if (keysCurrent() & (KEY_A | KEY_Y | KEY_SELECT))  // Select ROM
     {
       if (!proromlist[ucFicAct].directory) 
       {
-        if (keysCurrent() & KEY_Y) bEmulatorRun = false; else bEmulatorRun=true;
-        if (keysCurrent() & KEY_X) DEBUG_DUMP = 1; else DEBUG_DUMP=0;
+        if (keysCurrent() & KEY_Y)      bEmulatorRun = false; else bEmulatorRun=true;
+        if (keysCurrent() & KEY_SELECT) bNoDatabase = true; else bNoDatabase=false;
+        if (keysCurrent() & KEY_X)      DEBUG_DUMP = 1; else DEBUG_DUMP=0;
         bRet=true;
         bDone=true;
       }
-      else 
+      else if (keysCurrent() & KEY_A) // Drill down into directory
       {
         chdir(proromlist[ucFicAct].filename);
         proFindFiles();

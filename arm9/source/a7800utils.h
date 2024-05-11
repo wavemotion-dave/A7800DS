@@ -57,7 +57,7 @@ typedef struct {
 
 extern gamecfg GameConf;
 
-extern uint video_height;                  // Actual video height
+extern uint video_height;          // Actual video height
 extern unsigned short *bufVideo;   // Video buffer
 
 

@@ -233,83 +233,88 @@ Database_Entry game_list[] = {
 // -------------------------------------------------------------------------
 bool database_Load(byte *digest) 
 {
+    extern u8 bNoDatabase;
     bool bFound = false;
     uint16 i;
     
-    // --------------------------------------------------------------------------------------
-    // First see if we've got a match in our external A7800DS.DAT configuration database...
-    // --------------------------------------------------------------------------------------
-    for (i=0; i<MAX_CONFIGS; i++)
+    // See if we've been asked to skip the internal database
+    if (!bNoDatabase)
     {
-      if (!strcmp(allConfigs.cart[i].digest,(char *) digest))
-      {
-          memcpy(&myCartInfo, &allConfigs.cart[i], sizeof(myCartInfo));
-          bFound = true;
-          break;
-      }
-    }
-
-    
-    // ---------------------------------------------------------------------------------------------
-    // If we didn't find it in the config database, we can look in the internal database table...
-    // ---------------------------------------------------------------------------------------------
-    if (!bFound)
-    {
-        /* Look up mapper in game list by md5sum */
-        for(i = 0; strlen(game_list[i].digest); i++)
+        // --------------------------------------------------------------------------------------
+        // First see if we've got a match in our external A7800DS.DAT configuration database...
+        // --------------------------------------------------------------------------------------
+        for (i=0; i<MAX_CONFIGS; i++)
         {
-          if (!strcmp(game_list[i].digest,(char *) digest))
+          if (!strcmp(allConfigs.cart[i].digest,(char *) digest))
           {
-            memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
-            if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
-            myCartInfo.palette = 1; // Force this if not specifically found by md5
-            myCartInfo.xJiggle = 64;
-            myCartInfo.yJiggle = 16;
-            bFound = true;          
-            break;
+              memcpy(&myCartInfo, &allConfigs.cart[i], sizeof(myCartInfo));
+              bFound = true;
+              break;
           }
         }
-    }
-    
-   
-    // -----------------------------------------------------------------------------------------------
-    // If we didn't find a definitive md5 match above, look up game by cart title in the .A78 header 
-    // or even by the name of the ROM filename as it will give us a clue as to the game identity.
-    // -----------------------------------------------------------------------------------------------
-    if (!bFound)
-    {
-      for(i = 0; strlen(game_list[i].header_name); i++)
-      {
-        if (myCartInfo.region == NTSC)
+
+        
+        // ---------------------------------------------------------------------------------------------
+        // If we didn't find it in the config database, we can look in the internal database table...
+        // ---------------------------------------------------------------------------------------------
+        if (!bFound)
         {
-          if ( (!strcmp(game_list[i].header_name,(char *) cartridge_title)) ||
-               (strstr((char *) cartridge_filename, game_list[i].header_name) != NULL) ) 
-          {
-            memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
-            strcpy(myCartInfo.digest, (char *)digest); 
-            if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
-            myCartInfo.palette = 1; // Force this if not specifically found by md5
-            myCartInfo.xJiggle = 64;
-            myCartInfo.yJiggle = 16;
-            bFound = true;
-            
-            // --------------------------------------------------------------------------------------
-            // As a sanity check... if the card type ended up as 'NORMAL' but the ROM is larger 
-            // than NORMAL would support - we adjust it here. This prevents soft matches in 
-            // the database from causing problems (I'm looking at you various flavors of Donkey Kong)
-            // --------------------------------------------------------------------------------------
-            if (myCartInfo.cardtype == CT_NORMAL)
+            /* Look up mapper in game list by md5sum */
+            for(i = 0; strlen(game_list[i].digest); i++)
             {
-                if (cartridge_size == (144*1024)) myCartInfo.cardtype = CT_SUPLRG;
-                else myCartInfo.cardtype = (cartridge_size <= (52*1024)) ? CT_NORMAL:CT_SUPROM;
+              if (!strcmp(game_list[i].digest,(char *) digest))
+              {
+                memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
+                if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
+                myCartInfo.palette = 1; // Force this if not specifically found by md5
+                myCartInfo.xJiggle = 64;
+                myCartInfo.yJiggle = 16;
+                bFound = true;          
+                break;
+              }
             }
+        }
+        
+       
+        // -----------------------------------------------------------------------------------------------
+        // If we didn't find a definitive md5 match above, look up game by cart title in the .A78 header 
+        // or even by the name of the ROM filename as it will give us a clue as to the game identity.
+        // -----------------------------------------------------------------------------------------------
+        if (!bFound)
+        {
+          for(i = 0; strlen(game_list[i].header_name); i++)
+          {
+            if (myCartInfo.region == NTSC)
+            {
+              if ( (!strcmp(game_list[i].header_name,(char *) cartridge_title)) ||
+                   (strstr((char *) cartridge_filename, game_list[i].header_name) != NULL) ) 
+              {
+                memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
+                strcpy(myCartInfo.digest, (char *)digest); 
+                if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
+                myCartInfo.palette = 1; // Force this if not specifically found by md5
+                myCartInfo.xJiggle = 64;
+                myCartInfo.yJiggle = 16;
+                bFound = true;
+                
+                // --------------------------------------------------------------------------------------
+                // As a sanity check... if the card type ended up as 'NORMAL' but the ROM is larger 
+                // than NORMAL would support - we adjust it here. This prevents soft matches in 
+                // the database from causing problems (I'm looking at you various flavors of Donkey Kong)
+                // --------------------------------------------------------------------------------------
+                if (myCartInfo.cardtype == CT_NORMAL)
+                {
+                    if (cartridge_size == (144*1024)) myCartInfo.cardtype = CT_SUPLRG;
+                    else myCartInfo.cardtype = (cartridge_size <= (52*1024)) ? CT_NORMAL:CT_SUPROM;
+                }
 
-            break;
+                break;
+              }
+            }
           }
         }
-      }
     }
-    
+        
     // --------------------------------------------------------------------------
     // Default scaling options below if not found... these are close enough... 
     // We can make some educated guesses on cart and frameskip...

@@ -73,8 +73,9 @@ Known Issues and Limitations:
 - Paddles are not supported.
 - Artifacting is not supported which means Tower Toppler is unplayable.
 - Games greater than 1MB (1024K + 128b header) are not supported.
-- Only one Pokey is supported at 4000h, 800h or 450h (no Dual Pokey)
-- XM is not supported (beyond HSC and Pokey)
+- Only one Pokey is supported at 4000h, 800h or 450h (no Dual Pokey).
+- XM is not supported (beyond HSC and Pokey).
+- Keystone Koppers and ARTI have slight sound issues as Pokey emulation is not perfect.
    
 --------------------------------------------------------------------------------
 How to use a7800DS :
