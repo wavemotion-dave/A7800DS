@@ -33,6 +33,8 @@
 
 #include "shared.h"
 
+extern u8 bHSC_dirty;
+
 extern byte memory_ram[MEMORY_SIZE];
 extern void memory_Reset( );
 

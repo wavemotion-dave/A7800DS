@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2022-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2022-2025 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, it's source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -170,6 +170,8 @@ void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr,
   }
 }
 
+u8 tchepres_delay = 0;
+u8 tchepres_value = 0;
 
 #define tchepres(a) \
    keyboard_data[GameConf.DS_Pad[a]] = 1;
@@ -393,6 +395,9 @@ void dsLoadGame(char *filename)
     TIMER0_CR=0;
     TIMER0_DATA=0;
     TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+    
+    tchepres_delay = 0;
+    tchepres_value = 0;
       
     SoundUnPause();
   }
@@ -428,7 +433,7 @@ bool dsWaitOnQuit(void) {
   dmaFillWords(dmaVal | (dmaVal<<16),(void*) bgGetMapPtr(bg1b),32*24*2);
   
   strcpy(szName,"Quit  a7800DS ?");
-  dsPrintValue(16-strlen(szName)/2,3,0,szName);
+  dsPrintValue(16-strlen(szName)/2,5,0,szName);
   sprintf(szName,"%s","A TO CONFIRM, B TO GO BACK");
   dsPrintValue(16-strlen(szName)/2,23,0,szName);
       
@@ -977,7 +982,14 @@ ITCM_CODE void dsMainLoop(void)
             }
             memset(keyboard_data, 0x00, 15); // Not the difficulty switches which are the two bytes after this...
         }
-            
+        
+        // If we have recently pressed any of the console keys... keep it pressed for a minimum duration    
+        if (tchepres_delay)
+        {
+            tchepres_delay--;
+            tchepres(tchepres_value);
+        }
+
         scanKeys();
         keys_pressed = keysCurrent();
 
@@ -990,7 +1002,7 @@ ITCM_CODE void dsMainLoop(void)
               touchRead(&touch);
               iTx = touch.px;
               iTy = touch.py;
-              if ((iTx>8) && (iTx<55) && (iTy>154) && (iTy<171))  { // 32,160  -> 64,168   POWER
+              if ((iTx>2) && (iTx<67) && (iTy>154) && (iTy<171))  { // POWER
                 SoundPause();
                 mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
                 if (dsWaitOnQuit()) emu_state=A7800_QUITSTDS;
@@ -1005,34 +1017,28 @@ ITCM_CODE void dsMainLoop(void)
                   fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");
                   dampen=60;
               }
-              else if ((iTx>63) && (iTx<105) && (iTy>154) && (iTy<171))  { // 72,160  -> 105,168   PAUSE
+              else if ((iTx>67) && (iTx<128) && (iTy>154) && (iTy<171))  { // PAUSE
                 if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
+                tchepres_value = 10;
+                tchepres_delay = 5;
                 tchepres(10);
               }
-              else if ((iTx>152) && (iTx<198) && (iTy>154) && (iTy<171))  { // 142,160  -> 175,168   SELECT
+              else if ((iTx>128) && (iTx<193) && (iTy>154) && (iTy<171))  { // SELECT
                 if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
+                tchepres_value = 11;
+                tchepres_delay = 5;
                 tchepres(11);
               }
-              else if ((iTx>208) && (iTx<251) && (iTy>154) && (iTy<171))  { // 191,160  -> 224,168   RESET
+              else if ((iTx>193) && (iTx<254) && (iTy>154) && (iTy<171))  { // RESET
                 if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
+                tchepres_value = 6;
+                tchepres_delay = 5;
                 tchepres(6);
               }
               else if ((iTx>90) && (iTx<110) && (iTy>90) && (iTy<110))  { // Atari Logo - Activate HSC Maintenence Mode (only on High Score screen)
                 special_hsc_entry=70; 
               }
-              else if ((iTx>115) && (iTx<144) && (iTy>154) && (iTy<171))  { // Snap HSC SRAM file
-                if (high_score_cart_loaded)
-                {
-                    dsPrintValue(13,0,0, "SAVING");
-                    mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
-                    WAITVBL;WAITVBL;
-                    cartridge_SaveHighScoreSram();
-                    dsPrintValue(13,0,0, "      ");
-                }
-                dampen=60;
-                continue;
-              }
-              else if ((iTx>69) && (iTx<180) && (iTy>22) && (iTy<62))   // Cartridge slot
+              else if ((iTx>69) && (iTx<180) && (iTy>21) && (iTy<62))   // Cartridge slot
               {     
                 SoundPause();
                 // Find files in current directory and show it 
@@ -1052,7 +1058,7 @@ ITCM_CODE void dsMainLoop(void)
               }
               else if ((iTx>10) && (iTx<58) && (iTy>22) && (iTy<62))   // Magnifying Glass (zoom)
               {
-                  toggle_zoom();
+                  if (!keys_touch) toggle_zoom();
               }
               
               keys_touch=1;
@@ -1124,6 +1130,15 @@ ITCM_CODE void dsMainLoop(void)
         // -------------------------------------------------------------
         if (TIMER1_DATA >= 32728)   // 1000MS (1 sec)
         {
+            if (bHSC_dirty) // Check to see if the High Score area has changed ... if so, snap out the .hsc file
+            {
+                if(high_score_cart_loaded && myCartInfo.hsc)
+                {
+                    cartridge_SaveHighScoreSram();
+                }
+                bHSC_dirty = 0;
+            }
+
             TIMER1_CR = 0;
             TIMER1_DATA = 0;
             TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;

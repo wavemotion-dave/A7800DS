@@ -30,6 +30,7 @@
 byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
 u8 *is_memory_writable = (u8*)0x06820000;
 u32 snes_bit_pos = 0;
+u8  bHSC_dirty = 0;
 
 extern bool write_only_pokey_at_4000;
 
@@ -47,7 +48,8 @@ void memory_Reset( )
   for(index = 0; index < 16384/2; index++) {
     ptr[index] = 0xFFFF;
   }
-    
+   
+  bHSC_dirty = 0;
   snes_bit_pos = 0;
 }
 
@@ -147,7 +149,10 @@ ITCM_CODE void memory_Write(word address, byte data)
                 memory_ram[address ^0x0100] = data;        
             }
         }
-        //else if ((address & 0xF800) == 0x1000)  // HSC RAM - someday we might trigger on this and auto-save the .hsc SRAM file
+        else if ((address & 0xF800) == 0x1000)  // HSC RAM - set the dirty bit so we persist the .hsc file in the main loop
+        {
+            bHSC_dirty = 1;
+        }
 
         memory_ram[address] = data;
         return;

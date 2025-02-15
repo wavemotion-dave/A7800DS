@@ -33,7 +33,7 @@ Features :
  
 Copyright :
 ----------
-A7800DS is Copyright 2021-2024 by Dave Bernazzani (wavemotion-dave).
+A7800DS is Copyright 2021-2025 by Dave Bernazzani (wavemotion-dave).
 
 This emulator is based heavily upon ProSystem and that emulator was released
 in 2005 by Greg Stanton under the GNU General Public License and, as such,
@@ -197,6 +197,12 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.8 : 15-Feb-2025 by wavemotion-dave
+  * High Score (HSC) now auto-saves the .hsc file after it is written by the game. The HSC button is gone.
+  * Smoother console button operation so that a press is registered more consistently and with better debounce.
+  * Improved magnifying glass icon debounce so that it registers more consistently and with better debounce.
+  * New game icon to align with the other emulators in the Atari lineup on the DS.
+
 V4.7 : 11-May-2024 by wavemotion-dave
   * X and Y buttons now shift the screen down/up by 16 pixels so you can position the score off-screen and use these to pan up/down to see it.
   * Fix for Supercarts so that they start in bank 0 (Legend of Silverpeak should now load)
