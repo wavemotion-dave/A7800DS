@@ -218,16 +218,20 @@ bool cartridge_SaveHighScoreSram(void)
         return false;   // If we didn't load the high score cartridge, or don't have an HSC enabled cart: don't save.
     }
 
-    memcpy(high_score_sram, memory_ram+HS_SRAM_START, HS_SRAM_SIZE);   // Copy from main memory to SRAM buffer
-    
-    make_hsc_name();    // HSC filename is same as base filename with .hsc extension
-
-    // Write out the .hsc file
-    FILE *handle = fopen(szName, "wb");
-    if (handle != NULL)
+    // Make sure something actually changed before writing... 
+    if (memcmp(high_score_sram, memory_ram+HS_SRAM_START, HS_SRAM_SIZE) != 0)
     {
-      fwrite(high_score_sram, HS_SRAM_SIZE, 1, handle);
-      fclose(handle);
+        memcpy(high_score_sram, memory_ram+HS_SRAM_START, HS_SRAM_SIZE);   // Copy from main memory to SRAM buffer
+        
+        make_hsc_name();    // HSC filename is same as base filename with .hsc extension
+
+        // Write out the .hsc file
+        FILE *handle = fopen(szName, "wb");
+        if (handle != NULL)
+        {
+          fwrite(high_score_sram, HS_SRAM_SIZE, 1, handle);
+          fclose(handle);
+        }
     }
 
     return true;    // We at least made the attempt to write out the .hsc save file
@@ -265,6 +269,8 @@ static bool cartridge_LoadHighScoreSram(void)
     {
         memory_Write(HS_SRAM_START + i, high_score_sram[i]);
     }
+    
+    bHSC_dirty = 0; // We don't consider the init of SRAM directly above to be a 'write' (no need to persist)
     
     return true;    // HSC SRAM is ready to go!
 }
