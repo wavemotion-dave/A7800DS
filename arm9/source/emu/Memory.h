@@ -43,8 +43,8 @@ extern void memory_Write(word address, byte data);
 
 inline byte memory_Read(word address)
 {
-    if (!(address & 0xFE00)) return memory_ram[address];    // This happens a lot... so it speeds up emulation
-    return memory_Read_Slower(address);
+    if (address & 0x4C00) return memory_Read_Slower(address); // If these bits are set, might be POKEY
+    else return memory_ram[address];
 }
 
 extern void memory_WriteROM(word address, u32 size, const byte* data);

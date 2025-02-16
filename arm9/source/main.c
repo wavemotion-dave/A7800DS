@@ -25,6 +25,7 @@
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 // =====================================================================================
 #include <stdio.h>
+#include <time.h>
 #include <fat.h>
 #include <nds.h>
 #include <maxmod9.h>
@@ -58,6 +59,8 @@ int main(int argc, char **argv)
   intro_logo();  
   dsInitScreenMain();
   emu_state = A7800_MENUINIT;
+  
+  srand(time(NULL));
     
   LoadConfig();
   

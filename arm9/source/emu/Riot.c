@@ -217,7 +217,7 @@ void riot_SetDRB(byte data) {
 // ----------------------------------------------------------------------------
 // SetTimer
 // ----------------------------------------------------------------------------
-ITCM_CODE void riot_SetTimer(word timer, byte intervals) 
+void riot_SetTimer(word timer, byte intervals) 
 {
   riot_timer = timer;
   riot_intervals = intervals;

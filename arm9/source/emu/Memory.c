@@ -5,7 +5,7 @@
 //
 // ----------------------------------------------------------------------------
 // Copyright 2005 Greg Stanton
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -28,7 +28,7 @@
 #include "Database.h"
 
 byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
-u8 *is_memory_writable = (u8*)0x06820000;
+u8  is_memory_writable[256] __attribute__((section(".dtcm")));
 u32 snes_bit_pos = 0;
 u8  bHSC_dirty = 0;
 
@@ -37,18 +37,20 @@ extern bool write_only_pokey_at_4000;
 // ----------------------------------------------------------------------------
 // Reset
 // ----------------------------------------------------------------------------
-void memory_Reset( ) 
+void memory_Reset( )
 {
   uint index;
-  for(index = 0; index < MEMORY_SIZE; index++) {
-    memory_ram[index] = 0;
-    is_memory_writable[index] = 0;
+  for(index = 0x4000; index < MEMORY_SIZE; index++)
+  {
+    memory_ram[index] = 0xff;
+    is_memory_writable[index>>8] = 0;
   }
-  u16 *ptr = (u16*)is_memory_writable;
-  for(index = 0; index < 16384/2; index++) {
-    ptr[index] = 0xFFFF;
+  for(index = 0; index < 0x4000; index++)
+  {
+    memory_ram[index] = 0x00;
+    is_memory_writable[index>>8] = 1;
   }
-   
+
   bHSC_dirty = 0;
   snes_bit_pos = 0;
 }
@@ -57,16 +59,15 @@ void memory_Reset( )
 // ----------------------------------------------------------------------------
 // Read
 // ----------------------------------------------------------------------------
-ITCM_CODE byte memory_Read_Slower(word address) 
-{ 
-  if (address & 0x8000) return memory_ram[address];
-  else if ((address & 0xFFFC) == 0x284)
+ITCM_CODE byte memory_Read_Slower(word address)
+{
+  if ((address & 0xFFFC) == 0x284)
   {
       if (address & 0x1)
       {
         byte tmp_byte = memory_ram[INTFLG];
         memory_ram[INTFLG] &= 0x7f;
-        return tmp_byte; 
+        return tmp_byte;
       }
       else
       {
@@ -78,11 +79,11 @@ ITCM_CODE byte memory_Read_Slower(word address)
   {
       if (myCartInfo.pokeyType == POKEY_AT_4000)
       {
-          if (((address & 0xFFF0) == 0x4000) && (!write_only_pokey_at_4000)) return pokey_GetRegister(address);            
+          if (((address & 0xFFF0) == 0x4000) && (!write_only_pokey_at_4000)) return pokey_GetRegister(address);
       }
       else
       {
-          // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's 
+          // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's
           // good enough as nothing else should be mapped in this region except POKEY.
           if ((address & 0xFFC0) == 0x440) return pokey_GetRegister(0x4000 | (address & 0xF));
           if ((address & 0xFFF0) == 0x800) return pokey_GetRegister(0x4000 | (address & 0xF));
@@ -94,11 +95,11 @@ ITCM_CODE byte memory_Read_Slower(word address)
 // ----------------------------------------------------------------------------
 // Write
 // ----------------------------------------------------------------------------
-ITCM_CODE void memory_Write(word address, byte data) 
+ITCM_CODE void memory_Write(word address, byte data)
 {
   extern u32 bg32, maria_charbase;
   extern u8 bg8;
-    
+
   if (myCartInfo.pokeyType)
   {
       if (myCartInfo.pokeyType == POKEY_AT_4000)
@@ -111,7 +112,7 @@ ITCM_CODE void memory_Write(word address, byte data)
       }
       else
       {
-          // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's 
+          // Not quite accurate as it will catch anything from 0x440 to 0x4C0 but that's
           // good enough as nothing else should be mapped in this region except POKEY.
           if ((address & 0xFFC0) == 0x440)
           {
@@ -122,48 +123,45 @@ ITCM_CODE void memory_Write(word address, byte data)
           {
             pokey_SetRegister(0x4000 | (address & 0x0F), data);
             return;
-          }          
+          }
       }
   }
-  
-  if (((u8*)0x06820000)[address]) // We use 64K of faster VRAM to hold the bits to tell us if this area is writable... speeds up things slightly...
+
+  if (is_memory_writable[address >> 8])
   {
     // ---------------------------------------------------------------------------------------
-    // If this write would be in normal (non bankset) memory, we need to keep the bankset 
+    // If this write would be in normal (non bankset) memory, we need to keep the bankset
     // memory up to date as well... This speeds up processing in Maria for banksets handling.
     // ---------------------------------------------------------------------------------------
     extern byte banksets_memory[]; extern u16 banksets_mask;
     if (!(address & banksets_mask)) banksets_memory[address] = data;
-      
-    if ((address & 0xF800))     // Base RAM is at 0x1800 and HSC SRAM is at 0x1000 so this will find anything that is RAM... 
+
+    if ((address & 0xF800))     // Base RAM is at 0x1800 and HSC SRAM is at 0x1000 so this will find anything that is RAM...
     {
         // For banking RAM we need to keep the shadow up to date.
         if ((address & 0xC000) == 0x4000)
-        { 
+        {
             extern u8 *shadow_ram;
             shadow_ram[address] = data;
-            
+
             if (myCartInfo.cardtype == CARTRIDGE_TYPE_FRACTALUS)
             {
                 // Special EXRAM/A8 handling... mirror ram
-                memory_ram[address ^0x0100] = data;        
+                memory_ram[address ^0x0100] = data;
             }
         }
         else if ((address & 0xF800) == 0x1000)  // HSC RAM - set the dirty bit so we persist the .hsc file in the main loop
         {
             bHSC_dirty = 1;
         }
-
-        memory_ram[address] = data;
-        return;
     }
-    
+
     if (address >= 0x460 && address < 0x480) return;    // XM/Yamaha is mapped into this area... do not respond to it as we are not XM capable (yet)
-      
+
     switch(address) {
       case INPTCTRL:
-        if(data == 22 && cartridge_IsLoaded( )) { 
-          cartridge_Store( ); 
+        if(data == 22 && cartridge_IsLoaded( )) {
+          cartridge_Store( );
         }
         break;
       case INPT0:
@@ -217,10 +215,10 @@ ITCM_CODE void memory_Write(word address, byte data)
         break;
       case SWCHB:
         /*gdement:  Writing here actually writes to DRB inside the RIOT chip.
-					This value only indirectly affects output of SWCHB.*/
+                    This value only indirectly affects output of SWCHB.*/
         riot_SetDRB(data);
         break;
-      case SWCHA:	
+      case SWCHA:
         if (myCartInfo.cardctrl1 == SNES)
         {
             extern byte riot_dra;
@@ -233,7 +231,7 @@ ITCM_CODE void memory_Write(word address, byte data)
             {
                 if (data & 0x10) // Clock going High
                 {
-                    snes_bit_pos++; 
+                    snes_bit_pos++;
                 }
                 else    // Clock going low
                 {
@@ -262,38 +260,44 @@ ITCM_CODE void memory_Write(word address, byte data)
         break;
       default:
         memory_ram[address] = data;
-#ifdef RAM_MIRRORS_ENABLED  // Technically the RAM mirrors are here but we don't really care... we assume anyone using a mirror will read back from that same mirror location.
-        if (address >= 8256)
+#ifdef RAM_MIRRORS_ENABLED
+        // ------------------------------------------------------
+        // Handle the odd RAM mirrors that the 7800 presents...
+        //
+        // 0x2040 - 0x20FF  RAM block 0 (mirror of 0x0040-00FF)
+        // 0x2140 - 0x21FF  RAM block 1 (mirror of 0x0140-01FF)
+        // ------------------------------------------------------
+        if (address >= 0x2040)
         {
-          // 0x2040 -> 0x20ff    (0x2000)
-          if(address >= 8256 && address <= 8447) 
-          {
-            memory_ram[address - 8192] = data;
-          }
-          // 0x2140 -> 0x21ff    (0x2000)
-          else if(address >= 8512 && address <= 8703) 
-          {
-            memory_ram[address - 8192] = data;
-          }
+            // 0x2040 -> 0x20ff    (0x2000)
+            if (address <= 0x20FF)
+            {
+                memory_ram[address - 0x2000] = data;
+            }
+            // 0x2140 -> 0x21ff    (0x2100)
+            else if (address >= 0x2140 && address <= 0x21FF)
+            {
+                memory_ram[address - 0x2000] = data;
+            }
         }
-        else if (address <= 511)
+        else if (address < 0x200)
         {
-          // 0x40 -> 0xff    (0x2000)
-          if(address >= 64 && address <= 255) 
-          {
-            memory_ram[address + 8192] = data;
-          }
-          // 0x140 -> 0x1ff    (0x2000)
-          else if(address >= 320 && address <= 511) 
-          {
-            memory_ram[address + 8192] = data;
-          }
+            // 0x40 -> 0xff    (0x2000)
+            if (address >= 0x40 && address <= 0xFF)
+            {
+                memory_ram[address + 0x2000] = data;
+            }
+            // 0x140 -> 0x1ff    (0x2100)
+            else if (address >= 0x140 && address <= 0x1FF)
+            {
+                memory_ram[address + 0x2000] = data;
+            }
         }
-#endif            
+#endif
         break;
     }
   }
-  else 
+  else
   {
     cartridge_Write(address, data);
   }
@@ -302,29 +306,27 @@ ITCM_CODE void memory_Write(word address, byte data)
 // ----------------------------------------------------------------------------
 // WriteROM
 // ----------------------------------------------------------------------------
-ITCM_CODE void memory_WriteROM(word address, u32 size, const byte* data) 
+ITCM_CODE void memory_WriteROM(word address, u32 size, const byte* data)
 {
-  u32* ramPtr = (u32*)&memory_ram[address];
-  u32* romPtr = (u32*)&is_memory_writable[address];
-  u32* dataPtr = (u32*)data;
-  for (u32 i=0; i<(size>>2); i++)
-  {
-      *ramPtr++ = *dataPtr++;
-      *romPtr++ = 0x00000000;
-  }
+    memcpy(&memory_ram[address], data, size);
+    memset(&is_memory_writable[address>>8], 0x00, size>>8);
 }
 
 // ----------------------------------------------------------------------------
 // WriteROMFast (assumes is_memory_writable[] already set properly)
-// size is already in multiples of u32 dwords
+// size is already in multiples of 8x u32 dwords (32 bytes)
 // ----------------------------------------------------------------------------
-ITCM_CODE void memory_WriteROMFast(word address, u32 size, const u32* data) 
+ITCM_CODE void memory_WriteROMFast(word address, u32 size, const u32* data)
 {
   u32* ramPtr = (u32*)&memory_ram[address];
   u32* dataPtr = (u32*)data;
-  u16 size2 = size;
+  u32 size2 = size;
   do
   {
+      *ramPtr++ = *dataPtr++;
+      *ramPtr++ = *dataPtr++;
+      *ramPtr++ = *dataPtr++;
+      *ramPtr++ = *dataPtr++;
       *ramPtr++ = *dataPtr++;
       *ramPtr++ = *dataPtr++;
       *ramPtr++ = *dataPtr++;
@@ -336,8 +338,8 @@ ITCM_CODE void memory_WriteROMFast(word address, u32 size, const u32* data)
 // ----------------------------------------------------------------------------
 // ClearROM
 // ----------------------------------------------------------------------------
-void memory_ClearROM(word address, word size) 
+void memory_ClearROM(word address, word size)
 {
     memset(&memory_ram[address], 0x00, size);
-    memset(&is_memory_writable[address], 0xFF, size);
+    memset(&is_memory_writable[address>>8], 0xFF, size>>8);
 }

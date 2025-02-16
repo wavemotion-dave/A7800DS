@@ -122,9 +122,11 @@ ITCM_CODE void cartridge_WriteBank(word address, byte bank)
       
     uint offset = bank * 16384;
     if (offset < (272*1024))    // If we are in fast VRAM memory
-        memory_WriteROMFast(address, (16384/(4*4)), (u32*)(0x06860000 + offset));
+        memory_WriteROMFast(address, (16384/(8*4)), (u32*)(0x06860000 + offset));
+    else if (offset < (336*1024))    // If we are in fast VRAM memory (we have 64K more here)
+        memory_WriteROMFast(address, (16384/(8*4)), (u32*)(0x06820000 + offset-(272*1024)));
     else    // Normal memory - a little slower but that's the best we can do...
-        memory_WriteROMFast(address, (16384/(4*4)), (u32*)(cartridge_buffer + offset));
+        memory_WriteROMFast(address, (16384/(8*4)), (u32*)(cartridge_buffer + offset));
   }
 }
 
@@ -471,8 +473,15 @@ static bool _cartridge_Load(uint size)
   // -----------------------------------------------------------------------------
   u32 *fast_mem = (u32*)0x06860000;
   memcpy(fast_mem, cartridge_buffer, (272 * 1024));
+  
+  // -----------------------------------------------------------------
+  // And another 64K bytes of cart into this VRAM area. This gives us
+  // 272K above + 64K here = 336K of cache to help with memory copy.
+  // -----------------------------------------------------------------
+  fast_mem = (u32*)0x06820000;
+  memcpy(fast_mem, cartridge_buffer + (272 * 1024), (64 * 1024));
     
-  memset((u8*)0x06830000, 0x00, (64*1024));   // Clear this 128K chunk of fast VRAM as we use it for RAM bankswitch
+  memset((u8*)0x06830000, 0x00, (64*1024));   // Clear this 64K chunk of fast VRAM as we use it for RAM bankswitch
   
   hash_Compute(cartridge_buffer, cartridge_size, cartridge_digest);
   return true;

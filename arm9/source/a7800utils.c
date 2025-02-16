@@ -232,7 +232,7 @@ void dsInitScreenMain(void)
     if (isDSiMode()) isDS_LITE = false; 
     else isDS_LITE = true;    
 
-    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 64K used for the is_memory_writable[] check and 64K for extra RAM
+    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 64K for extra Bankswitched RAM
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
@@ -252,7 +252,7 @@ void dsShowScreenEmu(void)
     // Change vram
     videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
     vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
-    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 64K used for the is_memory_writable[] check and 64K for extra RAM
+    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 64K used for Cart Bankswitch and 64K for extra RAM
     vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
     vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
     vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
@@ -921,17 +921,85 @@ __attribute__ ((noinline)) void toggle_zoom(void)
   bRefreshXY = true; 
 }
 
+static u8 special_hsc_entry=0;    
+u8 keys_touch __attribute__((section(".dtcm"))) = 0;
+
+void handle_touch_screen_input(void)
+{
+    unsigned int romSel;
+    short iTx,iTy;    
+    touchPosition touch;
+    
+    touchRead(&touch);
+    iTx = touch.px;
+    iTy = touch.py;
+    
+    if ((iTx>2) && (iTx<67) && (iTy>154) && (iTy<171))  { // POWER
+        SoundPause();
+        mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
+        if (dsWaitOnQuit()) emu_state=A7800_QUITSTDS;
+        else SoundUnPause();
+    }
+    else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper right corner...
+       full_speed = 1-full_speed; 
+       if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");
+       dampen=60;
+    }
+    else if ((iTx>=0) && (iTx<16) && (iTy>0) && (iTy<20))  { // FPS Toggle ... upper left corner...
+        fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");
+        dampen=60;
+    }
+    else if ((iTx>67) && (iTx<128) && (iTy>154) && (iTy<171))  { // PAUSE
+        if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
+        tchepres_value = 10;
+        tchepres_delay = 5;
+        tchepres(10);
+    }
+    else if ((iTx>128) && (iTx<193) && (iTy>154) && (iTy<171))  { // SELECT
+        if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
+        tchepres_value = 11;
+        tchepres_delay = 5;
+        tchepres(11);
+    }
+    else if ((iTx>193) && (iTx<254) && (iTy>154) && (iTy<171))  { // RESET
+        if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
+        tchepres_value = 6;
+        tchepres_delay = 5;
+        tchepres(6);
+    }
+    else if ((iTx>90) && (iTx<110) && (iTy>90) && (iTy<110))  { // Atari Logo - Activate HSC Maintenence Mode (only on High Score screen)
+        special_hsc_entry=70; 
+    }
+    else if ((iTx>69) && (iTx<180) && (iTy>21) && (iTy<62))   // Cartridge slot
+    {     
+        SoundPause();
+        // Find files in current directory and show it 
+        proFindFiles();
+        romSel=dsWaitForRom();
+        if (romSel) {emu_state=A7800_PLAYINIT; dsLoadGame(proromlist[ucFicAct].filename); if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}
+        else SoundUnPause();
+    }
+    else if ((iTx>190) && (iTx<230) && (iTy>22) && (iTy<62))   // Gear Icon (Settings)
+    {     
+        SoundPause();
+        ShowConfig();
+        SoundUnPause();
+    }
+    else if ((iTx>10) && (iTx<58) && (iTy>22) && (iTy<62))   // Magnifying Glass (zoom)
+    {
+        if (!keys_touch) toggle_zoom();
+    }
+}
+
 // ----------------------------------------------------------------------------------
 // This is where the action happens!  The main loop runs continually and clocks
 // out the 60 frames per second of the 7800 Prosystem
 // ----------------------------------------------------------------------------------
 ITCM_CODE void dsMainLoop(void) 
 {
-  static u8 special_hsc_entry=0;    
   static short int last_keys_pressed = 999;
-  unsigned int keys_pressed,keys_touch=0, romSel;
-  short iTx,iTy;
- 
+  unsigned int keys_pressed;
+
   timer_reset();
   
   while(emu_state != A7800_QUITSTDS) {
@@ -942,7 +1010,7 @@ ITCM_CODE void dsMainLoop(void)
         break;
         
       case A7800_MENUSHOW:
-        emu_state =  dsWaitOnMenu(A7800_MENUSHOW);
+        emu_state = dsWaitOnMenu(A7800_MENUSHOW);
         break;
         
       case A7800_PLAYINIT:
@@ -1002,69 +1070,7 @@ ITCM_CODE void dsMainLoop(void)
           // if touch screen pressed
           if (keys_pressed & KEY_TOUCH) 
           {
-              touchPosition touch;
-              touchRead(&touch);
-              iTx = touch.px;
-              iTy = touch.py;
-              if ((iTx>2) && (iTx<67) && (iTy>154) && (iTy<171))  { // POWER
-                SoundPause();
-                mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
-                if (dsWaitOnQuit()) emu_state=A7800_QUITSTDS;
-                else SoundUnPause();
-              }
-              else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper right corner...
-                 full_speed = 1-full_speed; 
-                 if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");
-                 dampen=60;
-              }
-              else if ((iTx>=0) && (iTx<16) && (iTy>0) && (iTy<20))  { // FPS Toggle ... upper left corner...
-                  fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");
-                  dampen=60;
-              }
-              else if ((iTx>67) && (iTx<128) && (iTy>154) && (iTy<171))  { // PAUSE
-                if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
-                tchepres_value = 10;
-                tchepres_delay = 5;
-                tchepres(10);
-              }
-              else if ((iTx>128) && (iTx<193) && (iTy>154) && (iTy<171))  { // SELECT
-                if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
-                tchepres_value = 11;
-                tchepres_delay = 5;
-                tchepres(11);
-              }
-              else if ((iTx>193) && (iTx<254) && (iTy>154) && (iTy<171))  { // RESET
-                if (keys_touch == 0) mmEffect(SFX_KEYCLICK);  // Play short key click for feedback...
-                tchepres_value = 6;
-                tchepres_delay = 5;
-                tchepres(6);
-              }
-              else if ((iTx>90) && (iTx<110) && (iTy>90) && (iTy<110))  { // Atari Logo - Activate HSC Maintenence Mode (only on High Score screen)
-                special_hsc_entry=70; 
-              }
-              else if ((iTx>69) && (iTx<180) && (iTy>21) && (iTy<62))   // Cartridge slot
-              {     
-                SoundPause();
-                // Find files in current directory and show it 
-                proFindFiles();
-                romSel=dsWaitForRom();
-                if (romSel) { emu_state=A7800_PLAYINIT; dsLoadGame(proromlist[ucFicAct].filename); if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");}
-                else 
-                { 
-                    SoundUnPause();
-                }
-              }
-              else if ((iTx>190) && (iTx<230) && (iTy>22) && (iTy<62))   // Gear Icon (Settings)
-              {     
-                SoundPause();
-                ShowConfig();
-                SoundUnPause();
-              }
-              else if ((iTx>10) && (iTx<58) && (iTy>22) && (iTy<62))   // Magnifying Glass (zoom)
-              {
-                  if (!keys_touch) toggle_zoom();
-              }
-              
+              handle_touch_screen_input();
               keys_touch=1;
           } else keys_touch=0;
           
@@ -1090,7 +1096,7 @@ ITCM_CODE void dsMainLoop(void)
         
         snes_adaptor = 0x0000FFFF;  // Nothing pressed to start
             
-        // manage a7800 pad 
+        // manage a7800 joystick 
         if ( (keys_pressed & KEY_UP) )    { tchepres(0); snes_adaptor &= 0xFFEF;} // UP
         if ( (keys_pressed & KEY_DOWN) )  { tchepres(1); snes_adaptor &= 0xFFDF;} // DOWN
         if ( (keys_pressed & KEY_LEFT) )  { tchepres(2); snes_adaptor &= 0xFFBF;} // LEFT
@@ -1120,8 +1126,8 @@ ITCM_CODE void dsMainLoop(void)
         {
             if ( (keys_pressed & KEY_A) ) { tchepres(4); snes_adaptor &= 0xFEFF;}  // BUTTON #1
             if ( (keys_pressed & KEY_B) ) { tchepres(5); snes_adaptor &= 0xFFFE;}  // BUTTON #2
-            if ( (keys_pressed & KEY_Y) ) { temp_shift = 16; shift_dampen = 1;}  // Shift Screen Down
-            if ( (keys_pressed & KEY_X) ) { temp_shift = -16; shift_dampen = 1;} // Shift Screen Up
+            if ( (keys_pressed & KEY_Y) ) { temp_shift = 16; shift_dampen = 1;}    // Shift Screen Down
+            if ( (keys_pressed & KEY_X) ) { temp_shift = -16; shift_dampen = 1;}   // Shift Screen Up
         }
             
         if ((keys_pressed & KEY_R) || (keys_pressed & KEY_L))
@@ -1154,9 +1160,6 @@ ITCM_CODE void dsMainLoop(void)
                 dsPrintValue(11,0,0, "          ");
             }
 
-            TIMER1_CR = 0;
-            TIMER1_DATA = 0;
-            TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
             if (fpsDisplay)
             {
                 int fps = gTotalAtariFrames;
@@ -1175,6 +1178,11 @@ ITCM_CODE void dsMainLoop(void)
                 }
             }
             DumpDebugData();
+
+            // And finally reset the frame timer...
+            TIMER1_CR = 0;
+            TIMER1_DATA = 0;
+            TIMER1_CR=TIMER_ENABLE | TIMER_DIV_1024;
         }
         break;
     }
