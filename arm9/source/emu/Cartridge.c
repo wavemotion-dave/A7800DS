@@ -33,7 +33,7 @@ char cartridge_filename[256];
 byte header[128] = {0};                   // We might have a header... this will buffer it
 
 word cardtype = 0x0000;
-bool write_only_pokey_at_4000 = false;
+u8 write_only_pokey_at_4000 __attribute__((section(".dtcm"))) = false;
 
 // -------------------------------------------------------------------------------------------------
 // We allow cart sizes up to 1024K which is pretty huge - I've not seen any ROMs bigger than this.
@@ -93,9 +93,9 @@ ITCM_CODE void cartridge_WriteBank(word address, byte bank)
       
     if (last_ex_ram_bank != ex_ram_bank)
     {
-        u32 *src  = ex_ram_bank ? (u32*)0x06830000 : (u32*)0x06834000;  // Only for the DSi.. see DS_LITE handling below
+        u32 *src  = ex_ram_bank ? (u32*)0x06838000 : (u32*)0x0683C000;  // Only for the DSi.. see DS_LITE handling below
         u32 *dest = (u32*)(memory_ram+0x4000);
-        shadow_ram = ex_ram_bank ? (u8*)0x06830000 : (u8*)0x06834000;   // // Only for the DSi.. see DS_LITE handling below
+        shadow_ram = ex_ram_bank ? (u8*)0x06838000 : (u8*)0x0683C000;   // Only for the DSi.. see DS_LITE handling below
 
         if (isDS_LITE) // Unfortunately non DSi can't write 8-bit values to LCD RAM... so we have to do this the slow way
         {
@@ -123,7 +123,7 @@ ITCM_CODE void cartridge_WriteBank(word address, byte bank)
     uint offset = bank * 16384;
     if (offset < (272*1024))    // If we are in fast VRAM memory
         memory_WriteROMFast(address, (16384/(8*4)), (u32*)(0x06860000 + offset));
-    else if (offset < (336*1024))    // If we are in fast VRAM memory (we have 64K more here)
+    else if (offset < (368*1024))    // If we are in fast VRAM memory (we have 96K more here)
         memory_WriteROMFast(address, (16384/(8*4)), (u32*)(0x06820000 + offset-(272*1024)));
     else    // Normal memory - a little slower but that's the best we can do...
         memory_WriteROMFast(address, (16384/(8*4)), (u32*)(cartridge_buffer + offset));
@@ -136,9 +136,9 @@ void cartridge_SwapRAM_DragonFlyStyle(u8 data)
 
     if (last_ex_ram_bank_df != ex_ram_bank_df)
     {
-        u32 *src  = ex_ram_bank_df ? (u32*)0x06830000 : (u32*)0x06834000;  // Only for the DSi.. see DS_LITE handling below
+        u32 *src  = ex_ram_bank_df ? (u32*)0x06838000 : (u32*)0x0683C000;  // Only for the DSi.. see DS_LITE handling below
         u32 *dest = (u32*)(memory_ram+0x4000);
-        shadow_ram = ex_ram_bank_df ? (u8*)0x06830000 : (u8*)0x06834000;   // Only for the DSi.. see DS_LITE handling below
+        shadow_ram = ex_ram_bank_df ? (u8*)0x06838000 : (u8*)0x0683C000;   // Only for the DSi.. see DS_LITE handling below
 
         if (isDS_LITE) // Unfortunately non DSi can't write 8-bit values to LCD RAM... so we have to do this the slow way
         {
@@ -401,7 +401,7 @@ static void cartridge_ReadHeader(const byte* header) {
   write_only_pokey_at_4000  = false;
   ex_ram_bank_df            = 0;
   if (isDS_LITE) shadow_ram = ex_ram_bank ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // for DS-Lite
-  else shadow_ram = ex_ram_bank ? (u8*)0x06830000 : (u8*)0x06834000;   // // Only for the DSi.. see DS_LITE handling above
+  else shadow_ram = ex_ram_bank ? (u8*)0x06838000 : (u8*)0x0683C000;   // // Only for the DSi.. see DS_LITE handling above
   shadow_ram -= 0x4000; // Makes for faster indexing in Memory.c
 }
 
@@ -475,13 +475,13 @@ static bool _cartridge_Load(uint size)
   memcpy(fast_mem, cartridge_buffer, (272 * 1024));
   
   // -----------------------------------------------------------------
-  // And another 64K bytes of cart into this VRAM area. This gives us
-  // 272K above + 64K here = 336K of cache to help with memory copy.
+  // And another 96K bytes of cart into this VRAM area. This gives us
+  // 272K above + 96K here = 368K of cache to help with memory copy.
   // -----------------------------------------------------------------
   fast_mem = (u32*)0x06820000;
-  memcpy(fast_mem, cartridge_buffer + (272 * 1024), (64 * 1024));
+  memcpy(fast_mem, cartridge_buffer + (272 * 1024), (96 * 1024));
     
-  memset((u8*)0x06830000, 0x00, (64*1024));   // Clear this 64K chunk of fast VRAM as we use it for RAM bankswitch
+  memset((u8*)0x06838000, 0x00, (32*1024));   // Clear this 32K chunk of fast VRAM as we use it for additional 2X RAM bankswitch (two banks of 16K)
   
   hash_Compute(cartridge_buffer, cartridge_size, cartridge_digest);
   return true;
@@ -749,6 +749,6 @@ void cartridge_Release( )
     ex_ram_bank_df            = 0;
     write_only_pokey_at_4000  = false;
     if (isDS_LITE) shadow_ram = ex_ram_bank ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // for DS-Lite
-    else shadow_ram = ex_ram_bank ? (u8*)0x06830000 : (u8*)0x06834000;   // // Only for the DSi.. see DS_LITE handling above
+    else shadow_ram = ex_ram_bank ? (u8*)0x06838000 : (u8*)0x0683C000;   // // Only for the DSi.. see DS_LITE handling above
     shadow_ram -= 0x4000; // Makes for faster indexing in Memory.c
 }

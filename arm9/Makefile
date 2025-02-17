@@ -14,10 +14,10 @@ include $(DEVKITARM)/ds_rules
 # DATA is a list of directories containing binary files
 # all directories are relative to this makefile
 #---------------------------------------------------------------------------------
-BUILD		  :=	build
+BUILD		:=	build
 SOURCES		:=	source/emu source  
 INCLUDES	:=	source/emu source include
-DATA		  := data
+DATA		:=	data
 GRAPHICS	:=	gfx
 
 #---------------------------------------------------------------------------------
@@ -26,17 +26,14 @@ GRAPHICS	:=	gfx
 #ARCH	:=	-mthumb -mthumb-interwork
 ARCH	:=	
 
-#CFLAGS	:=	-g -Wall -O2 -march=armv5te -mtune=arm946e-s -fomit-frame-pointer -ffast-math $(ARCH)
 CFLAGS	:=	-Wall -Ofast -march=armv5te -mtune=arm946e-s -fomit-frame-pointer -ffast-math -fsigned-char $(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM9
 CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
 
-#ASFLAGS	:=	-g $(ARCH) -march=armv5te -mtune=arm946e-s
-ASFLAGS	:=	$(ARCH) -march=armv5te -mtune=arm946e-s
+ASFLAGS		:=	$(ARCH) -march=armv5te -mtune=arm946e-s
 
-#LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
-LDFLAGS	=	-specs=ds_arm9.specs $(ARCH) -Wl,-Map,$(notdir $*.map)
+LDFLAGS		 = -specs=ds_arm9.specs $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
@@ -56,7 +53,7 @@ LIBDIRS	:=	$(LIBNDS)
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
  
-export ARM9ELF	:=	$(CURDIR)/$(TARGET).elf
+export ARM9ELF := $(CURDIR)/$(TARGET).elf
 export DEPSDIR := $(CURDIR)/$(BUILD)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
@@ -123,13 +120,8 @@ $(ARM9ELF)	:	$(OFILES)
 	@$(bin2o)
 
 %.s %.h	: %.png 
-#	grit $< -fts -W3 -gT! -gzl -gB16 -gb -o$*
 	grit $^ -o $@  -gt -mrt -mR8 -mLs -gzl -mzl
   
-#%.gif.o	:	%.gif
-#	@echo $(notdir $<)
-#	@$(bin2o)
-
 %.wav.o	:	%.wav
 	@echo $(notdir $<)
 	@$(bin2o)

@@ -31,10 +31,9 @@ byte sally_y __attribute__((section(".dtcm"))) = 0;
 uint sally_p __attribute__((section(".dtcm"))) = 0;
 uint sally_s __attribute__((section(".dtcm"))) = 0;
 
-PCUnion sally_pc  __attribute__((section(".dtcm"))) = {0};
-
+static PCUnion sally_pc      __attribute__((section(".dtcm"))) = {0};
 static PCUnion sally_address __attribute__((section(".dtcm")));
-static uint sally_cyclesX4 __attribute__((section(".dtcm")));
+static uint sally_cyclesX4   __attribute__((section(".dtcm")));
 
 byte last_illegal_opcode = 0;
 
@@ -56,24 +55,25 @@ static const Vector SALLY_RES = {65533, 65532};
 static const Vector SALLY_NMI = {65531, 65530};
 static const Vector SALLY_IRQ = {65535, 65534}; 
 
+// Cycle table assumes jump is taken - the Sally_Branch() handler will back off 4 cycles if needed
 static uint SALLY_CYCLESX4[256] __attribute__((section(".dtcm"))) = 
 {
 	7*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,0*4,4*4,6*4,0*4,    //00
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //10
+	3*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //10
 	6*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,4*4,2*4,2*4,2*4,4*4,4*4,6*4,0*4,    //20
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //30
+	3*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //30
 	6*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,3*4,2*4,2*4,2*4,3*4,4*4,6*4,0*4,    //40
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //50
+	3*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //50
 	6*4,6*4,0*4,0*4,0*4,3*4,5*4,0*4,4*4,2*4,2*4,0*4,5*4,4*4,6*4,0*4,    //60
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //70
+	3*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4,    //70
 	0*4,6*4,0*4,6*4,3*4,3*4,3*4,3*4,2*4,0*4,2*4,0*4,4*4,4*4,4*4,4*4,    //80
-	2*4,6*4,0*4,0*4,4*4,4*4,4*4,4*4,2*4,5*4,2*4,0*4,0*4,5*4,0*4,0*4,    //90
+	3*4,6*4,0*4,0*4,4*4,4*4,4*4,4*4,2*4,5*4,2*4,0*4,0*4,5*4,0*4,0*4,    //90
 	2*4,6*4,2*4,6*4,3*4,3*4,3*4,3*4,2*4,2*4,2*4,0*4,4*4,4*4,4*4,4*4,    //A0
-	2*4,5*4,0*4,5*4,4*4,4*4,4*4,4*4,2*4,4*4,2*4,0*4,4*4,4*4,4*4,4*4,    //B0
+	3*4,5*4,0*4,5*4,4*4,4*4,4*4,4*4,2*4,4*4,2*4,0*4,4*4,4*4,4*4,4*4,    //B0
 	2*4,6*4,0*4,8*4,3*4,3*4,5*4,5*4,2*4,2*4,2*4,0*4,4*4,4*4,6*4,6*4,    //C0
-	2*4,5*4,0*4,8*4,0*4,4*4,6*4,6*4,2*4,4*4,0*4,7*4,0*4,4*4,7*4,7*4,    //D0
+	3*4,5*4,0*4,8*4,0*4,4*4,6*4,6*4,2*4,4*4,0*4,7*4,0*4,4*4,7*4,7*4,    //D0
 	2*4,6*4,0*4,0*4,3*4,3*4,5*4,0*4,2*4,2*4,2*4,0*4,4*4,4*4,6*4,0*4,    //E0
-	2*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4     //F0
+	3*4,5*4,0*4,0*4,0*4,4*4,6*4,0*4,2*4,4*4,0*4,0*4,0*4,4*4,7*4,0*4     //F0
 };
 
 
@@ -101,32 +101,37 @@ static inline byte sally_Pop( )
 // ----------------------------------------------------------------------------
 // Flags
 // ----------------------------------------------------------------------------
-static inline void sally_Flags(byte data) 
+static inline __attribute__((always_inline)) void sally_Flags(byte data) 
 {
   sally_p = (sally_p & ~(_fN | _fZ)) | (data ? (data & _fN) : _fZ);
 }
 
-static inline void sally_FlagsFastCmp(byte data)   // For faster compare handling...
+static inline __attribute__((always_inline)) void sally_FlagsFastCmp(byte data)   // For faster compare handling...
 {
-  sally_p = (sally_p & 0x7C) | (data ? (data & _fN) : (_fZ|_fC));
+  sally_p = (sally_p & ~(_fN | _fZ | _fC)) | (data ? (data & _fN) : (_fZ | _fC));
 }
 
 // ----------------------------------------------------------------------------
 // Branch
 // ----------------------------------------------------------------------------
-static inline void sally_Branch(byte branch) {
-  if(branch) 
+static inline __attribute__((always_inline)) void sally_Branch(byte branch) 
+{
+  if (likely(branch))
   {
     uint carry = sally_pc.w;
     sally_pc.w += (signed char)sally_address.b.l;
-    sally_cyclesX4 += ((carry ^ sally_pc.w) & 0x100) ? 8:4;
+    if ((carry ^ sally_pc.w) & 0x100) sally_cyclesX4 += 4;  // Add an extra 4 cycles if we've crossed a page boundary
+  }
+  else // 95% of the time, the branch is not taken... so we've built into the cycle table the assumption the branch was taken and we back off 4 cycles if not
+  {
+      sally_cyclesX4 -= 4;
   }
 }
 
 // ----------------------------------------------------------------------------
 // Delay
 // ----------------------------------------------------------------------------
-static inline void sally_Delay(byte delta) {
+static inline __attribute__((always_inline)) void sally_Delay(byte delta) {
   if (((word)sally_address.b.l + (word)delta) & 0xFF00) sally_cyclesX4 += 4;
 }
 
@@ -170,8 +175,8 @@ static inline void sally_Indirect( ) {
   lpair base;
   base.w = memory_Read_Fast(sally_pc.w++);
   base.b.h = memory_Read_Fast(sally_pc.w++);
-  sally_address.w = memory_Read_Fast(base.w);
-  sally_address.b.h = memory_Read_Fast(base.w + 1);
+  sally_address.w = memory_Read(base.w);
+  sally_address.b.h = memory_Read(base.w + 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -226,8 +231,8 @@ static inline void sally_ZeroPageY( ) {
 // ----------------------------------------------------------------------------
 // ADC
 // ----------------------------------------------------------------------------
-static inline void sally_ADC( ) {
-  byte data = memory_Read_Fast(sally_address.w);
+static ITCM_CODE void sally_ADC( ) {
+  byte data = memory_Read(sally_address.w);
   if(sally_p & _fD) {
     word al = (sally_a & 15) + (data & 15) + (sally_p & _fC);
     word ah = (sally_a >> 4) + (data >> 4);
@@ -453,8 +458,8 @@ static inline void sally_CLV( ) {
 // ----------------------------------------------------------------------------
 // CMP
 // ----------------------------------------------------------------------------
-static inline void sally_CMP( ) {
-  byte data = memory_Read_Fast(sally_address.w);//memory_Read(sally_address.w);
+static inline __attribute__((always_inline)) void sally_CMP( ) {
+  byte data = memory_Read(sally_address.w);
     
   if(sally_a >= data) {
     sally_p |= _fC;
@@ -501,8 +506,8 @@ static inline void sally_CPY( ) {
 // ----------------------------------------------------------------------------
 // DEC
 // ----------------------------------------------------------------------------
-static inline void sally_DEC( ) {
-  byte data = memory_Read_Fast(sally_address.w);
+static ITCM_CODE void sally_DEC( ) {
+  byte data = memory_Read(sally_address.w);
   memory_Write(sally_address.w, --data);
   sally_Flags(data);
 }
@@ -532,8 +537,8 @@ static inline void sally_EOR( ) {
 // ----------------------------------------------------------------------------
 // INC
 // ----------------------------------------------------------------------------
-static inline void sally_INC( ) {
-  byte data = memory_Read_Fast(sally_address.w);
+static ITCM_CODE void sally_INC( ) {
+  byte data = memory_Read(sally_address.w);
   memory_Write(sally_address.w, ++data);
   sally_Flags(data);
 }
@@ -573,10 +578,17 @@ static inline void sally_JSR( ) {
 // ----------------------------------------------------------------------------
 // LDA
 // ----------------------------------------------------------------------------
-static inline void sally_LDA( ) {
+static inline __attribute__((always_inline)) void sally_LDA( ) {
   sally_a = memory_Read(sally_address.w);
   sally_Flags(sally_a);
 }
+
+// Same as sally_LDA() above but when you know we are in basic memory_ram[]
+static inline __attribute__((always_inline)) void sally_LDA_fast( ) { 
+  sally_a = memory_Read_Fast(sally_address.w);
+  sally_Flags(sally_a);
+}
+
 
 // ----------------------------------------------------------------------------
 // LDX
@@ -586,11 +598,23 @@ static inline void sally_LDX( ) {
   sally_Flags(sally_x);
 }
 
+// Same as sally_LDX() above but when you know we are in basic memory_ram[]
+static inline void sally_LDX_fast( ) {
+  sally_x = memory_Read_Fast(sally_address.w);
+  sally_Flags(sally_x);
+}
+
 // ----------------------------------------------------------------------------
 // LDY
 // ----------------------------------------------------------------------------
 static inline void sally_LDY( ) {
   sally_y = memory_Read(sally_address.w);
+  sally_Flags(sally_y);
+}
+
+// Same as sally_LDY() above but when you know we are in basic memory_ram[]
+static inline void sally_LDY_fast( ) {
+  sally_y = memory_Read_Fast(sally_address.w);
   sally_Flags(sally_y);
 }
 
@@ -757,8 +781,8 @@ static inline void sally_RTS( ) {
 // ----------------------------------------------------------------------------
 // SBC
 // ----------------------------------------------------------------------------
-static inline void sally_SBC( ) {
-  byte data = memory_Read_Fast(sally_address.w);
+static void sally_SBC( ) {
+  byte data = memory_Read(sally_address.w);
 
   if(sally_p & _fD) {
     word al = (sally_a & 15) - (data & 15) - !(sally_p & _fC);
@@ -1410,18 +1434,21 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
       goto next_inst;
 
     l_0x84: 
-      sally_ZeroPage( );  
-      sally_STY( ); 
+      memory_Write(memory_ram[sally_pc.w++], sally_y);
+      //sally_ZeroPage( );  
+      //sally_STY( ); 
       goto next_inst;
 
-    l_0x85: 
-      sally_ZeroPage( );  
-      sally_STA( ); 
+    l_0x85:
+      memory_Write(memory_ram[sally_pc.w++], sally_a);
+      //sally_ZeroPage( );  
+      //sally_STA( ); 
       goto next_inst;
 
     l_0x86: 
-      sally_ZeroPage( );  
-      sally_STX( ); 
+      memory_Write(memory_ram[sally_pc.w++], sally_x);
+      //sally_ZeroPage( );  
+      //sally_STX( ); 
       goto next_inst;
 
     l_0x88: 
@@ -1462,7 +1489,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
       sally_STY( ); 
       goto next_inst;
 
-    l_0x95: 
+    l_0x95:
       sally_ZeroPageX( ); 
       sally_STA( ); 
       goto next_inst;
@@ -1492,7 +1519,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
 
     l_0xa0: 
       sally_Immediate( ); 
-      sally_LDY( ); 
+      sally_LDY_fast( ); 
       goto next_inst;
 
     l_0xa1: 
@@ -1502,22 +1529,22 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
 
     l_0xa2: 
       sally_Immediate( ); 
-      sally_LDX( ); 
+      sally_LDX_fast( ); 
       goto next_inst;
 
     l_0xa4: 
-      sally_ZeroPage( );  
-      sally_LDY( ); 
+      sally_y = memory_Read_Fast(memory_Read_Fast(sally_pc.w++)); // Skip the intermediate set of sally_address to save a few CPU cycles
+      sally_Flags(sally_y);
       goto next_inst;
 
-    l_0xa5: 
-      sally_ZeroPage( );  
-      sally_LDA( ); 
+    l_0xa5:
+      sally_a = memory_Read_Fast(memory_Read_Fast(sally_pc.w++)); // Skip the intermediate set of sally_address to save a few CPU cycles
+      sally_Flags(sally_a);      
       goto next_inst;
 
     l_0xa6: 
-      sally_ZeroPage( );  
-      sally_LDX( ); 
+      sally_x = memory_Read_Fast(memory_Read_Fast(sally_pc.w++)); // Skip the intermediate set of sally_address to save a few CPU cycles
+      sally_Flags(sally_x);
       goto next_inst;
 
     l_0xa8: 
@@ -1526,7 +1553,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
 
     l_0xa9: 
       sally_Immediate( ); 
-      sally_LDA( ); 
+      sally_LDA_fast( ); 
       goto next_inst;
 
     l_0xaa: 
@@ -1561,17 +1588,17 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
 
     l_0xb4: 
       sally_ZeroPageX( ); 
-      sally_LDY( ); 
+      sally_LDY_fast( ); 
       goto next_inst;
 
     l_0xb5: 
       sally_ZeroPageX( ); 
-      sally_LDA( ); 
+      sally_LDA_fast( ); 
       goto next_inst;
 
     l_0xb6: 
       sally_ZeroPageY( ); 
-      sally_LDX( ); 
+      sally_LDX_fast( ); 
       goto next_inst;
 
     l_0xb8: 
@@ -1614,7 +1641,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
     l_0xc1: 
       sally_IndirectX( ); 
       //sally_CMP( ); 
-      data_cmp = memory_Read_Fast(sally_address.w);
+      data_cmp = memory_Read(sally_address.w);
       sally_FlagsFastCmp(sally_a - data_cmp);    
       if(sally_a > data_cmp) sally_p |= _fC;
       goto next_inst;
@@ -1661,7 +1688,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
     l_0xcd: 
       sally_Absolute( );  
       //sally_CMP( ); 
-      data_cmp = memory_Read_Fast(sally_address.w);
+      data_cmp = memory_Read(sally_address.w);
       sally_FlagsFastCmp(sally_a - data_cmp);    
       if(sally_a > data_cmp) sally_p |= _fC;
       goto next_inst;
@@ -1679,7 +1706,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
     l_0xd1: 
       sally_IndirectY( ); 
       //sally_CMP( ); 
-      data_cmp = memory_Read_Fast(sally_address.w);
+      data_cmp = memory_Read(sally_address.w);
       sally_FlagsFastCmp(sally_a - data_cmp);    
       if(sally_a > data_cmp) sally_p |= _fC;
       sally_Delay(sally_y); 
@@ -1696,7 +1723,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
     l_0xd9: 
       sally_AbsoluteY( ); 
       //sally_CMP( ); 
-      data_cmp = memory_Read_Fast(sally_address.w);
+      data_cmp = memory_Read(sally_address.w);
       sally_FlagsFastCmp(sally_a - data_cmp);    
       if(sally_a > data_cmp) sally_p |= _fC;
       sally_Delay(sally_y); 
@@ -1705,7 +1732,7 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
     l_0xdd: 
       sally_AbsoluteX( ); 
       //sally_CMP( ); 
-      data_cmp = memory_Read_Fast(sally_address.w);
+      data_cmp = memory_Read(sally_address.w);
       sally_FlagsFastCmp(sally_a - data_cmp);    
       if(sally_a > data_cmp) sally_p |= _fC;
       sally_Delay(sally_x); 
@@ -1867,14 +1894,14 @@ ITCM_CODE void sally_Execute(unsigned int cycles )
       
     l_0xa7:
       sally_ZeroPage( ); 
-      sally_LDA( ); 
-      sally_LDX( ); 
+      sally_LDA_fast( ); 
+      sally_LDX_fast( ); 
       goto next_inst;
 
     l_0xb7:
       sally_ZeroPageY( ); 
-      sally_LDA( ); 
-      sally_LDX( ); 
+      sally_LDA_fast( ); 
+      sally_LDX_fast( ); 
       goto next_inst;
       
     l_0x87:

@@ -135,7 +135,7 @@ void maria_Clear( )
 // ----------------------------------------------------------------------------
 // ClearCells - 4 bytes at a time
 // ----------------------------------------------------------------------------
-static inline void _maria_ClearCells4(void)
+static inline __attribute__((always_inline))  void _maria_ClearCells4(void)
 {
   if ((maria_horizontal) < MARIA_LINERAM_SIZE)
   {
@@ -149,7 +149,7 @@ static inline void _maria_ClearCells4(void)
 // ----------------------------------------------------------------------------
 // StoreCells - 4 bytes at a time
 // ----------------------------------------------------------------------------
-static inline void _maria_StoreCells4(byte data) 
+static inline __attribute__((always_inline))  void _maria_StoreCells4(byte data) 
 {
   if((maria_horizontal) < MARIA_LINERAM_SIZE) 
   {
@@ -176,7 +176,7 @@ static inline void _maria_StoreCells4(byte data)
 // ----------------------------------------------------------------------------
 // StoreCell - write mode
 // ----------------------------------------------------------------------------
-static inline void maria_StoreCellWriteMode(byte data) 
+static inline __attribute__((always_inline)) void maria_StoreCellWriteMode(byte data) 
 {
   if(maria_horizontal < MARIA_LINERAM_SIZE) 
   {
@@ -301,7 +301,7 @@ static u8 write_mode_lookup_mode2B[] __attribute__((section(".dtcm"))) =
 // ----------------------------------------------------------------------------
 // WriteLineRAM
 // ----------------------------------------------------------------------------
-static inline void maria_WriteLineRAM(word* buffer) 
+static ITCM_CODE void maria_WriteLineRAM(word* buffer) 
 {
   union ColorUnion colors; 
   uint32 *pix=(uint32 *) buffer;
@@ -409,7 +409,7 @@ static inline void maria_WriteLineRAM(word* buffer)
 // ----------------------------------------------------------------------------
 // StoreGraphic
 // ----------------------------------------------------------------------------
-static inline void maria_StoreGraphic( ) 
+static inline __attribute__((always_inline)) void maria_StoreGraphic( ) 
 {
   byte data = memory_ram[maria_pp.w];
   if(maria_wmode) 
@@ -442,7 +442,7 @@ static inline void maria_StoreGraphic( )
 // ---------------------------------------------------------------------------
 // For when cwidth == 2 and we are storing graphics which are 2 chars wide...
 // ---------------------------------------------------------------------------
-static inline void maria_StoreGraphicX2( ) 
+static inline __attribute__((always_inline)) void maria_StoreGraphicX2( ) 
 {
   byte data1 = memory_ram[maria_pp.w++];
   byte data2 = memory_ram[maria_pp.w];
@@ -685,7 +685,7 @@ extern byte banksets_memory[];
 // ----------------------------------------------------------------------------
 // StoreGraphic
 // ----------------------------------------------------------------------------
-static inline void mariabank_StoreGraphic( ) 
+static inline __attribute__((always_inline)) void mariabank_StoreGraphic( ) 
 {
   byte data = bankset_memory_read(maria_pp.w);
   if(maria_wmode) 

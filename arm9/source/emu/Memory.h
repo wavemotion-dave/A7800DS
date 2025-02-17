@@ -38,12 +38,13 @@ extern u8 bHSC_dirty;
 extern byte memory_ram[MEMORY_SIZE];
 extern void memory_Reset( );
 
-extern ITCM_CODE byte memory_Read_Slower(word address);
+extern byte memory_Read_Slower(word address);
 extern void memory_Write(word address, byte data);
+extern void memory_WriteZP(word address, byte data);
 
 inline byte memory_Read(word address)
 {
-    if (address & 0x4C00) return memory_Read_Slower(address); // If these bits are set, might be POKEY
+    if (address & 0x4E00) return memory_Read_Slower(address); // If these bits are set, might be POKEY access... or RIOT read
     else return memory_ram[address];
 }
 

@@ -32,8 +32,6 @@ u8  is_memory_writable[256] __attribute__((section(".dtcm")));
 u32 snes_bit_pos = 0;
 u8  bHSC_dirty = 0;
 
-extern bool write_only_pokey_at_4000;
-
 // ----------------------------------------------------------------------------
 // Reset
 // ----------------------------------------------------------------------------
@@ -61,6 +59,8 @@ void memory_Reset( )
 // ----------------------------------------------------------------------------
 ITCM_CODE byte memory_Read_Slower(word address)
 {
+  extern u8 write_only_pokey_at_4000;
+  
   if ((address & 0xFFFC) == 0x284)
   {
       if (address & 0x1)
@@ -100,7 +100,7 @@ ITCM_CODE void memory_Write(word address, byte data)
   extern u32 bg32, maria_charbase;
   extern u8 bg8;
 
-  if (myCartInfo.pokeyType)
+  if (unlikely(myCartInfo.pokeyType))
   {
       if (myCartInfo.pokeyType == POKEY_AT_4000)
       {
@@ -136,10 +136,10 @@ ITCM_CODE void memory_Write(word address, byte data)
     extern byte banksets_memory[]; extern u16 banksets_mask;
     if (!(address & banksets_mask)) banksets_memory[address] = data;
 
-    if ((address & 0xF800))     // Base RAM is at 0x1800 and HSC SRAM is at 0x1000 so this will find anything that is RAM...
+    if ((address & 0x5000))     // This will catch RAM at 0x4000 and HSC at 0x1000
     {
         // For banking RAM we need to keep the shadow up to date.
-        if ((address & 0xC000) == 0x4000)
+        if ((address & 0x5000) == 0x4000)
         {
             extern u8 *shadow_ram;
             shadow_ram[address] = data;
@@ -149,20 +149,26 @@ ITCM_CODE void memory_Write(word address, byte data)
                 // Special EXRAM/A8 handling... mirror ram
                 memory_ram[address ^0x0100] = data;
             }
+            memory_ram[address] = data;
+            return;
         }
         else if ((address & 0xF800) == 0x1000)  // HSC RAM - set the dirty bit so we persist the .hsc file in the main loop
         {
-            bHSC_dirty = 1;
+            if (memory_ram[address] != data)
+            {
+                memory_ram[address] = data;
+                if (address != 0x1007 && (address < 0x17FA))    // Don't count the 'function' address nor the temp score...
+                {
+                    bHSC_dirty = 1;
+                }
+            }
+            return;
         }
-    }
-
-    if (address >= 0x460 && address < 0x480) return;    // XM/Yamaha is mapped into this area... do not respond to it as we are not XM capable (yet)
+    } else if ((address & 0xFFE0) == 0x460) return; // XM/Yamaha is mapped into 460 - 47F... do not respond to it as we are not XM capable (yet)
 
     switch(address) {
       case INPTCTRL:
-        if(data == 22 && cartridge_IsLoaded( )) {
-          cartridge_Store( );
-        }
+        if(data == 22) cartridge_Store();
         break;
       case INPT0:
         break;
@@ -262,7 +268,7 @@ ITCM_CODE void memory_Write(word address, byte data)
         memory_ram[address] = data;
 #ifdef RAM_MIRRORS_ENABLED
         // ------------------------------------------------------
-        // Handle the odd RAM mirrors that the 7800 presents...
+        // Handle the RAM mirrors that the 7800 presents...
         //
         // 0x2040 - 0x20FF  RAM block 0 (mirror of 0x0040-00FF)
         // 0x2140 - 0x21FF  RAM block 1 (mirror of 0x0140-01FF)
@@ -272,12 +278,12 @@ ITCM_CODE void memory_Write(word address, byte data)
             // 0x2040 -> 0x20ff    (0x2000)
             if (address <= 0x20FF)
             {
-                memory_ram[address - 0x2000] = data;
+                memory_ram[address & 0x00FF] = data;
             }
             // 0x2140 -> 0x21ff    (0x2100)
             else if (address >= 0x2140 && address <= 0x21FF)
             {
-                memory_ram[address - 0x2000] = data;
+                memory_ram[address & 0x01FF] = data;
             }
         }
         else if (address < 0x200)
@@ -285,12 +291,12 @@ ITCM_CODE void memory_Write(word address, byte data)
             // 0x40 -> 0xff    (0x2000)
             if (address >= 0x40 && address <= 0xFF)
             {
-                memory_ram[address + 0x2000] = data;
+                memory_ram[address | 0x2000] = data;
             }
             // 0x140 -> 0x1ff    (0x2100)
             else if (address >= 0x140 && address <= 0x1FF)
             {
-                memory_ram[address + 0x2000] = data;
+                memory_ram[address | 0x2000] = data;
             }
         }
 #endif

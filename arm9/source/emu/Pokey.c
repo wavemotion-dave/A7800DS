@@ -176,7 +176,7 @@ void pokey_Reset( )
 }                           
 
 
-ITCM_CODE byte pokey_GetRegister(word address) 
+byte pokey_GetRegister(word address) 
 {
   byte data = 0;
 

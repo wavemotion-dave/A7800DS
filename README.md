@@ -197,6 +197,14 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V4.9 : 17-Feb-2025 by wavemotion-dave
+  * High Score (HSC) auto-save improvements - no longer write the backing .hsc file if the write didn't actually change HSC data.
+  * Improved Sally emulation accuracy and optimization pass to render the games 3-4% faster.
+  * Improved Pokey emulation - missing sounds on games like Ballblazer are now much better.
+  * Improved memory emulation for more accurate mirror handling - 7800 Utility cart now shows this as a PASS.
+  * Improved memory caching to help with the really big games (those 512K or larger).
+  * All but two games on the DSi are now rendered without any form of frameskip. Older DS-Lite/Phat reduces frameskip due to new optimizations.
+
 V4.8 : 15-Feb-2025 by wavemotion-dave
   * High Score (HSC) now auto-saves the .hsc file after it is written by the game. The HSC button is gone.
   * Smoother console button operation so that a press is registered more consistently and with better debounce.

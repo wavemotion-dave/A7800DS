@@ -232,13 +232,13 @@ void dsInitScreenMain(void)
     if (isDSiMode()) isDS_LITE = false; 
     else isDS_LITE = true;    
 
-    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 64K for extra Bankswitched RAM
-    vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
-    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
-    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
-    vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 -   ..
-    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 -   ..
-    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 -   ..    
+    vramSetBankB(VRAM_B_LCD );  // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 96K for Cart Bankswitch cache and 32K for 2X Bankswitched RAM
+    vramSetBankD(VRAM_D_LCD );  // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch cache (272K contiguous below)
+    vramSetBankE(VRAM_E_LCD );  // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch cache
+    vramSetBankF(VRAM_F_LCD );  // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 - Used for Cart Bankswitch cache
+    vramSetBankG(VRAM_G_LCD );  // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 - Used for Cart Bankswitch cache
+    vramSetBankH(VRAM_H_LCD );  // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 - Used for Cart Bankswitch cache
+    vramSetBankI(VRAM_I_LCD );  // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 - Used for Cart Bankswitch cache
 }
 
 void dsInitTimer(void) 
@@ -252,13 +252,14 @@ void dsShowScreenEmu(void)
     // Change vram
     videoSetMode(MODE_5_2D | DISPLAY_BG2_ACTIVE | DISPLAY_BG3_ACTIVE);
     vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
-    vramSetBankB(VRAM_B_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 64K used for Cart Bankswitch and 64K for extra RAM
-    vramSetBankD(VRAM_D_LCD );                // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch
-    vramSetBankE(VRAM_E_LCD );                // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch
-    vramSetBankF(VRAM_F_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 -   ..
-    vramSetBankG(VRAM_G_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 -   ..
-    vramSetBankH(VRAM_H_LCD );                // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 -   ..
-    vramSetBankI(VRAM_I_LCD );                // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 -   ..
+    vramSetBankB(VRAM_B_LCD );  // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06820000 - 96K for Cart Bankswitch cache and 32K for 2X Bankswitched RAM
+    vramSetBankD(VRAM_D_LCD );  // Not using this for video but 128K of faster RAM always useful! Mapped at 0x06860000 - Used for Cart Bankswitch cache (272K contiguous below)
+    vramSetBankE(VRAM_E_LCD );  // Not using this for video but 64K of faster RAM always useful!  Mapped at 0x06880000 - Used for Cart Bankswitch cache
+    vramSetBankF(VRAM_F_LCD );  // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06890000 - Used for Cart Bankswitch cache
+    vramSetBankG(VRAM_G_LCD );  // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x06894000 - Used for Cart Bankswitch cache
+    vramSetBankH(VRAM_H_LCD );  // Not using this for video but 32K of faster RAM always useful!  Mapped at 0x06898000 - Used for Cart Bankswitch cache
+    vramSetBankI(VRAM_I_LCD );  // Not using this for video but 16K of faster RAM always useful!  Mapped at 0x068A0000 - Used for Cart Bankswitch cache
+
     bg0 = bgInit(3, BgType_Bmp8, BgSize_B8_512x512, 0,0);
     bg1 = bgInit(2, BgType_Bmp8, BgSize_B8_512x512, 0,0);
 
@@ -995,7 +996,7 @@ void handle_touch_screen_input(void)
 // This is where the action happens!  The main loop runs continually and clocks
 // out the 60 frames per second of the 7800 Prosystem
 // ----------------------------------------------------------------------------------
-ITCM_CODE void dsMainLoop(void) 
+void dsMainLoop(void) 
 {
   static short int last_keys_pressed = 999;
   unsigned int keys_pressed;

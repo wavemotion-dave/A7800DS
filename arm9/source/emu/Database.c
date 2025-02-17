@@ -33,14 +33,14 @@ Database_Entry game_list[] = {
     
   // The original NTSC Commercial Games
   {"0be996d25144966d5541c9eb4919b289",  "Ace of Aces",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Ace Of Aces
-  {"877dcc97a775ed55081864b2dbf5f1e2",  "Alien Brigade",                    CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  7,  22, 264,  230, 1}, // title=Alien Brigade
+  {"877dcc97a775ed55081864b2dbf5f1e2",  "Alien Brigade",                    CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  7,  22, 264,  230, 0}, // title=Alien Brigade
   {"07342c78619ba6ffcc61c10e907e3b50",  "Asteroids",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  230, 0}, // title=Asteroids
   {"8fc3a695eaea3984912d98ed4a543376",  "Ballblazer",                       CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  6,  12, 262,  220, 0}, // title=Ballblazer
   {"42682415906c21c6af80e4198403ffda",  "Barnyard Blaster",                 CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Barnyard Blaster
-  {"f5f6b69c5eb4b55fc163158d1a6b423e",  "Basketbrawl",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 1}, // title=Basketbrawl
+  {"f5f6b69c5eb4b55fc163158d1a6b423e",  "Basketbrawl",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Basketbrawl
   {"5a09946e57dbe30408a8f253a28d07db",  "Centipede",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  24, 16, 300,  230, 0}, // title=Centipede
   {"93e4387864b014c155d7c17877990d1e",  "Choplifter",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Choplifter
-  {"2e8e28f6ad8b9b9267d518d880c73ebb",  "Commando",                         CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,  20,  0,  12, 256,  218, 1}, // title=Commando
+  {"2e8e28f6ad8b9b9267d518d880c73ebb",  "Commando",                         CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,  20,  0,  12, 256,  218, 0}, // title=Commando
   {"db691469128d9a4217ec7e315930b646",  "Crack'ed",                         CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  18, 256,  229, 0}, // title=Crack'ed
   {"a94e4560b6ad053a1c24e096f1262ebf",  "Crossbow",                         CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  5,  12, 267,  231, 0}, // title=Crossbow
   {"179b76ff729d4849b8f66a502398acae",  "Dark Chambers",                    CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  13, 256,  219, 0}, // title=Dark Chambers
@@ -48,7 +48,7 @@ Database_Entry game_list[] = {
   {"731879ea82fc0ca245e39e036fe293e6",  "Dig Dug",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  220, 0}, // title=Dig Dug
   {"5e332fbfc1e0fc74223d2e73271ce650",  "Donkey Kong Jr",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  14, 256,  220, 0}, // title=Donkey Kong Jr
   {"19f1ee292a23636bd57d408b62de79c7",  "Donkey Kong Orig",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  14, 256,  220, 0}, // title=Donkey Kong
-  {"543484c00ba233736bcaba2da20eeea9",  "Double Dragon",                    CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 1}, // title=Double Dragon
+  {"543484c00ba233736bcaba2da20eeea9",  "Double Dragon",                    CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Double Dragon
   {"2251a6a0f3aec84cc0aff66fc9fa91e8",  "F-18 Hornet",                      CT_ABSOLU,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=F-18 Hornet
   {"d25d5d19188e9f149977c49eb0367cd1",  "Fatal Run",                        CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Fatal Run
   {"07dbbfe612a0a28e283c01545e59f25e",  "Fight Night",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Fight Night
@@ -62,13 +62,13 @@ Database_Entry game_list[] = {
   {"c3a5a8692a423d43d9d28dd5b7d109d9",  "Karateka",                         CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Karateka                        
   {"f57d0af323d4e173fb49ed447f0563d7",  "Kung Fu Master",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  22, 17, 276,  225, 0}, // title=Kung Fu Master
   {"f2f5e5841e4dda89a2faf8933dc33ea6",  "Mean 18 Ultimate Golf",            CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Mean 18 Ultimate Golf
-  {"bc1e905db1008493a9632aa83ab4682b",  "Midnight Mutants",                 CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  13, 256,  226, 1}, // title=Midnight Mutants
+  {"bc1e905db1008493a9632aa83ab4682b",  "Midnight Mutants",                 CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  13, 256,  226, 0}, // title=Midnight Mutants
   {"431ca060201ee1f9eb49d44962874049",  "Mario Bros",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  14, 256,  220, 0}, // title=Mario Bros.
   {"37b5692e33a98115e574185fa8398c22",  "Mat Mania Challenge",              CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Mat Mania Challenge
   {"bedc30ec43587e0c98fc38c39c1ef9d0",  "Meltdown",                         CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Meltdown
-  {"3bc8f554cf86f8132a623cc2201a564b",  "Motor Psycho",                     CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 1}, // title=Motor Psycho
+  {"3bc8f554cf86f8132a623cc2201a564b",  "Motor Psycho",                     CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Motor Psycho
   {"fc0ea52a9fac557251b65ee680d951e5",  "Ms. Pac-Man",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  224, 0}, // title=Ms. Pac-Man   
-  {"220121f771fc4b98cef97dc040e8d378",  "Ninja Golf",                       CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  10, 20, 270,  234, 1}, // title=Ninja Golf
+  {"220121f771fc4b98cef97dc040e8d378",  "Ninja Golf",                       CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  10, 20, 270,  234, 0}, // title=Ninja Golf
   {"74569571a208f8b0b1ccfb22d7c914e1",  "One On One",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  224, 0}, // title=One On One
   {"1a5207870dec6fae9111cb747e20d8e3",  "Pete Rose Baseball",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Pete Rose Baseball
   {"33aea1e2b6634a1dec8c7006d9afda22",  "Planet Smashers",                  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  15, 256,  226, 0}, // title=Planet Smashers
@@ -76,7 +76,7 @@ Database_Entry game_list[] = {
   {"ac03806cef2558fc795a7d5d8dba7bc0",  "Rampage",                          CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Rampage
   {"383ed9bd1efb9b6cb3388a777678c928",  "Realsports Baseball",              CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 1}, // title=Realsports Baseball
   {"66ecaafe1b82ae68ffc96267aaf7a4d7",  "Robotron",                         CT_NORMAL,    POKEY_NONE, TWIN,TWIN, DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  5,  13, 270,  234, 0}, // title=Robotron     
-  {"980c35ae9625773a450aa7ef51751c04",  "Scrapyard Dog",                    CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 1}, // title=Scrapyard Dog
+  {"980c35ae9625773a450aa7ef51751c04",  "Scrapyard Dog",                    CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Scrapyard Dog
   {"cbb0746192540a13b4c7775c7ce2021f",  "Summer Games",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  13, 256,  220, 0}, // title=Summer Games
   {"cc18e3b37a507c4217eb6cb1de8c8538",  "Super Huey UH-IX",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Super Huey UH-IX
   {"59b5793bece1c80f77b55d60fb39cb94",  "Super Skatebordin'",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Super Skatebordin'
@@ -190,13 +190,13 @@ Database_Entry game_list[] = {
   {"9daaac9b25783a7e3c8858f3987ed18d",  "Frogus",                           CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  224, 0}, // title=Frogus (20221020)
   {"c2e131a091ceed2e04e71f19219b7804",  "Game of the Bear",                 CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  15, 256,  234, 0}, // title=Game of the Bear - Polar Opposites (RC1) (20230211)
   {"e443f7fb5be3283dd44c0f5d80c3a7b3",  "GoSub",                            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  13, 12, 280,  234, 0}, // title=GoSub
-  {"1e21bf1d9d7b3c0cebaac576964c9eb2",  "Graze Suit Alpha",                 CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  11, 256,  220, 1}, // title=Graze Suit Alpha (20170910)
+  {"1e21bf1d9d7b3c0cebaac576964c9eb2",  "Graze Suit Alpha",                 CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  11, 256,  220, 0}, // title=Graze Suit Alpha (20170910)
   {"1c9deabc48f07d1bf2c68731fccd27b5",  "Keystone Koppers",                 CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  220, 0}, // title=Keystone Koppers (Demo Dec 22)
   {"1d47c3802135d864dc1d922ec27aa708",  "Knight Guy On Board",              CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   0,  0,  12, 256,  233, 0}, // title=Knight Guy On Board - 30 Squares Of Fate (20210116)
   {"33dbb58f9ee73e9f476b4ebbc8190c88",  "Knight Guy In Low Res",            CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   0,  0,  12, 256,  233, 0}, // title=Knight Guy In Low Res World - Castle Days (RC 01-1)
   {"3ec728e116017be89c552a85a8f86d90",  "Knight Guy - Quest",               CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   0,  0,  12, 256,  233, 0}, // title=Knight Guy - Quest For Something (20210423)
   {"7abd9e0a6321e813d7528aa7f2c8fb40",  "Knight Guy In Another",            CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   0,  0,  12, 256,  233, 0}, // title=Knight Guy - In Another Castle (RC1b)
-  {"271864e0978278a3e2fb04273db69d57",  "Legend of Silverpeak",             CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,   7, 256,  201, 1}, // title=Legend of Silverpeak (1.01)
+  {"271864e0978278a3e2fb04273db69d57",  "Legend of Silverpeak",             CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,   7, 256,  201, 0}, // title=Legend of Silverpeak (1.01)
   {"181a9978d9da7a7e21f770808cc681f2",  "Merlain",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 320,  234, 0}, // title=Merlain
   {"3f80432f156088bf328cff15842766ee",  "Millie and Molly",                 CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  14, 256,  220, 0}, // title=Millie And Molly (Demo) (POKEY 450) (20230305)
   {"1c860298a8966cc8e176ab8453b172c3",  "Monster Maze",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  14, 256,  220, 0}, // title=Monster Maze (20220306)
@@ -213,7 +213,7 @@ Database_Entry game_list[] = {
   {"96f69b85e0b43bbebbbd59bb8276a372",  "Sick Pickles",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  12, 256,  233, 0}, // title=Sick Pickles (20171202)
   {"40567f50c569a60cc461cdf0e2853ff4",  "Slide Boy in Maze Land",           CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  230, 0}, // title=Slide Boy in Maze Land (RC1) (20210515)
   {"91f4cb1f642ff1de936a74672dce7198",  "Space Peril",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  230, 0}, // title=Space Peril (NTSC) (v8) (20210907)
-  {"19844117863cd38d4e1e4cbc867ae599",  "Spire of the Ancients",            CT_SUPLRG,    POKEY_NONE, SOTA,SOTA, DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  31, 17, 320,  230, 1}, // title=Spire of the Ancients (NTSC) (20201223)
+  {"19844117863cd38d4e1e4cbc867ae599",  "Spire of the Ancients",            CT_SUPLRG,    POKEY_NONE, SOTA,SOTA, DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  31, 17, 320,  230, 0}, // title=Spire of the Ancients (NTSC) (20201223)
   {"81cee326b99d6831de10a566e338bd25",  "Super Circus AA-NTSC-joy-4000",    CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  13, 256,  220, 0}, // title=Super Circus Atari Age (NTSC) (Joystick) (POKEY 4000)
   {"a60e4b608505d1fb201703b266f754a7",  "Time Salvo",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  16, 256,  230, 0}, // title=Time Salvo
   {"23ac803eabfb8c6118b600a8177c94a4",  "Lyra the Tenrec",                  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  234, 0}, // title=Lyra the Tenrec (20240104)
@@ -265,7 +265,7 @@ bool database_Load(byte *digest)
               if (!strcmp(game_list[i].digest,(char *) digest))
               {
                 memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
-                if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
+                if (!isDSiMode()) myCartInfo.frameSkip = ((cartridge_size <= (48*1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE); // Older DS-Lite/Phat needs help
                 myCartInfo.palette = 1; // Force this if not specifically found by md5
                 myCartInfo.xJiggle = 64;
                 myCartInfo.yJiggle = 16;
@@ -291,7 +291,7 @@ bool database_Load(byte *digest)
               {
                 memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
                 strcpy(myCartInfo.digest, (char *)digest); 
-                if (!isDSiMode())  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;  // DS-Lite defaults to frame skipping no matter what the DB says... user can override
+                if (!isDSiMode()) myCartInfo.frameSkip = ((cartridge_size <= (48*1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE); // Older DS-Lite/Phat needs help
                 myCartInfo.palette = 1; // Force this if not specifically found by md5
                 myCartInfo.xJiggle = 64;
                 myCartInfo.yJiggle = 16;
@@ -357,14 +357,13 @@ bool database_Load(byte *digest)
         // --------------------------------------------------------
         // Do our best guess as to whether we should frameskip...
         // --------------------------------------------------------
-        if (isDSiMode())    // DSi can handle many games in full framerate
+        if (isDSiMode())    // DSi can handle most games in full framerate... default to disable frameskip for the DSi
         {
-            if (cartridge_size <= (130*1024))  myCartInfo.frameSkip = FRAMESKIP_DISABLE;    // For smaller cart sizes, don't frameskip
-            else myCartInfo.frameSkip = FRAMESKIP_MEDIUM;
+            myCartInfo.frameSkip = FRAMESKIP_DISABLE;
         }
-        else    // DS-Lite defaults to frame skipping
+        else    // DS-Lite defaults to some level of frame skipping
         {
-            myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE;
+            myCartInfo.frameSkip = ((cartridge_size <= (48*1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE);
         }
     }
 
