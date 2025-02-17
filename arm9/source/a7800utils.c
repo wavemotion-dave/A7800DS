@@ -55,7 +55,7 @@ u8 bRefreshXY                           __attribute__((section(".dtcm"))) = fals
 u16 dampen                              __attribute__((section(".dtcm"))) = 0;
 unsigned char keyboard_data[20]         __attribute__((section(".dtcm"))) ALIGN(32);
 short int emu_state                     __attribute__((section(".dtcm"))) = 0;
-u8  full_speed                           __attribute__((section(".dtcm"))) = 0;
+u8  full_speed                          __attribute__((section(".dtcm"))) = 0;
 u8  fpsDisplay                          __attribute__((section(".dtcm"))) = 0;
 u8  bEmulatorRun                        __attribute__((section(".dtcm"))) = 1;
 u8  bNoDatabase                         __attribute__((section(".dtcm"))) = 0;
@@ -88,12 +88,12 @@ uint video_height;                       // Actual video height
 u16 *bufVideo;                           // Video flipping buffer
 gamecfg GameConf;                        // Game Config svg
 
-short cxBG __attribute__((section(".dtcm")));
-short cyBG __attribute__((section(".dtcm")));
+short cxBG   __attribute__((section(".dtcm")));
+short cyBG   __attribute__((section(".dtcm")));
 short xdxBG  __attribute__((section(".dtcm")));
 short ydyBG  __attribute__((section(".dtcm")));
 
-u32 myTiaBufIdx     __attribute__((section(".dtcm"))) = 0;
+u32 myTiaBufIdx  __attribute__((section(".dtcm"))) = 0;
 u8 soundEmuPause = 1;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
@@ -941,12 +941,12 @@ void handle_touch_screen_input(void)
         if (dsWaitOnQuit()) emu_state=A7800_QUITSTDS;
         else SoundUnPause();
     }
-    else if ((iTx>240) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper right corner...
+    else if ((iTx>238) && (iTx<256) && (iTy>0) && (iTy<20))  { // Full Speed Toggle ... upper right corner...
        full_speed = 1-full_speed; 
        if (full_speed) dsPrintValue(30,0,0,"FS"); else dsPrintValue(30,0,0,"  ");
        dampen=60;
     }
-    else if ((iTx>=0) && (iTx<16) && (iTy>0) && (iTy<20))  { // FPS Toggle ... upper left corner...
+    else if ((iTx>=0) && (iTx<18) && (iTy>0) && (iTy<20))  { // FPS Toggle ... upper left corner...
         fpsDisplay = 1-fpsDisplay; gTotalAtariFrames=0; if (!fpsDisplay) dsPrintValue(0,0,0,"   ");
         dampen=60;
     }

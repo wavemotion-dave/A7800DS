@@ -185,6 +185,16 @@ static inline __attribute__((always_inline)) void maria_StoreCellWriteMode(byte 
       {
           *ptr = (maria_palette & 0x10) | (data >> 4);
       }
+#ifdef KANGAROO_MODE_SUPPORTED
+      else
+      {
+          if ((memory_ram[CTRL] & 4))
+          {
+              *ptr = 0x0000;
+          }  
+      }
+#endif      
+      
       if (data & write_mask_low)  // low
       {
         ptr++;
@@ -195,8 +205,8 @@ static inline __attribute__((always_inline)) void maria_StoreCellWriteMode(byte 
       {
           if ((memory_ram[CTRL] & 4))
           {
-              u16 *ptr = (u16 *)&maria_lineRAM[maria_horizontal];
-              *ptr++ = 0x0000;
+              ptr++;
+              *ptr = 0x0000;
           }  
       }
 #endif      
