@@ -43,7 +43,6 @@
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 
-//#define KANGAROO_MODE_SUPPORTED 1   // Uncomment this for KANGAROO support. Slightly slower and virtually no game uses it...
 #define RAM_MIRRORS_ENABLED     1   // Uncomment if you want to have RAM mirrors handled (slower and no games need it as of this writing)
 
 extern int debug[];

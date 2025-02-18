@@ -34,6 +34,7 @@ byte header[128] = {0};                   // We might have a header... this will
 
 word cardtype = 0x0000;
 u8 write_only_pokey_at_4000 __attribute__((section(".dtcm"))) = false;
+u8 use_composite_filtering __attribute__((section(".dtcm"))) = 0;
 
 // -------------------------------------------------------------------------------------------------
 // We allow cart sizes up to 1024K which is pretty huge - I've not seen any ROMs bigger than this.
@@ -288,6 +289,8 @@ static void cartridge_ReadHeader(const byte* header) {
   //  bit 1 : 0=component, 1=composite
   //  bit 2 : 0=single region, 1=multi-region
   myCartInfo.region = header[57] & 1;
+  //use_composite_filtering = header[57] & 2;
+  use_composite_filtering = 0;
   
   // High Score Support
   //  bit 0 : HSC
@@ -747,6 +750,7 @@ void cartridge_Release( )
     ex_ram_bank               = 0;
     last_ex_ram_bank_df       = 0;
     ex_ram_bank_df            = 0;
+    use_composite_filtering   = 0;
     write_only_pokey_at_4000  = false;
     if (isDS_LITE) shadow_ram = ex_ram_bank ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // for DS-Lite
     else shadow_ram = ex_ram_bank ? (u8*)0x06838000 : (u8*)0x0683C000;   // // Only for the DSi.. see DS_LITE handling above

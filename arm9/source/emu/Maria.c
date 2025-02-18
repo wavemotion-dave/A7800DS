@@ -133,37 +133,33 @@ void maria_Clear( )
 }
 
 // ----------------------------------------------------------------------------
-// ClearCells - 4 bytes at a time
-// ----------------------------------------------------------------------------
-static inline __attribute__((always_inline))  void _maria_ClearCells4(void)
-{
-  if ((maria_horizontal) < MARIA_LINERAM_SIZE)
-  {
-      if (memory_ram[CTRL] & 4) 
-      {
-          *((u32 *)&maria_lineRAM[maria_horizontal]) = 0;
-      }
-  }
-}
-
-// ----------------------------------------------------------------------------
 // StoreCells - 4 bytes at a time
 // ----------------------------------------------------------------------------
-static inline __attribute__((always_inline))  void _maria_StoreCells4(byte data) 
+static inline __attribute__((always_inline))  void maria_StoreCells4(byte data) 
 {
   if((maria_horizontal) < MARIA_LINERAM_SIZE) 
   {
     byte *ptr = &(maria_lineRAM[maria_horizontal]);
-#ifdef KANGAROO_MODE_SUPPORTED
+    if (data & 0xC0) *ptr++ = maria_palette | ((data       ) >> 6); else ptr++;
+    if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else ptr++;
+    if (data & 0x0C) *ptr++ = maria_palette | ((data & 0x0C) >> 2); else ptr++;
+    if (data & 0x03) *ptr   = maria_palette | (data & 0x03); 
+  }
+}
+
+static inline __attribute__((always_inline))  void mariaROO_StoreCells4(byte data) 
+{
+  if((maria_horizontal) < MARIA_LINERAM_SIZE) 
+  {
+    byte *ptr = &(maria_lineRAM[maria_horizontal]);
     if (memory_ram[CTRL] & 4)
     {
-        if (data & 0xC0) *ptr++ = maria_palette | ((data       ) >> 6); else *ptr++ = 0;
-        if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else *ptr++ = 0;
-        if (data & 0x0C) *ptr++ = maria_palette | ((data & 0x0C) >> 2); else *ptr++ = 0;
-        if (data & 0x03) *ptr   = maria_palette | (data & 0x03);        else *ptr++ = 0;
+        *ptr++ = maria_palette | ((data       ) >> 6);
+        *ptr++ = maria_palette | ((data & 0x30) >> 4);
+        *ptr++ = maria_palette | ((data & 0x0C) >> 2);
+        *ptr   = maria_palette | (data & 0x03);       
     }
     else
-#endif        
     {
         if (data & 0xC0) *ptr++ = maria_palette | ((data       ) >> 6); else ptr++;
         if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else ptr++;
@@ -173,10 +169,11 @@ static inline __attribute__((always_inline))  void _maria_StoreCells4(byte data)
   }
 }
 
+
 // ----------------------------------------------------------------------------
 // StoreCell - write mode
 // ----------------------------------------------------------------------------
-static inline __attribute__((always_inline)) void maria_StoreCellWriteMode(byte data) 
+static inline __attribute__((always_inline)) void maria_StoreCellWideMode(byte data) 
 {
   if(maria_horizontal < MARIA_LINERAM_SIZE) 
   {
@@ -185,34 +182,47 @@ static inline __attribute__((always_inline)) void maria_StoreCellWriteMode(byte 
       {
           *ptr = (maria_palette & 0x10) | (data >> 4);
       }
-#ifdef KANGAROO_MODE_SUPPORTED
-      else
-      {
-          if ((memory_ram[CTRL] & 4))
-          {
-              *ptr = 0x0000;
-          }  
-      }
-#endif      
       
       if (data & write_mask_low)  // low
       {
         ptr++;
         *ptr = (maria_palette & 0x10) | (data & 0x0F);
       }
-#ifdef KANGAROO_MODE_SUPPORTED
+  }
+}
+
+static inline __attribute__((always_inline)) void mariaROO_StoreCellWideMode(byte data) 
+{
+  if(maria_horizontal < MARIA_LINERAM_SIZE) 
+  {
+      byte *ptr = (byte *)&maria_lineRAM[maria_horizontal];
+      if (data & write_mask_high)  // high
+      {
+          *ptr = (maria_palette & 0x10) | (data >> 4);
+      }
+      else
+      {
+          if ((memory_ram[CTRL] & 4))
+          {
+              *ptr = maria_palette;
+          }  
+      }
+      
+      if (data & write_mask_low)  // low
+      {
+        ptr++;
+        *ptr = (maria_palette & 0x10) | (data & 0x0F);
+      }
       else
       {
           if ((memory_ram[CTRL] & 4))
           {
               ptr++;
-              *ptr = 0x0000;
+              *ptr = maria_palette;
           }  
       }
-#endif      
   }
 }
-
 
 // ----------------------------------------------------------------------------
 // IsHoleyDMA
@@ -313,10 +323,16 @@ static u8 write_mode_lookup_mode2B[] __attribute__((section(".dtcm"))) =
 // ----------------------------------------------------------------------------
 static ITCM_CODE void maria_WriteLineRAM(word* buffer) 
 {
+  u8 buffer_local[MARIA_LINERAM_SIZE*2];
   union ColorUnion colors; 
   uint32 *pix=(uint32 *) buffer;
   uint32 *ptr = (uint32 *)&maria_lineRAM[0];
   byte rmode = memory_ram[CTRL] & 3;
+  
+  if (use_composite_filtering)
+  {
+      pix=(uint32 *) buffer_local;
+  }
     
   if(rmode == 0) // 160A/B
   {
@@ -407,6 +423,32 @@ static ITCM_CODE void maria_WriteLineRAM(word* buffer)
       }
     }
   }
+  
+    // -------------------------------------------------------
+    // Composite Artifact handling - mainly for Tower Toppler
+    // -------------------------------------------------------
+    if (use_composite_filtering && ((rmode == 2) || (rmode == 3))) 
+    {
+        u8 lum1 = 0;
+        u8 lum2 = 0;
+        u8 lum3 = 0;
+        lum3 = buffer_local[1] & 0x0f;
+        for(u16 pixel = 2; pixel < (MARIA_LINERAM_SIZE*2) - 1; pixel++) 
+        {
+          lum1 = lum2;
+          lum2 = lum3;
+          lum3 = buffer_local[pixel] & 0x0f;
+          if (lum2 > 5)
+          {
+              if ((lum1 | lum3) == 0)
+              {
+                buffer_local[pixel - 1] = (buffer_local[pixel - 1] & 0xF0) | ((lum2 >> 1) + 1);
+                buffer_local[pixel - 2] = buffer_local[pixel - 1];
+              }
+          }
+        }
+    }
+    if (use_composite_filtering) memcpy(buffer, buffer_local, MARIA_LINERAM_SIZE*2);
 }
 
 
@@ -426,7 +468,7 @@ static inline __attribute__((always_inline)) void maria_StoreGraphic( )
   {
     if (data)
     {
-        if(maria_IsNotHoleyDMA()) maria_StoreCellWriteMode(write_mode_lookup[data]);
+        if(maria_IsNotHoleyDMA()) maria_StoreCellWideMode(write_mode_lookup[data]);
     }
     maria_horizontal += 2;
   }
@@ -434,19 +476,39 @@ static inline __attribute__((always_inline)) void maria_StoreGraphic( )
   {
     if (data)
     {
-        if (maria_IsNotHoleyDMA()) _maria_StoreCells4(data);
+        if (maria_IsNotHoleyDMA()) maria_StoreCells4(data);
     }
-#ifdef KANGAROO_MODE_SUPPORTED
-    else 
-    {
-       _maria_ClearCells4();   
-    }
-#endif
     maria_horizontal += 4;
 
   }
   maria_pp.w++;
 }
+
+// ---------------------------------------------------------------------
+// And this is the Kangaroo version that is a little slower to emulate.
+// ---------------------------------------------------------------------
+static inline __attribute__((always_inline)) void mariaROO_StoreGraphic( ) 
+{
+  byte data = memory_ram[maria_pp.w];
+  if(maria_wmode) 
+  {
+    if (maria_IsNotHoleyDMA())
+    {
+        mariaROO_StoreCellWideMode(write_mode_lookup[data]);
+    }
+    maria_horizontal += 2;
+  }
+  else 
+  {
+    if (maria_IsNotHoleyDMA())
+    {
+        mariaROO_StoreCells4(data);
+    }
+    maria_horizontal += 4;
+  }
+  maria_pp.w++;
+}
+
 
 
 // ---------------------------------------------------------------------------
@@ -456,15 +518,16 @@ static inline __attribute__((always_inline)) void maria_StoreGraphicX2( )
 {
   byte data1 = memory_ram[maria_pp.w++];
   byte data2 = memory_ram[maria_pp.w];
+
   if(maria_wmode) 
   {
     if (data1 || data2)
     {
         if(maria_IsNotHoleyDMA()) 
         {
-            maria_StoreCellWriteMode(write_mode_lookup[data1]);
+            maria_StoreCellWideMode(write_mode_lookup[data1]);
             maria_horizontal += 2;
-            maria_StoreCellWriteMode(write_mode_lookup[data2]);
+            maria_StoreCellWideMode(write_mode_lookup[data2]);
             maria_horizontal += 2;
         }
     }
@@ -476,9 +539,9 @@ static inline __attribute__((always_inline)) void maria_StoreGraphicX2( )
     {
         if (maria_IsNotHoleyDMA()) 
         {
-            _maria_StoreCells4(data1);
+            maria_StoreCells4(data1);
             maria_horizontal += 4;
-            _maria_StoreCells4(data2);
+            maria_StoreCells4(data2);
             maria_horizontal += 4;
         }
     }
@@ -579,6 +642,97 @@ ITCM_CODE static void maria_StoreLineRAM( )
 }
 
 // ----------------------------------------------------------------------------
+// StoreLineRAM
+// ----------------------------------------------------------------------------
+static void mariaROO_StoreLineRAM( ) 
+{
+  uint index;
+
+   debug[1]++;
+  if (bRenderFrame)  // Skip every other frame...
+  {
+    u32 *ptr=(u32*)maria_lineRAM;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+    *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0; *ptr = 0;
+      
+    write_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
+    write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;      
+  }    
+
+  maria_pp.b.l = memory_ram[maria_dp.w++];
+  uint mode = memory_ram[maria_dp.w++];
+  maria_pp.b.h = memory_ram[maria_dp.w++];
+  while(mode & 0x5f) 
+  {
+    uint width;
+    uint indirect = 0;
+ 
+    if(mode & 31) 
+    { 
+      maria_cycles += MARIA_CYCLES_4_BYTE_HEADER; // Maria cycles (Header 4 byte)
+      maria_palette = (mode & 0xE0) >> 3;
+      maria_horizontal = memory_ram[maria_dp.w++];
+      width = (~mode & 31) + 1;
+    }
+    else 
+    {
+      maria_cycles += MARIA_CYCLES_5_BYTE_HEADER; // Maria cycles (Header 5 byte)
+      maria_palette = (memory_ram[maria_dp.w] & 0xE0) >> 3;
+      width = memory_ram[maria_dp.w++] & 31;
+      width = (width == 0) ? 32: ((~width) & 31) + 1;
+      maria_horizontal = memory_ram[maria_dp.w++];
+      indirect = mode & 32;
+      maria_wmode = mode & 128;
+    }
+
+    if(!indirect) 
+    {
+      if (bRenderFrame)
+      {
+          maria_pp.b.h += maria_offset;
+          for(index = 0; index < width; index++) 
+          {
+             mariaROO_StoreGraphic();
+          }
+          maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
+      }
+      maria_cycles += (3*width); // Maria cycles (Direct graphic read)
+    }
+    else 
+    {
+      uint cwidth = (memory_ram[CTRL] & 16);
+      if (bRenderFrame)
+      {
+          lpair basePP = maria_pp;
+          u16 charbase_plus_offset = ((maria_charbase + maria_offset) << 8);
+          for(index = 0; index < width; index++) 
+          {
+            maria_pp.w = charbase_plus_offset | memory_ram[basePP.w++];
+            mariaROO_StoreGraphic( );              //maria_cycles += 6; // Maria cycles (Indirect, 1 byte)
+            if(cwidth) mariaROO_StoreGraphic( );   //maria_cycles += 9; // Maria cycles (Indirect, 2 bytes)
+          }
+          maria_pp.w &= 0xFFFF;   // Pole Position II and Failsafe both require that we wrap this...      
+      }
+      maria_cycles += ((cwidth ? 9:6)*width);             // Maria cycles for Indirect 1 byte (6 cycles) or 2 bytes (9 cycles)
+    }
+      
+    maria_dp.w &= 0xFFFF;   // Super Pac-Man requires that we wrap this...
+    
+    maria_pp.b.l = memory_ram[maria_dp.w++];
+    mode = memory_ram[maria_dp.w++];
+    maria_pp.b.h = memory_ram[maria_dp.w++];      
+  }
+}
+
+// ----------------------------------------------------------------------------
 // RenderScanline
 // ----------------------------------------------------------------------------
 ITCM_CODE void maria_RenderScanlineTOP(void) 
@@ -617,7 +771,8 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
         maria_dp.b.l = memory_ram[maria_dpp.w + 1];
       }
     
-      maria_StoreLineRAM( );
+      if (memory_ram[CTRL] & 4) mariaROO_StoreLineRAM( );
+      else maria_StoreLineRAM( );
       
       if(!maria_offset--) 
       {
@@ -663,8 +818,9 @@ ITCM_CODE void maria_RenderScanline(void)
     
     maria_dp.b.h = memory_ram[maria_dpp.w ];
     maria_dp.b.l = memory_ram[maria_dpp.w + 1];
-    
-    maria_StoreLineRAM( );
+
+    if (memory_ram[CTRL] & 4) mariaROO_StoreLineRAM( );
+    else maria_StoreLineRAM( );
       
     if(!maria_offset--) 
     {
@@ -702,7 +858,7 @@ static inline __attribute__((always_inline)) void mariabank_StoreGraphic( )
   {
     if (data)
     {
-        if(maria_IsNotHoleyDMA()) maria_StoreCellWriteMode(write_mode_lookup[data]);
+        if(maria_IsNotHoleyDMA()) maria_StoreCellWideMode(write_mode_lookup[data]);
     }
     maria_horizontal += 2;
   }
@@ -710,29 +866,17 @@ static inline __attribute__((always_inline)) void mariabank_StoreGraphic( )
   {
     if (data)
     {
-        if (maria_IsNotHoleyDMA()) _maria_StoreCells4(data);
+        if (maria_IsNotHoleyDMA()) maria_StoreCells4(data);
     }
-#ifdef KANGAROO_MODE_SUPPORTED
-    else 
-    {
-       _maria_ClearCells4();   
-    }
-#endif
     maria_horizontal += 4;
 
   }
   maria_pp.w++;
 }
 
-// ----------------------------------------------------------------------------
-// StoreLineRAM
-// ----------------------------------------------------------------------------
-ITCM_CODE static void mariabank_StoreLineRAM( ) 
+// Pulled out so we can fit more into ITCM_CODE below...
+void mariabank_ClearLine(void)
 {
-  uint index;
-
-  if (bRenderFrame)  // Skip every other frame...
-  {
     u32 *ptr=(u32*)maria_lineRAM;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
@@ -744,7 +888,18 @@ ITCM_CODE static void mariabank_StoreLineRAM( )
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0; *ptr = 0;
-      
+}
+
+// ----------------------------------------------------------------------------
+// StoreLineRAM
+// ----------------------------------------------------------------------------
+ITCM_CODE static void mariabank_StoreLineRAM( ) 
+{
+  uint index;
+
+  if (bRenderFrame)  // Skip every other frame...
+  {
+    mariabank_ClearLine();
     write_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
     write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;      
   }    

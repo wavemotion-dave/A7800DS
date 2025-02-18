@@ -84,7 +84,7 @@ Database_Entry game_list[] = {
   {"1af475ff6429a160752b592f0f92b287",  "Title Match Pro Wrestling",        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Title Match Pro Wrestling
   {"c3903ab01a51222a52197dbfe6538ecf",  "Tomcat F-14 Simulator",            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Tomcat F-14 Simulator
   {"208ef955fa90a29815eb097bce89bace",  "Touchdown Football",               CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Touchdown Football
-  {"8d64763db3100aadc552db5e6868506a",  "Tower Toppler",                    CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   8, 256,  230, 0}, // title=Tower Toppler
+  {"8d64763db3100aadc552db5e6868506a",  "Tower Toppler",                    CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   8, 320,  234, 1}, // title=Tower Toppler
   {"427cb05d0a1abb068998e2760d77f4fb",  "Water Ski",                        CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,   3, 256,  197, 0}, // title=Water Ski
   {"3799d72f78dda2ee87b0ef8bf7b91186",  "Winter Games",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  13, 256,  220, 0}, // title=Winter Games
   {"05fb699db9eef564e2fe45c568746dbc",  "Xenophobe",                        CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  15, 13, 284,  234, 0}, // title=Xenophobe
@@ -248,6 +248,13 @@ bool database_Load(byte *digest)
           if (!strcmp(allConfigs.cart[i].digest,(char *) digest))
           {
               memcpy(&myCartInfo, &allConfigs.cart[i], sizeof(myCartInfo));
+              if (strcmp((char *) digest, (char *) "8d64763db3100aadc552db5e6868506a") == 0) // Tower Toppler
+              {
+                  use_composite_filtering = 1;
+                  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE; // It's the only way we stand a chance.
+                  myCartInfo.xScale  = 320;
+                  myCartInfo.yScale  = 234;
+              }
               bFound = true;
               break;
           }
@@ -330,6 +337,7 @@ bool database_Load(byte *digest)
         myCartInfo.yScale        = 220;
         myCartInfo.diff1         = DIFF_A;
         myCartInfo.diff2         = DIFF_A;
+        myCartInfo.spare0        = 0;
         myCartInfo.spare1        = 0;
         myCartInfo.spare2        = 0;
         myCartInfo.spare3        = 0;

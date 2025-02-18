@@ -482,7 +482,7 @@ ITCM_CODE void pokey_Process(void)
 }
 
 
-ITCM_CODE u16 pokey_ProcessNow(void) 
+ u16 pokey_ProcessNow(void) 
 {
     byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
 

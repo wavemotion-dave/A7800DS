@@ -212,9 +212,7 @@ const struct options_t Game_Option_Table[] =
     {"Y SCALE",     2, {"+180",  "+234"},                                                                                                                 (u8*)&myCartInfo.yScale,              2},
     {"X JIGGLE",    1, {"+1",    "+256"},                                                                                                                 (u8*)&myCartInfo.xJiggle,             2},
     {"Y JIGGLE",    1, {"+1",    "+256"},                                                                                                                 (u8*)&myCartInfo.yJiggle,             2},
-    
-    
-    
+   
     {NULL,          0, {"",      ""},                                                                                                                          NULL,                            1},
 };
 

@@ -36,6 +36,8 @@
 
 #define MAX_CART_SIZE (1024 * 1024) // 1MB Cart is HUGE!
 
+extern u8 use_composite_filtering;
+
 #define CARTRIDGE_CONTROLLER_NONE        0
 #define CARTRIDGE_CONTROLLER_JOYSTICK    1
 #define CARTRIDGE_CONTROLLER_LIGHTGUN    2
