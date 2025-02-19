@@ -57,7 +57,7 @@ Database_Entry game_list[] = {
   {"fd9e78e201b6baafddfd3e1fbfe6ba31",  "Hat Trick",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  17, 256,  227, 0}, // title=Hat Trick                       
   {"c3672482ca93f70eafd9134b936c3feb",  "Ikari Warriors",                   CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  17, 256,  230, 0}, // title=Ikari Warriors
   {"baebc9246c087e893dfa489632157180",  "Impossible Mission",               CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Impossible Mission
-  {"045fd12050b7f2b842d5970f2414e912",  "Jinks",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  3,  12, 261,  234, 0}, // title=Jinks
+  {"045fd12050b7f2b842d5970f2414e912",  "Jinks",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  3,  12, 261,  234, 1}, // title=Jinks
   {"f18b3b897a25ab3885b43b4bd141b396",  "Joust",                            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  0,  0,  17, 256,  234, 0}, // title=Joust                           
   {"c3a5a8692a423d43d9d28dd5b7d109d9",  "Karateka",                         CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  0,  12, 256,  220, 0}, // title=Karateka                        
   {"f57d0af323d4e173fb49ed447f0563d7",  "Kung Fu Master",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   0,  22, 17, 276,  225, 0}, // title=Kung Fu Master
@@ -248,13 +248,6 @@ bool database_Load(byte *digest)
           if (!strcmp(allConfigs.cart[i].digest,(char *) digest))
           {
               memcpy(&myCartInfo, &allConfigs.cart[i], sizeof(myCartInfo));
-              if (strcmp((char *) digest, (char *) "8d64763db3100aadc552db5e6868506a") == 0) // Tower Toppler
-              {
-                  use_composite_filtering = 1;
-                  myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE; // It's the only way we stand a chance.
-                  myCartInfo.xScale  = 320;
-                  myCartInfo.yScale  = 234;
-              }
               bFound = true;
               break;
           }
@@ -321,6 +314,25 @@ bool database_Load(byte *digest)
           }
         }
     }
+    
+    // No matter what... override for Tower Toppler to make it playable...
+    if (strcmp((char *) digest, (char *) "8d64763db3100aadc552db5e6868506a") == 0) // Tower Toppler
+    {
+        use_composite_filtering = 1;
+        myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE; // It's the only way we stand a chance.
+        myCartInfo.cardctrl1 = SOTA;
+        myCartInfo.xOffset = 32;
+        myCartInfo.yOffset = 8;
+        myCartInfo.xScale  = 320;
+        myCartInfo.yScale  = 234;
+    }
+
+    // Override for Jinks to enable composite filtering
+    else if (strcmp((char *) digest, (char *) "045fd12050b7f2b842d5970f2414e912") == 0) // Jinks
+    {
+        use_composite_filtering = 1;
+    } else use_composite_filtering = 0;
+    
         
     // --------------------------------------------------------------------------
     // Default scaling options below if not found... these are close enough... 

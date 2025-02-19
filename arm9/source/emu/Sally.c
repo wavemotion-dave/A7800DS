@@ -537,7 +537,7 @@ static inline void sally_EOR( ) {
 // ----------------------------------------------------------------------------
 // INC
 // ----------------------------------------------------------------------------
-static ITCM_CODE void sally_INC( ) {
+static void sally_INC( ) {
   byte data = memory_Read(sally_address.w);
   memory_Write(sally_address.w, ++data);
   sally_Flags(data);

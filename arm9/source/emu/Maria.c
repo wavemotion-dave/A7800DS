@@ -317,6 +317,8 @@ static u8 write_mode_lookup_mode2B[] __attribute__((section(".dtcm"))) =
     0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13, 0x10, 0x12, 0x10, 0x12, 0x11, 0x13, 0x11, 0x13
 };
 
+static u8 artifacting_lookup_bright[]  __attribute__((section(".dtcm"))) = { 0x00, 0x00, 0x00, 0x02, 0x02, 0x03, 0x03, 0x04, 0x05, 0x06, 0x06, 0x07, 0x07, 0x08, 0x09, 0x0A };
+static u8 artifacting_lookup_dull[]    __attribute__((section(".dtcm"))) = { 0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x02, 0x02, 0x03, 0x03, 0x03, 0x03, 0x04, 0x04, 0x04 };
 
 // ----------------------------------------------------------------------------
 // WriteLineRAM
@@ -429,23 +431,48 @@ static ITCM_CODE void maria_WriteLineRAM(word* buffer)
     // -------------------------------------------------------
     if (use_composite_filtering && ((rmode == 2) || (rmode == 3))) 
     {
-        u8 lum1 = 0;
-        u8 lum2 = 0;
-        u8 lum3 = 0;
-        lum3 = buffer_local[1] & 0x0f;
-        for(u16 pixel = 2; pixel < (MARIA_LINERAM_SIZE*2) - 1; pixel++) 
+        if (((memory_ram[CTRL] & 0x80) == 0) && (maria_scanline > 70)) // The scanline check here is a hack - don't like the blurred look of artifacting on the upper screen on Tower Toppler... and this gives us some speed!
         {
-          lum1 = lum2;
-          lum2 = lum3;
-          lum3 = buffer_local[pixel] & 0x0f;
-          if (lum2 > 5)
-          {
-              if ((lum1 | lum3) == 0)
+            u8 lum1 = 0x00;
+            u8 lum2 = buffer_local[0] & 0x0f;
+            u8 lum3 = buffer_local[1] & 0x0f;
+            for(u16 pixel = 2; pixel < (MARIA_LINERAM_SIZE*2) - 1; pixel++) 
+            {
+              lum1 = lum2;
+              lum2 = lum3;
+              lum3 = buffer_local[pixel] & 0x0f;
+
+              if ((lum1 | lum3) == 0) // First order artifacting... DULL-BRIGHT-DULL
               {
-                buffer_local[pixel - 1] = (buffer_local[pixel - 1] & 0xF0) | ((lum2 >> 1) + 1);
-                buffer_local[pixel - 2] = buffer_local[pixel - 1];
+                  if (lum2 & 0xFC) // Some reasonably bright intensity... 4 and up
+                  {
+                      if (pixel & 1) // Ledges (slightly brighter)
+                      {
+                          // Although it appears we're looking at an 'odd' pixel, we are really hinging on lum2 which would be an 'even' pixel here - hence the brighter processing
+                          buffer_local[pixel - 1] = ((buffer_local[pixel - 1] & 0xF0) | artifacting_lookup_bright[lum2]);
+                          buffer_local[pixel - 2] = buffer_local[pixel - 1];
+                          buffer_local[pixel - 0] = buffer_local[pixel - 1];
+                      }
+                      else // Wall Bricks
+                      {
+                          // Shift color hue - produces reasonable separation in odd/even pixel artifacting colors
+                          buffer_local[pixel - 1] = ((buffer_local[pixel - 1] & 0xF0) | artifacting_lookup_dull[lum2])+0x20; 
+                          buffer_local[pixel - 2] = buffer_local[pixel - 1];
+                          buffer_local[pixel - 0] = buffer_local[pixel - 1];
+                      }
+                  }
               }
-          }
+              else if (lum1 == 0)
+              {
+                  if ((lum2 & 0xF8) && (lum3 & 0xF8)) // Second order artifacting... DULL-DULL-BRIGHT-BRIGHT-DULL - look for bright intensity here (8 and up)
+                  {
+                      if (((buffer_local[pixel+1] & 0x0F) == 0) && ((buffer_local[pixel-3] & 0x0F) == 0))
+                      {
+                          buffer_local[pixel - 2] = ((buffer_local[pixel - 1] & 0xF0) | artifacting_lookup_bright[lum2]);
+                      }
+                  }
+              }
+            }
         }
     }
     if (use_composite_filtering) memcpy(buffer, buffer_local, MARIA_LINERAM_SIZE*2);
@@ -648,7 +675,6 @@ static void mariaROO_StoreLineRAM( )
 {
   uint index;
 
-   debug[1]++;
   if (bRenderFrame)  // Skip every other frame...
   {
     u32 *ptr=(u32*)maria_lineRAM;
@@ -888,6 +914,9 @@ void mariabank_ClearLine(void)
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
     *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0; *ptr = 0;
+    
+    write_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
+    write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;      
 }
 
 // ----------------------------------------------------------------------------
@@ -900,8 +929,6 @@ ITCM_CODE static void mariabank_StoreLineRAM( )
   if (bRenderFrame)  // Skip every other frame...
   {
     mariabank_ClearLine();
-    write_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
-    write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;      
   }    
 
   maria_pp.b.l = bankset_memory_read(maria_dp.w++);

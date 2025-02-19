@@ -1088,8 +1088,8 @@ void dsMainLoop(void)
               }
               if (myCartInfo.cardctrl1 == SOTA)
               {
-                  if ( (keys_pressed & KEY_R) )  { myCartInfo.xOffset +=28; bRefreshXY = true; }
-                  if ( (keys_pressed & KEY_L) )  { myCartInfo.xOffset -=28; bRefreshXY = true; }  
+                  if ( (keys_pressed & KEY_R) )  { if (myCartInfo.xOffset < 50)  myCartInfo.xOffset +=28; bRefreshXY = true; }
+                  if ( (keys_pressed & KEY_L) )  { if (myCartInfo.xOffset > 28)  myCartInfo.xOffset -=28; bRefreshXY = true; }  
               }
               if (dampen < 6) dampen = 6;
           }
