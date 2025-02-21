@@ -431,7 +431,7 @@ static ITCM_CODE void maria_WriteLineRAM(word* buffer)
     // -------------------------------------------------------
     if (use_composite_filtering && ((rmode == 2) || (rmode == 3))) 
     {
-        if (((memory_ram[CTRL] & 0x80) == 0) && (maria_scanline > 70)) // The scanline check here is a hack - don't like the blurred look of artifacting on the upper screen on Tower Toppler... and this gives us some speed!
+        if (maria_scanline > use_composite_filtering) // The scanline check here is a hack - don't like the blurred look of artifacting on the upper screen on Tower Toppler... and this gives us some speed!
         {
             u8 lum1 = 0x00;
             u8 lum2 = buffer_local[0] & 0x0f;

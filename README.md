@@ -72,10 +72,8 @@ Known Issues and Limitations:
 - Lightgun is not supported.
 - Paddles are not supported.
 - PAL is not supported - use NTSC instead.
-- Artifacting is not supported which means Tower Toppler is unplayable.
 - Souper mapper (Ricky & Vicky) is not supported.
 - Keystone Koppers and ARTI have slight sound issues as Pokey emulation is not perfect.
-- Games greater than 1MB (1024K + 128b header) are not supported.
 - Only one Pokey is supported at 4000h, 800h or 450h (no Dual Pokey).
 - XM is not supported (beyond HSC and Pokey).
    
@@ -95,8 +93,8 @@ Controls :
  * B             : Fire button 2
  * SELECT        : SELECT Button
  * START         : PAUSE Button
- * X             : Pan Screen Down
- * Y             : Pan Screen Up
+ * X             : Configurable (default: Pan Screen Down)
+ * Y             : Configurable (default: Pan Screen Up)
  * L/R + DPAD    : Used to Shift Offsets and Scale Screen to desired ratio
  * L + R + X     : Hold for 1 second to swap LCD screens top/bottom
   
@@ -134,7 +132,7 @@ The following schemes are supported:
 Frame Skipping can be OFF (show all frames), Moderate (Show 3/4 frames) or Agressive (only show 1/2 frames).  The latter is
 only really needed for the DS-Lite/Phat where the faster DSi CPU isn't available.
 
-Don't touch the DMA Cycle Adjustment unless you understand them... and most people don't - sometimes including the developer :)
+Don't touch the DMA Cycle Adjustment unless you understand it... and most people don't - sometimes including the developer :)
 
 Press START to save off your configuration - if you made changes you should re-load the game to ensure all settings are applied.
 
@@ -197,6 +195,12 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.0 : 21-Feb-2025 by wavemotion-dave
+  * Kangaroo mode fixed and fully implemented. Cleans up some small graphical glitches on a number of games.
+  * Composite Artifacting implemented for Tower Toppler and Jinks.
+  * Sound handler fixed so that drop-outs of sounds are eliminated (or at least greatly minimized).
+  * The X button on the NDS is now configurable to a range of joystick/console buttons.
+
 V4.9 : 17-Feb-2025 by wavemotion-dave
   * High Score (HSC) auto-save improvements - no longer write the backing .hsc file if the write didn't actually change HSC data.
   * Improved Sally emulation accuracy and optimization pass to render the games 3-4% faster.

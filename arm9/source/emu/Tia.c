@@ -59,6 +59,7 @@ byte tia_audv[2]                __attribute__((section(".dtcm"))) = {0};
 static byte tia_poly4Cntr[2]    __attribute__((section(".dtcm"))) = {0};
 static byte tia_poly5Cntr[2]    __attribute__((section(".dtcm"))) = {0};
 static u16 tia_poly9Cntr[2]     __attribute__((section(".dtcm"))) = {0};
+u16 tia_wait                    __attribute__((section(".dtcm"))) = 0;
 
 // ----------------------------------------------------------------------------
 // ProcessChannel
@@ -140,6 +141,7 @@ void tia_Reset( ) {
     tia_poly9Cntr[index] = 0;
   }
   tia_Clear( );
+  tia_wait = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -151,8 +153,6 @@ void tia_Clear( ) {
     tia_buffer[index] = 0;
   }
 }
-
-
 
 // Same as TIA_Process but designed for Pokey integration...
 ITCM_CODE  int TIA_Sample(void)
@@ -184,6 +184,9 @@ ITCM_CODE  int TIA_Sample(void)
 ITCM_CODE void tia_Process(void) 
 {
   u32 samp[2];
+  
+  if (tia_wait) return;
+  
   for(u8 index = 0; index < 2; index++) 
   {
     if(tia_counter[0] > 1) 
@@ -206,8 +209,17 @@ ITCM_CODE void tia_Process(void)
     }
     samp[index] = ((tia_volume[0] + tia_volume[1]));
   }
-  tia_buffer[tiaBufIdx++] = (samp[1] << 8) | (samp[0]);
-  tiaBufIdx &= (SNDLENGTH-1);
+  
+  // We have filled the buffer... let the buffer drain a bit
+  if (((tiaBufIdx+1) & (SNDLENGTH-1)) == myTiaBufIdx)
+  {
+      tia_wait = (SNDLENGTH >> 2);
+  }
+  else
+  {
+      tia_buffer[tiaBufIdx++] = (samp[1] << 8) | (samp[0]);
+      tiaBufIdx &= (SNDLENGTH-1);
+  }
 }
 
 

@@ -406,8 +406,10 @@ extern u32 tiaBufIdx;
 // ----------------------------------------------------------------------------
 ITCM_CODE void pokey_Process(void) 
 {
-    byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
+    if (tia_wait) return;
 
+    byte* sampleCntrPtrB = ((byte*)&pokey_sampleCount[0]) + 1;
+    
     while (1)
     {
         int currentValue;
@@ -474,8 +476,16 @@ ITCM_CODE void pokey_Process(void)
           //currentValue = (currentValue >> 1);
           if (currentValue > 127) {currentValue = 127;}   // Clip
 
-          tia_buffer[tiaBufIdx++] = (u16)((currentValue<<8) | currentValue);
-          tiaBufIdx &= (SNDLENGTH-1);
+          // We have filled the buffer... let the buffer drain a bit
+          if (((tiaBufIdx+1) & (SNDLENGTH-1)) == myTiaBufIdx)
+          {
+              tia_wait = (SNDLENGTH >> 2);
+          }
+          else
+          {
+              tia_buffer[tiaBufIdx++] = (u16)((currentValue<<8) | currentValue);
+              tiaBufIdx &= (SNDLENGTH-1);
+          }
           return;
         }
     }

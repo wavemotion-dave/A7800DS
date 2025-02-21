@@ -62,7 +62,8 @@ extern u16 tia_ProcessNow(void);
 extern byte tia_volume[2];
 extern uint tia_counter[2];
 extern uint tia_counterMax[2];
-
+extern u16  tia_wait;
+extern u32  myTiaBufIdx;
 
 
 inline void tia_MemoryChannel(byte channel) 

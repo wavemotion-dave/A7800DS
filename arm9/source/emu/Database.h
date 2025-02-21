@@ -48,7 +48,7 @@ typedef struct {
   u8    palette;
   u8    xJiggle;
   u8    yJiggle;
-  u8    spare0;
+  u8    xButton;
   u8    spare1;
   u8    spare2;
   u8    spare3;
@@ -58,6 +58,17 @@ typedef struct {
 
 
 extern Database_Entry myCartInfo;
+
+#define KEY_MAP_DEFAULT     0
+#define KEY_MAP_PANUP       1
+#define KEY_MAP_PANDN       2
+#define KEY_MAP_JOYUP       3
+#define KEY_MAP_JOYDN       4
+#define KEY_MAP_JOYLEFT     5
+#define KEY_MAP_JOYRIGHT    6
+#define KEY_MAP_JOYB1       7
+#define KEY_MAP_JOYB2       8
+#define KEY_MAP_PAUSE       9
 
 
 extern void database_Initialize( );

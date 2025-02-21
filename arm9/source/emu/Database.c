@@ -318,19 +318,25 @@ bool database_Load(byte *digest)
     // No matter what... override for Tower Toppler to make it playable...
     if (strcmp((char *) digest, (char *) "8d64763db3100aadc552db5e6868506a") == 0) // Tower Toppler
     {
-        use_composite_filtering = 1;
+        use_composite_filtering = 70;
         myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE; // It's the only way we stand a chance.
         myCartInfo.cardctrl1 = SOTA;
         myCartInfo.xOffset = 32;
         myCartInfo.yOffset = 8;
         myCartInfo.xScale  = 320;
         myCartInfo.yScale  = 234;
+        bFound = 1;
     }
-
+    else if (strcmp((char *) digest, (char *) "f5150c0fc1948832211e57852abb0c6e") == 0) // 7800 Utility Cart
+    {
+        use_composite_filtering = 1;
+        bFound = 1;
+    }
     // Override for Jinks to enable composite filtering
     else if (strcmp((char *) digest, (char *) "045fd12050b7f2b842d5970f2414e912") == 0) // Jinks
     {
         use_composite_filtering = 1;
+        bFound = 1;
     } else use_composite_filtering = 0;
     
         
@@ -349,7 +355,7 @@ bool database_Load(byte *digest)
         myCartInfo.yScale        = 220;
         myCartInfo.diff1         = DIFF_A;
         myCartInfo.diff2         = DIFF_A;
-        myCartInfo.spare0        = 0;
+        myCartInfo.xButton       = KEY_MAP_DEFAULT;
         myCartInfo.spare1        = 0;
         myCartInfo.spare2        = 0;
         myCartInfo.spare3        = 0;
@@ -383,7 +389,7 @@ bool database_Load(byte *digest)
         }
         else    // DS-Lite defaults to some level of frame skipping
         {
-            myCartInfo.frameSkip = ((cartridge_size <= (48*1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE);
+            myCartInfo.frameSkip = ((cartridge_size <= (48*1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE); // Non-banked carts get light frameskip... otherwise agressive
         }
     }
 
