@@ -170,7 +170,7 @@ ITCM_CODE void memory_Write(word address, byte data)
 
     switch(address) {
       case INPTCTRL:
-        if (!bINPTCTRL_locked) {if (data & 0x04) cartridge_Store(); else bios_Store();}
+        if (!bINPTCTRL_locked) {if ((data & 0x0E) == 6) cartridge_Store(); else if ((data & 0x0E) == 2) bios_Store();}
         if (data & 0x01) bINPTCTRL_locked = 1;
         break;
       case INPT0:

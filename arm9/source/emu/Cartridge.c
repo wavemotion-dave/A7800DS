@@ -29,6 +29,7 @@
 
 char cartridge_title[256];
 byte cartridge_digest[256];
+byte bios_digest[256];
 char cartridge_filename[256];
 byte header[128] = {0};                   // We might have a header... this will buffer it
 
@@ -37,6 +38,9 @@ u8 write_only_pokey_at_4000 __attribute__((section(".dtcm"))) = false;
 u8 use_composite_filtering  __attribute__((section(".dtcm"))) = 0;
 u8 bios_show_counter        __attribute__((section(".dtcm"))) = 0;
 u8 bios_available           __attribute__((section(".dtcm"))) = 0;
+
+u8 cart_restore = 0;            // After the cart is stored, we set this flag to indicate a swap will restore only the top 4K
+u8 cart_restore_buffer[0x1000]; // Used to store the cart space that coincides with the BIOS data at the top 4K
 
 // -------------------------------------------------------------------------------------------------
 // We allow cart sizes up to 1024K which is pretty huge - I've not seen any ROMs bigger than this.
@@ -522,6 +526,9 @@ bool cartridge_Load(char *filename)
     if(!_cartridge_Load(size)) return false;
 
     strcpy(cartridge_filename, filename);
+    
+    cart_restore = 0;
+    
     return true;
 }
 
@@ -548,6 +555,14 @@ bool cartridge_Load(char *filename)
 void cartridge_Store( ) 
 {
   uint offset, lastBank;
+  
+  if (cart_restore)
+  {
+      memory_WriteROM(0xF000, 0x1000, cart_restore_buffer); 
+      return;
+  }
+  
+  cart_restore = 1;
     
   switch(myCartInfo.cardtype) 
   {
@@ -642,12 +657,16 @@ void cartridge_Store( )
       memset(&banksets_memory[0x4000], 0x00, 0x4000);
       break;
   }
+  
+  // Save off the top 4K in case BIOS is swapped in...
+  memcpy(cart_restore_buffer, memory_ram + 0xF000, 0x1000);
 }
 
 // ----------------------------------------------------------------------------
 // Cart Write - this may cause a bankswitch
 // ----------------------------------------------------------------------------
-ITCM_CODE void cartridge_Write(word address, byte data) {
+ITCM_CODE void cartridge_Write(word address, byte data) 
+{
   switch(myCartInfo.cardtype) 
   {
     case CARTRIDGE_TYPE_SUPERCART:
@@ -751,6 +770,7 @@ void cartridge_Release( )
     last_ex_ram_bank_df       = 0;
     ex_ram_bank_df            = 0;
     use_composite_filtering   = 0;
+    cart_restore              = 0;
     write_only_pokey_at_4000  = false;
     if (isDS_LITE) shadow_ram = ex_ram_bank ? (u8*)(ex_ram_buffer+0x0000) : (u8*)(ex_ram_buffer+0x4000);  // for DS-Lite
     else shadow_ram = ex_ram_bank ? (u8*)0x06838000 : (u8*)0x0683C000;   // // Only for the DSi.. see DS_LITE handling above
@@ -774,16 +794,22 @@ void bios_check_and_load(void)
 
     if (romfile != NULL)
     {
-        //hash_Compute(cartridge_buffer, cartridge_size, cartridge_digest);
         fread(bios_data, 0x1000, 1, romfile);
         fclose(romfile);
-        bios_available = 1;
+        hash_Compute(bios_data, 0x1000, bios_digest);
+        if (strcmp((char *)bios_digest, "0763f1ffb006ddbe32e52d497ee848ae") == 0)   // We only allow the stock NTSC bios
+        {
+            bios_available = 1;
+        }
     }
 }
 
 void bios_Store(void)
 {
-    if (bios_available) memory_WriteROM(0xF000, 0x1000, bios_data);
+    if (bios_available)
+    {
+         memory_WriteROM(0xF000, 0x1000, bios_data);
+    }
 }
 
 /*************************** End of file ****************************/
