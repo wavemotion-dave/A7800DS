@@ -797,7 +797,8 @@ void bios_check_and_load(void)
         fread(bios_data, 0x1000, 1, romfile);
         fclose(romfile);
         hash_Compute(bios_data, 0x1000, bios_digest);
-        if (strcmp((char *)bios_digest, "0763f1ffb006ddbe32e52d497ee848ae") == 0)   // We only allow the stock NTSC bios
+        if ( (strcmp((char *)bios_digest, "0763f1ffb006ddbe32e52d497ee848ae") == 0) || 
+             (strcmp((char *)bios_digest, "b32526ea179dc9ab9b2e5f8a2662b298") == 0))  // We only allow the stock NTSC bios (old or new version)        
         {
             bios_available = 1;
         }

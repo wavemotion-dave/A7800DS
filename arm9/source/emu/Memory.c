@@ -168,11 +168,14 @@ ITCM_CODE void memory_Write(word address, byte data)
         }
     } else if ((address & 0xFFE0) == 0x460) return; // XM/Yamaha is mapped into 460 - 47F... do not respond to it as we are not XM capable (yet)
 
-    switch(address) {
-      case INPTCTRL:
-        if (!bINPTCTRL_locked) {if ((data & 0x0E) == 6) cartridge_Store(); else if ((data & 0x0E) == 2) bios_Store();}
+    // Until the unit is locked, the lower 32 addresses all access INPTCTRL to allow toggle of BIOS/CART
+    if (address <= 0x1f)
+    {
+        if (!bINPTCTRL_locked) {if (data & 0x04) cartridge_Store(); else bios_Store();}
         if (data & 0x01) bINPTCTRL_locked = 1;
-        break;
+    }
+
+    switch(address) {
       case INPT0:
         break;
       case INPT1:

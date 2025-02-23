@@ -35,8 +35,8 @@
 #include "shared.h"
 
 extern void maria_Reset( );
-extern ITCM_CODE void maria_RenderScanline(void);
-extern ITCM_CODE void maria_RenderScanlineTOP(void);
+extern void maria_RenderScanline(void);
+extern void maria_RenderScanlineTOP(void);
 extern void maria_Clear( );
 extern word* maria_surface;
 extern uint maria_scanline;
