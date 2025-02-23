@@ -85,7 +85,7 @@ static uint SALLY_CYCLESX4[256] __attribute__((section(".dtcm"))) =
 // ----------------------------------------------------------------------------
 static inline void sally_Push(byte data) 
 {
-  memory_ram[sally_s | 256] = data;
+  memory_Write(sally_s | 256, data); // This could also write one of the mirrors...
   sally_s--;
 }
 
@@ -231,7 +231,7 @@ static inline void sally_ZeroPageY( ) {
 // ----------------------------------------------------------------------------
 // ADC
 // ----------------------------------------------------------------------------
-static ITCM_CODE void sally_ADC( ) {
+static void sally_ADC( ) {
   byte data = memory_Read(sally_address.w);
   if(sally_p & _fD) {
     word al = (sally_a & 15) + (data & 15) + (sally_p & _fC);
@@ -506,7 +506,7 @@ static inline void sally_CPY( ) {
 // ----------------------------------------------------------------------------
 // DEC
 // ----------------------------------------------------------------------------
-static ITCM_CODE void sally_DEC( ) {
+static void sally_DEC( ) {
   byte data = memory_Read(sally_address.w);
   memory_Write(sally_address.w, --data);
   sally_Flags(data);

@@ -34,7 +34,9 @@ byte header[128] = {0};                   // We might have a header... this will
 
 word cardtype = 0x0000;
 u8 write_only_pokey_at_4000 __attribute__((section(".dtcm"))) = false;
-u8 use_composite_filtering __attribute__((section(".dtcm"))) = 0;
+u8 use_composite_filtering  __attribute__((section(".dtcm"))) = 0;
+u8 bios_show_counter        __attribute__((section(".dtcm"))) = 0;
+u8 bios_available           __attribute__((section(".dtcm"))) = 0;
 
 // -------------------------------------------------------------------------------------------------
 // We allow cart sizes up to 1024K which is pretty huge - I've not seen any ROMs bigger than this.
@@ -396,7 +398,6 @@ static void cartridge_ReadHeader(const byte* header) {
     }  
   }
   
-  myCartInfo.dma_adjust     = 0;
   last_bank                 = 255;
   last_ex_ram_bank          = 0;
   ex_ram_bank               = 0;
@@ -489,7 +490,6 @@ static bool _cartridge_Load(uint size)
   hash_Compute(cartridge_buffer, cartridge_size, cartridge_digest);
   return true;
 }
-extern unsigned long crc32 (unsigned int crc, const unsigned char *buf, unsigned int len);
 
 // ----------------------------------------------------------------------------
 // Load
@@ -669,12 +669,12 @@ ITCM_CODE void cartridge_Write(word address, byte data) {
       break;
           
     case CARTRIDGE_TYPE_ABSOLUTE:
-      if(address == 32768 && (data == 1 || data == 2)) 
+      if ((address == 0x8000) && (data == 1 || data == 2)) 
       {
         cartridge_WriteBank(16384, data-1);
       }
       break;
-          
+
     case CARTRIDGE_TYPE_ACTIVISION:
       if(address >= 65408) 
       {
@@ -744,7 +744,7 @@ void cartridge_Release( )
     myCartInfo.cardctrl1      = 0;
     myCartInfo.cardctrl2      = 0;
     myCartInfo.hasHeader      = false;
-    myCartInfo.dma_adjust     = 0;
+    myCartInfo.biosTimeout    = 160;
     last_bank                 = 255;
     last_ex_ram_bank          = 0;
     ex_ram_bank               = 0;
@@ -756,3 +756,34 @@ void cartridge_Release( )
     else shadow_ram = ex_ram_bank ? (u8*)0x06838000 : (u8*)0x0683C000;   // // Only for the DSi.. see DS_LITE handling above
     shadow_ram -= 0x4000; // Makes for faster indexing in Memory.c
 }
+
+static unsigned char bios_data[0x1000];
+
+void bios_check_and_load(void)
+{
+    bios_available = 0;
+    
+    FILE *romfile = fopen("7800.rom", "rb");
+    if (romfile == NULL) romfile = fopen("/roms/bios/7800.rom", "rb");
+    if (romfile == NULL) romfile = fopen("/data/bios/7800.rom", "rb");
+    if (romfile == NULL) romfile = fopen("7800.bin", "rb");
+    if (romfile == NULL) romfile = fopen("/roms/bios/7800.bin", "rb");
+    if (romfile == NULL) romfile = fopen("/data/bios/7800.bin", "rb");
+    if (romfile == NULL) romfile = fopen("/roms/bios/a7800.bin", "rb");
+    if (romfile == NULL) romfile = fopen("/data/bios/a7800.bin", "rb");
+
+    if (romfile != NULL)
+    {
+        //hash_Compute(cartridge_buffer, cartridge_size, cartridge_digest);
+        fread(bios_data, 0x1000, 1, romfile);
+        fclose(romfile);
+        bios_available = 1;
+    }
+}
+
+void bios_Store(void)
+{
+    if (bios_available) memory_WriteROM(0xF000, 0x1000, bios_data);
+}
+
+/*************************** End of file ****************************/

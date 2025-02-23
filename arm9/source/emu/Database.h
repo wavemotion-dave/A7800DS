@@ -38,7 +38,7 @@ typedef struct {
   u8    diff2;
   u8    region;
   u8    hsc;
-  s16   dma_adjust;
+  s16   biosTimeout;
   s16   xOffset;
   s16   yOffset;
   s16   xScale;
@@ -49,7 +49,7 @@ typedef struct {
   u8    xJiggle;
   u8    yJiggle;
   u8    xButton;
-  u8    spare1;
+  u8    yButton;
   u8    spare2;
   u8    spare3;
   u8    spare4;

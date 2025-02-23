@@ -206,13 +206,13 @@ const struct options_t Game_Option_Table[] =
     {"LEFT JOY",    0, {"NONE", "JOYSTICK", "LIGHTGUN", "PADDLES", "TWIN STICKS", "SOTA", "SNES2ATARI"},                                                       &myCartInfo.cardctrl1,           7},
     {"RIGHT JOY",   0, {"NONE", "JOYSTICK", "LIGHTGUN", "PADDLES", "TWIN STICKS", "SOTA", "SNES2ATARI"},                                                       &myCartInfo.cardctrl2,           7},    
     {"X BUTTON",    0, {"DEFAULT", "PAN UP", "PAN DOWN", "JOY UP", "JOY DOWN", "JOY LEFT", "JOY RIGHT", "JOY B1", "JOY B2", "CONSOLE PAUSE"},                  &myCartInfo.xButton,             10},
+    {"Y BUTTON",    0, {"DEFAULT", "PAN UP", "PAN DOWN", "JOY UP", "JOY DOWN", "JOY LEFT", "JOY RIGHT", "JOY B1", "JOY B2", "CONSOLE PAUSE"},                  &myCartInfo.yButton,             10},
     {"X OFFSET",    2, {"-50",   "+50"},                                                                                                                  (u8*)&myCartInfo.xOffset,             2},
     {"Y OFFSET",    2, {"-50",   "+50"},                                                                                                                  (u8*)&myCartInfo.yOffset,             2},
     {"X SCALE",     2, {"+200",  "+320"},                                                                                                                 (u8*)&myCartInfo.xScale,              2},
     {"Y SCALE",     2, {"+180",  "+234"},                                                                                                                 (u8*)&myCartInfo.yScale,              2},
     {"X JIGGLE",    1, {"+1",    "+256"},                                                                                                                 (u8*)&myCartInfo.xJiggle,             2},
     {"Y JIGGLE",    1, {"+1",    "+256"},                                                                                                                 (u8*)&myCartInfo.yJiggle,             2},
-    {"DMA ADJUST",  2, {"-25","+50"},                                                                                                                     (u8*)&myCartInfo.dma_adjust,          2},    
    
     {NULL,          0, {"",      ""},                                                                                                                          NULL,                            1},
 };

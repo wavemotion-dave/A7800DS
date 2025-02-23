@@ -36,7 +36,9 @@
 
 #define MAX_CART_SIZE (1024 * 1024) // 1MB Cart is HUGE!
 
-extern u8 use_composite_filtering;
+extern u8  use_composite_filtering;
+extern u8  bios_show_counter;
+extern u8  bios_available;
 
 #define CARTRIDGE_CONTROLLER_NONE        0
 #define CARTRIDGE_CONTROLLER_JOYSTICK    1
@@ -110,6 +112,8 @@ extern void cartridge_Store( );
 extern void cartridge_Write(word address, byte data);
 extern bool cartridge_IsLoaded( );
 extern void cartridge_Release( );
+extern void bios_check_and_load(void);
+extern void bios_Store(void);
 extern char cartridge_title[256];
 extern byte cartridge_digest[256];
 extern char cartridge_filename[256];

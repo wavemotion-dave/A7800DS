@@ -31,6 +31,7 @@ byte memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
 u8  is_memory_writable[256] __attribute__((section(".dtcm")));
 u32 snes_bit_pos = 0;
 u8  bHSC_dirty = 0;
+u8  bINPTCTRL_locked = 0;
 
 // ----------------------------------------------------------------------------
 // Reset
@@ -51,6 +52,7 @@ void memory_Reset( )
 
   bHSC_dirty = 0;
   snes_bit_pos = 0;
+  bINPTCTRL_locked = 0;
 }
 
 
@@ -168,7 +170,8 @@ ITCM_CODE void memory_Write(word address, byte data)
 
     switch(address) {
       case INPTCTRL:
-        if(data == 22) cartridge_Store();
+        if (!bINPTCTRL_locked) {if (data & 0x04) cartridge_Store(); else bios_Store();}
+        if (data & 0x01) bINPTCTRL_locked = 1;
         break;
       case INPT0:
         break;

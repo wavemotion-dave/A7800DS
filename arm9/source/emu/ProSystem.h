@@ -57,5 +57,6 @@ extern void prosystem_ExecuteFrame(const byte* input);
 extern void prosystem_Close( );
 extern byte prosystem_frame;
 extern uint prosystem_cycles;
+extern void Trace(word data);
 
 #endif

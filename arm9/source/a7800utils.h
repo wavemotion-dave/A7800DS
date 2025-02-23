@@ -63,8 +63,6 @@ extern unsigned short *bufVideo;   // Video buffer
 
 extern void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr, unsigned char valEnd, unsigned char uWait);
 
-extern unsigned long crc32 (unsigned int crc, const unsigned char *buf, unsigned int len);
-
 extern void vblankIntr();
 
 extern void dsInitScreenMain(void);

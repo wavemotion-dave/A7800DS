@@ -56,7 +56,13 @@ void prosystem_Reset( )
     maria_Reset( );
     riot_Reset ( );
     cartridge_LoadHighScoreCart();
-    cartridge_Store( );
+
+    // Load 7800 BIOS if available... otherwise direct load the CART
+    if (bios_available)
+    {
+         bios_Store();
+         bios_show_counter = myCartInfo.biosTimeout;
+    } else cartridge_Store( );    
 
     prosystem_cycles = sally_ExecuteRES( );
   }
@@ -93,8 +99,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
         
       maria_RenderScanlineTOP( );
       
-      // Cycle Stealing happens here... with a fudge adjustment...
-      if (maria_cycles > 0) maria_cycles += (int)myCartInfo.dma_adjust;
+      // Cycle Stealing happens here...
       prosystem_cycles += maria_cycles;
       if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
     }
@@ -135,8 +140,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 
     maria_RenderScanline( );
     
-    // Cycle Stealing happens here... with a fudge adjustment...
-    if (maria_cycles > 0) maria_cycles += (int)myCartInfo.dma_adjust;
+    // Cycle Stealing happens here...
     prosystem_cycles += maria_cycles;
     if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
  
@@ -154,7 +158,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   // ---------------------------------------------------------------------------
   // And at the bottom, we no longer have to render anything Maria-related...
   // ---------------------------------------------------------------------------
-  for (; maria_scanline < 262; maria_scanline++) 
+  for (; maria_scanline < 264; maria_scanline++) 
   {
     prosystem_cycles = 0;
       

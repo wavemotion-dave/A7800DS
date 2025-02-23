@@ -98,6 +98,25 @@ u8 soundEmuPause = 1;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
+void Trace(word data)
+{
+    static int trace_x=0;
+    static int trace_y=0;
+    static u8 done = 0;
+    
+    if (done) return;
+    
+    sprintf(fpsbuf, "%04X", data);
+    dsPrintValue(trace_x,trace_y,0, fpsbuf);
+    if (trace_y < 22) { trace_y++; }
+    else 
+    {
+        trace_y = 0;
+        if (trace_x < 22) { trace_x += 6;} else {trace_x = 0; done=1;}
+    }
+    WAITVBL;
+}
+
 static void DumpDebugData(void)
 {
     if (DEBUG_DUMP)
@@ -107,12 +126,15 @@ static void DumpDebugData(void)
             sprintf(fpsbuf, "D%-2d: %08ld %08XH", i, debug[i], debug[i]);
             dsPrintValue(0,2+i,0, fpsbuf);
         }
+        
+        //sprintf(fpsbuf, "PC = %04X", sally_pc.w);
+        //dsPrintValue(0,10,0, fpsbuf);
 
         extern byte last_illegal_opcode;
         if (last_illegal_opcode > 0)
         {
             sprintf(fpsbuf, "ILLEGAL OP=%02X", last_illegal_opcode);
-            dsPrintValue(10,23,0, fpsbuf);
+            dsPrintValue(14,23,0, fpsbuf);
         }
     }
 }
@@ -183,7 +205,24 @@ uint8_t shift_dampen = 0;
 
 ITCM_CODE void vblankIntr()
 {
-  if (bRefreshXY || temp_shift)
+  if (bios_show_counter)
+  {
+      bios_show_counter--;
+      xdxBG = 0x0100;
+      ydyBG = 0x0100;
+      cxBG = (32 << 8);
+      cyBG = (8 << 8);
+      REG_BG2PA = xdxBG;
+      REG_BG2PD = ydyBG;
+      REG_BG3PA = xdxBG;
+      REG_BG3PD = ydyBG;
+      REG_BG2X = cxBG;
+      REG_BG2Y = cyBG;
+      REG_BG3X = cxBG;
+      REG_BG3Y = cyBG;
+      bRefreshXY = 1;
+  }
+  else if (bRefreshXY || temp_shift)
   {
     cxBG = (myCartInfo.xOffset << 8);
     cyBG = (myCartInfo.yOffset + temp_shift) << 8;
@@ -759,7 +798,7 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 // --------------------------------------------------------------------------------------------
 // MAXMOD streaming setup and handling...
 // --------------------------------------------------------------------------------------------
-#define sample_rate  31400      // To rough match the TIA driver for the Atari 7800 - we purposely undershoot slightly
+#define sample_rate  31500      // To rough match the TIA driver for the Atari 7800 - we purposely undershoot slightly (263 x 60 x 2 = 31560)
 #define buffer_size  (256)      // Enough buffer that we don't have to fill it too often but not so big as to create lag
 
 mm_ds_system sys  __attribute__((section(".dtcm")));
@@ -1131,7 +1170,22 @@ void dsMainLoop(void)
 
             if (myCartInfo.cardctrl1 != SOTA)
             {
-                if ( (keys_pressed & KEY_Y) ) { temp_shift = 16; shift_dampen = 1; }     // Shift Screen Down
+                if ( (keys_pressed & KEY_Y) )
+                {
+                    switch (myCartInfo.yButton)
+                    {
+                        case KEY_MAP_DEFAULT:  { temp_shift = 16;  shift_dampen = 1;  break; }   // Shift Screen Down
+                        case KEY_MAP_PANUP:    { temp_shift = -16; shift_dampen = 1;  break; }   // Shift Screen Up
+                        case KEY_MAP_PANDN:    { temp_shift = 16;  shift_dampen = 1;  break; }   // Shift Screen Down
+                        case KEY_MAP_JOYUP:    { tchepres(0); snes_adaptor &= 0xFFEF; break; }   // Joystick Up
+                        case KEY_MAP_JOYDN:    { tchepres(1); snes_adaptor &= 0xFFDF; break; }   // Joystick Down
+                        case KEY_MAP_JOYLEFT:  { tchepres(2); snes_adaptor &= 0xFFBF; break; }   // Joystick Left
+                        case KEY_MAP_JOYRIGHT: { tchepres(3); snes_adaptor &= 0xFF7F; break; }   // Joystick Right
+                        case KEY_MAP_JOYB1:    { tchepres(4); snes_adaptor &= 0xFEFF; break; }   // Joystick Button #1
+                        case KEY_MAP_JOYB2:    { tchepres(5); snes_adaptor &= 0xFFFE; break; }   // Joystick Button #2
+                        case KEY_MAP_PAUSE:    { tchepres_value = 10; tchepres_delay = 5; tchepres(10); break; } // Console Pause Button
+                    }
+                }
                 if ( (keys_pressed & KEY_X) )
                 {
                     switch (myCartInfo.xButton)
