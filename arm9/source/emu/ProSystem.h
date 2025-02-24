@@ -47,6 +47,7 @@
 
 extern int debug[];
 extern u8 isDS_LITE;
+extern u8 bSkipBIOS;
 
 // Difficulty switches... 
 #define DIFF_A      0
@@ -58,5 +59,6 @@ extern void prosystem_Close( );
 extern byte prosystem_frame;
 extern uint prosystem_cycles;
 extern void Trace(word data);
+extern void Trace2(word addr, u8 data);
 
 #endif

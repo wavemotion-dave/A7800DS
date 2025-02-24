@@ -149,7 +149,7 @@ ITCM_CODE void memory_Write(word address, byte data)
             if (myCartInfo.cardtype == CARTRIDGE_TYPE_FRACTALUS)
             {
                 // Special EXRAM/A8 handling... mirror ram
-                memory_ram[address ^0x0100] = data;
+                memory_ram[address ^ 0x0100] = data;
             }
             memory_ram[address] = data;
             return;
@@ -168,14 +168,18 @@ ITCM_CODE void memory_Write(word address, byte data)
         }
     } else if ((address & 0xFFE0) == 0x460) return; // XM/Yamaha is mapped into 460 - 47F... do not respond to it as we are not XM capable (yet)
 
-    // Until the unit is locked, the lower 32 addresses all access INPTCTRL to allow toggle of BIOS/CART
-    if (address <= 0x1f)
+    if ((address & 0xFCFF) <= 0x1f)
     {
         if (!bINPTCTRL_locked) {if (data & 0x04) cartridge_Store(); else bios_Store();}
         if (data & 0x01) bINPTCTRL_locked = 1;
     }
-
-    switch(address) {
+    switch(address) 
+    {
+//      case INPTCTRL:
+        // Until the unit is locked, the lower 32 addresses all access INPTCTRL to allow toggle of BIOS/CART... we only trap the one known to be used (A=0x0001)
+//        if (!bINPTCTRL_locked) {if (data & 0x04) cartridge_Store(); else bios_Store();}
+//        if (data & 0x01) bINPTCTRL_locked = 1;
+        break;
       case INPT0:
         break;
       case INPT1:

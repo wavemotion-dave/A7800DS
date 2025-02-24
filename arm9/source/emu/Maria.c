@@ -44,7 +44,7 @@ union ColorUnion
     } wo;
 };
 
-#define MARIA_CYCLE_LIMIT  430
+#define MARIA_CYCLE_LIMIT  426
 #define MARIA_LINERAM_SIZE 160
 static byte maria_lineRAM[256]  __attribute__((section(".dtcm")));
 
@@ -171,9 +171,9 @@ static inline __attribute__((always_inline))  void mariaROO_StoreCells4(byte dat
 
 
 // ----------------------------------------------------------------------------
-// StoreCell - wide mode
+// StoreCell - WriteMode
 // ----------------------------------------------------------------------------
-static inline __attribute__((always_inline)) void maria_StoreCellWideMode(byte data) 
+static inline __attribute__((always_inline)) void maria_StoreCellWriteMode(byte data) 
 {
     if (maria_horizontal < MARIA_LINERAM_SIZE) 
     {
@@ -191,7 +191,7 @@ static inline __attribute__((always_inline)) void maria_StoreCellWideMode(byte d
     }
 }
 
-static inline __attribute__((always_inline)) void mariaROO_StoreCellWideMode(byte data) 
+static inline __attribute__((always_inline)) void mariaROO_StoreCellWriteMode(byte data) 
 {
     if (maria_horizontal < MARIA_LINERAM_SIZE) 
     {
@@ -483,7 +483,7 @@ static inline __attribute__((always_inline)) void maria_StoreGraphic( )
     byte data = memory_ram[maria_pp.w];
     if (maria_wmode) 
     {
-        if (data) maria_StoreCellWideMode(write_mode_lookup[data]);
+        if (data) maria_StoreCellWriteMode(write_mode_lookup[data]);
     }
     else 
     {
@@ -499,7 +499,7 @@ static inline __attribute__((always_inline)) void mariaROO_StoreGraphic( )
     byte data = memory_ram[maria_pp.w];
     if (maria_wmode) 
     {
-        if (data) mariaROO_StoreCellWideMode(write_mode_lookup[data]);
+        if (data) mariaROO_StoreCellWriteMode(write_mode_lookup[data]);
     }
     else 
     {
@@ -859,7 +859,7 @@ static inline __attribute__((always_inline)) void mariaBANK_StoreGraphic( )
     
     if (maria_wmode) 
     {
-        if (data) maria_StoreCellWideMode(write_mode_lookup[data]);
+        if (data) maria_StoreCellWriteMode(write_mode_lookup[data]);
     }
     else 
     {

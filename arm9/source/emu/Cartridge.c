@@ -807,7 +807,7 @@ void bios_check_and_load(void)
 
 void bios_Store(void)
 {
-    if (bios_available)
+    if (bios_available && !bSkipBIOS)
     {
          memory_WriteROM(0xF000, 0x1000, bios_data);
     }

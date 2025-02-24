@@ -57,12 +57,14 @@ void prosystem_Reset( )
     riot_Reset ( );
     cartridge_LoadHighScoreCart();
 
+    cartridge_Store( );  // Always call this - it may setup some RAM or other stuff below the BIOS region...
+    
     // Load 7800 BIOS if available... otherwise direct load the CART
-    if (bios_available)
+    if (bios_available && !bSkipBIOS)
     {
          bios_Store();
          bios_show_counter = myCartInfo.biosTimeout;
-    } else cartridge_Store( );    
+    }
 
     prosystem_cycles = sally_ExecuteRES( );
   }

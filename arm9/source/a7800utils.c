@@ -59,6 +59,7 @@ u8  full_speed                          __attribute__((section(".dtcm"))) = 0;
 u8  fpsDisplay                          __attribute__((section(".dtcm"))) = 0;
 u8  bEmulatorRun                        __attribute__((section(".dtcm"))) = 1;
 u8  bNoDatabase                         __attribute__((section(".dtcm"))) = 0;
+u8  bSkipBIOS                           __attribute__((section(".dtcm"))) = 0;
 u32 snes_adaptor                        __attribute__((section(".dtcm"))) = 0x0000FFFF;
 
 extern u32 tiaBufIdx;
@@ -98,13 +99,12 @@ u8 soundEmuPause = 1;
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
+static u8 trace_x=0;
+static u8 trace_y=0;
+static u8 trace_done = 0;
 void Trace(word data)
 {
-    static int trace_x=0;
-    static int trace_y=0;
-    static u8 done = 0;
-    
-    if (done) return;
+    if (trace_done) return;
     
     sprintf(fpsbuf, "%04X", data);
     dsPrintValue(trace_x,trace_y,0, fpsbuf);
@@ -112,9 +112,22 @@ void Trace(word data)
     else 
     {
         trace_y = 0;
-        if (trace_x < 22) { trace_x += 6;} else {trace_x = 0; done=1;}
+        if (trace_x < 24) { trace_x += 5;} else {trace_x = 0; trace_done=1;}
     }
-    WAITVBL;
+}
+
+void Trace2(word addr, u8 data)
+{
+    if (trace_done) return;
+    
+    sprintf(fpsbuf, "%04X=%02X", addr, data);
+    dsPrintValue(trace_x,trace_y,0, fpsbuf);
+    if (trace_y < 22) { trace_y++; }
+    else 
+    {
+        trace_y = 0;
+        if (trace_x < 23) { trace_x += 8;} else {trace_x = 0; trace_done=1;}
+    }
 }
 
 static void DumpDebugData(void)
@@ -372,6 +385,10 @@ void dsLoadGame(char *filename)
   {
       debug[i] = 0;
   }
+  
+  trace_x=0;
+  trace_y=0;
+  trace_done = 0; 
 
   // load card game if ok
   if (cartridge_Load(filename) != 0)
@@ -669,12 +686,13 @@ unsigned int dsWaitForRom(void)
       while (keysCurrent() & KEY_B);
     }
 
-    if (keysCurrent() & (KEY_A | KEY_Y | KEY_SELECT))  // Select ROM
+    if (keysCurrent() & (KEY_A | KEY_Y | KEY_SELECT | KEY_START))  // Select ROM
     {
       if (!proromlist[ucFicAct].directory)
       {
         if (keysCurrent() & KEY_Y)      bEmulatorRun = false; else bEmulatorRun=true;
         if (keysCurrent() & KEY_SELECT) bNoDatabase = true; else bNoDatabase=false;
+        if (keysCurrent() & KEY_START)  bSkipBIOS = true; else bSkipBIOS=false;
         if (keysCurrent() & KEY_X)      DEBUG_DUMP = 1; else DEBUG_DUMP=0;
         bRet=true;
         bDone=true;
