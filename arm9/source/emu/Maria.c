@@ -76,7 +76,7 @@ void mariaBANK_RenderScanline(void);
 
 extern u32 bg32;
 
-#define MARIA_CYCLES_DMA_STARTUP_COST                        3
+#define MARIA_CYCLES_DMA_STARTUP_COST                        0
 #define MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE        24
 #define MARIA_CYCLES_STARTUP_SHUTDOWN_OTHER_LINES_ZONE      16
 #define MARIA_CYCLES_4_BYTE_HEADER                           8

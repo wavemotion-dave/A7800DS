@@ -86,26 +86,37 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 
   riot_SetInput(input);
   
-  // ------------------------------------------------------------
-  // Handle the TOP area first... speeds up processing below...
-  // ------------------------------------------------------------
-  for (maria_scanline = 1; maria_scanline <= 16; maria_scanline++) 
+  // ---------------------------------------------------------------------
+  // Handle the VERTICAL BLANK area first... speeds up processing below...
+  // ---------------------------------------------------------------------
+  memory_ram[MSTAT] = 128;  // Into the Vertical Blank...
+
+  // -------------------------------------------------------------------------------------------  
+  // Note: this is not accurate. It should be 20 scanlines of Vertical Blank but experimentally
+  // this is working for the emulation across ~200 games both with and without the BIOS enabled.
+  // Other combinations have produced some games that run too fast (Asteroids) and some games
+  // that crash (Robotron) and some issues with Pole Position II and the joystick selection
+  // of a course to play. I've also seen graphical glitches in Crossbow when loaded via the 
+  // BIOS. Be very careful if you change this... be sure you understand the consequences (and
+  // this developer doesn't... so be warned - don't follow this code for accuracy advice!).
+  // -------------------------------------------------------------------------------------------  
+  for (maria_scanline = 1; maria_scanline <= 22; maria_scanline++) 
   {
     prosystem_cycles = 0;
       
-    if (maria_scanline & 0x10) 
+    if (maria_scanline == 22) // Maria can start to do her thing... 
     {
-      memory_ram[MSTAT] = 0;
+      memory_ram[MSTAT] = 0;  // Out of the Vertical Blank
       framePtr = (word*)(maria_surface);
       sally_Execute(HBLANK_BEFORE_DMA);
         
-      maria_RenderScanlineTOP( );
+      maria_RenderScanlineTOP();
       
       // Cycle Stealing happens here...
       prosystem_cycles += maria_cycles;
       if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
     }
-    else
+    else // Still in the vertical blank - just execute CPU
     {    
         sally_Execute(HBLANK_BEFORE_DMA);
     }
@@ -116,31 +127,33 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     {
         pokey_Process();
         pokey_Scanline();
-    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
+    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz
   }   
     
-  // ------------------------------------------------------------
-  // Now handle the Main display area...
-  // ------------------------------------------------------------
-  for (; maria_scanline < 258; maria_scanline++) 
+  // -------------------------------------------------------------
+  // Now handle the Main display area... All the way to the final 
+  // scanline which is 263 (often reported incorrectly as 262).
+  // -------------------------------------------------------------
+  for (; maria_scanline <= 263; maria_scanline++) 
   {
     prosystem_cycles = 0;
       
-    if (maria_scanline == 25) 
+    if (maria_scanline == 31)
     {
-       // -----------------------------------------------------------------------------------
-       // At line 25 we can start to render the scanlines if we are not skipping this frame.
-       // -----------------------------------------------------------------------------------
+       // -------------------------------------------------------------------------
+       // We can start to render the scanlines if we are not skipping this frame.
+       // For the DSi, we generally don't skip any rames (the mask will be 0xFF).
+       // -------------------------------------------------------------------------
        bRenderFrame = gTotalAtariFrames & frameSkipMask;
     } 
-    else if (maria_scanline == 247)
+    else if (maria_scanline == 253)
     {
-       bRenderFrame = 0;    // At line 247 we can stop rendering frames...
+       bRenderFrame = 0;    // We can stop rendering scanlines - the poor DS can't display this far down anyway even with scaling
     }
       
     sally_Execute(HBLANK_BEFORE_DMA);
 
-    maria_RenderScanline( );
+    maria_RenderScanline();
     
     // Cycle Stealing happens here...
     prosystem_cycles += maria_cycles;
@@ -152,28 +165,8 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     {
         pokey_Process();
         pokey_Scanline();
-    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
+    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz
   }    
-    
-  memory_ram[MSTAT] = 128;
-  
-  // ---------------------------------------------------------------------------
-  // And at the bottom, we no longer have to render anything Maria-related...
-  // ---------------------------------------------------------------------------
-  for (; maria_scanline < 264; maria_scanline++) 
-  {
-    prosystem_cycles = 0;
-      
-    sally_Execute(HBLANK_BEFORE_DMA);
-
-    sally_Execute(CYCLES_PER_SCANLINE);
-    if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
-    {
-        pokey_Process();
-        pokey_Scanline();
-    } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz (or half that for DS LITE)
-  }    
-    
 }
 
 // ----------------------------------------------------------------------------
