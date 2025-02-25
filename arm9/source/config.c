@@ -65,11 +65,11 @@ void SaveConfig(bool bShow)
     // Find the slot we should save into...
     for (slot=0; slot<MAX_CONFIGS; slot++)
     {
-        if (strcmp(allConfigs.cart[slot].digest, myCartInfo.digest) == 0)  // Got a match?!
+        if (strncmp(allConfigs.cart[slot].half_digest, myCartInfo.half_digest, 16) == 0)  // Got a match?!
         {
             break;                           
         }
-        if (strcmp(allConfigs.cart[slot].digest, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx") == 0) // Didn't find it... use a blank slot...
+        if (strcmp(allConfigs.cart[slot].half_digest, "xxxxxxxxxxxxxxxx") == 0) // Didn't find it... use a blank slot...
         {
             break;                           
         }
@@ -138,8 +138,8 @@ static void SetDefaultGameConfig(void)
     // Init the entire database
     for (int slot=0; slot<MAX_CONFIGS; slot++)
     {
-        strcpy(allConfigs.cart[slot].digest, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-        // TBD - do more.
+        strcpy(allConfigs.cart[slot].half_digest, "xxxxxxxxxxxxxxxx");
+        // TBD - do more?
     }
 }
 

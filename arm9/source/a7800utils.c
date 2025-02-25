@@ -238,7 +238,7 @@ ITCM_CODE void vblankIntr()
   else if (bRefreshXY || temp_shift)
   {
     cxBG = (myCartInfo.xOffset << 8);
-    cyBG = ((myCartInfo.yOffset-1) + temp_shift) << 8;
+    cyBG = (myCartInfo.yOffset + temp_shift) << 8;
     xdxBG = ((320 / myCartInfo.xScale) << 8) | (320 % myCartInfo.xScale) ;
     ydyBG = ((video_height / myCartInfo.yScale) << 8) | (video_height % myCartInfo.yScale);
 

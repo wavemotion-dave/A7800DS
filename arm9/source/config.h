@@ -34,13 +34,28 @@
 // ---------------------------
 // Config handling...
 // ---------------------------
-#define CONFIG_VER  0x0009
+#define CONFIG_VER  0x000A
 
-#define MAX_CONFIGS 680
+#define MAX_CONFIGS 700
 
 struct AllConfig_t
 {
     u16              config_ver;
+    u8               global_buttonAB;
+    u8               global_showBios;
+    u8               global_spare1;
+    u8               global_spare2;
+    u8               global_spare3;
+    u8               global_spare4;
+    u8               global_spare5;
+    u8               global_spare6;
+    u8               global_spare7;
+    u8               global_spare10;
+    u8               global_spare11;
+    u8               global_spare12;
+    u8               global_spare13;
+    u8               global_spare14;
+    u8               global_unused[512];
     Database_Entry   cart[MAX_CONFIGS];
     u32              crc32;
 };

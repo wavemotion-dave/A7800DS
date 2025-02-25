@@ -28,8 +28,7 @@
 #include "Cartridge.h"
 
 typedef struct {
-  char  digest[33];
-  char  header_name[33];
+  char  half_digest[17];
   u8    cardtype;
   u8    pokeyType;
   u8    cardctrl1;
@@ -38,7 +37,7 @@ typedef struct {
   u8    diff2;
   u8    region;
   u8    hsc;
-  s16   biosTimeout;
+  u8    biosTimeout;
   s16   xOffset;
   s16   yOffset;
   s16   xScale;
@@ -53,7 +52,7 @@ typedef struct {
   u8    spare2;
   u8    spare3;
   u8    spare4;
-  s16   spare5;
+  u8    spare5;
 } Database_Entry;
 
 

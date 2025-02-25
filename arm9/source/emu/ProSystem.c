@@ -34,7 +34,7 @@ uint32 bg32           __attribute__((section(".dtcm"))) = 0;
 uint bRenderFrame     __attribute__((section(".dtcm"))) = 0;
 
 
-#define HBLANK_BEFORE_DMA   34      // Number of cycles in a HBLANK 
+#define HBLANK_BEFORE_DMA   134     // 134 Cycles in the HBLANK before DMA starts (really 33.5 CPU cycles)
 #define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system (really 113.5 CPU cycles)
 
 
@@ -106,7 +106,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
 
     sally_Execute(HBLANK_BEFORE_DMA);
     
-    if (maria_scanline == 22) // Maria can start to do her thing... 
+    if (maria_scanline == 22) // Maria can start to do her thing... At this point we've had 21 lines of VBLANK
     {
       memory_ram[MSTAT] = 0;  // Out of the Vertical Blank
       framePtr = (word*)(maria_surface);
@@ -135,13 +135,13 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles = 0;
       
-    if (maria_scanline & 0xFFE0) // Anything at or above line 32 we can start to render..
+    if (maria_scanline > 30) // Anything at or above line 31 we can start to render..
     {
        // -------------------------------------------------------------------------
        // We can start to render the scanlines if we are not skipping this frame.
        // For the DSi, we generally don't skip any frames (the mask will be 0xFF).
        // -------------------------------------------------------------------------
-       if (maria_scanline & 0x100) bRenderFrame = 0; // Above 256 we can stop... DS can't display this anyway
+       if (maria_scanline > 246) bRenderFrame = 0; // Above 246 or so... we can stop... DS can't display this anyway
        else bRenderFrame = gTotalAtariFrames & frameSkipMask;
     } 
      
