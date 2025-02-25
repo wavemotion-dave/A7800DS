@@ -34,7 +34,7 @@ uint32 bg32           __attribute__((section(".dtcm"))) = 0;
 uint bRenderFrame     __attribute__((section(".dtcm"))) = 0;
 
 
-#define CYCLES_BEFORE_DMA    34     // Number of cycles into HBLANK before the DMA occurs
+#define CYCLES_BEFORE_DMA    28     // Number of cycles before DMA kicks in (really 7 CPU cycles)
 #define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system (really 113.5 CPU cycles)
 
 
@@ -89,36 +89,39 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   // ---------------------------------------------------------------------
   // Handle the VERTICAL BLANK area first... speeds up processing below...
   // ---------------------------------------------------------------------
-  memory_ram[MSTAT] = 128;  // Into the Vertical Blank...
-
+  memory_ram[MSTAT] = 128;  // Into the Vertical Blank...  
+  
   // -------------------------------------------------------------------------------------------  
-  // Note: this is not accurate. It should be 20 scanlines of Vertical Blank but experimentally
-  // this is working for the emulation across ~200 games both with and without the BIOS enabled.
-  // Other combinations have produced some games that run too fast (Asteroids) and some games
-  // that crash (Robotron) and some issues with Pole Position II and the joystick selection
+  // Note: this is not accurate. It should be 263 scanlines total but it doesn't work for all
+  // games at 263 so we've gone with 262 for maximum compatibility. This is likely due to some
+  // emulation cycle counting inaccuracies. At 263, some games run too fast (Asteroids, Deluxe) 
+  // and some crash (Robotron) and some issues with Pole Position II and the joystick selection
   // of a course to play. I've also seen graphical glitches in Crossbow when loaded via the 
-  // BIOS. Be very careful if you change this... be sure you understand the consequences (and
-  // this developer doesn't... so be warned - don't follow this code for accuracy advice!).
-  // -------------------------------------------------------------------------------------------  
-  for (maria_scanline = 1; maria_scanline <= 22; maria_scanline++) 
+  // BIOS and all kinds of graphical oddities in Xenophobe. Be very careful if you change this...
+  // be sure you understand the consequences (and this developer doesn't... so be warned!).
+  // -------------------------------------------------------------------------------------------    
+  for (maria_scanline = 1; maria_scanline <= 21; maria_scanline++) 
   {
     prosystem_cycles = 0;
-
-    sally_Execute(CYCLES_BEFORE_DMA);
-    
-    if (maria_scanline == 22) // Maria can start to do her thing... At this point we've had 21 lines of VBLANK
+      
+    if (maria_scanline == 21)   // Maria can start to do her thing... We've had 20 VBLANK scanlines
     {
-      memory_ram[MSTAT] = 0;  // Out of the Vertical Blank
+      memory_ram[MSTAT] = 0;    // Out of the vertical blank
       framePtr = (word*)(maria_surface);
+      sally_Execute(CYCLES_BEFORE_DMA);
         
-      maria_RenderScanlineTOP();
+      maria_RenderScanlineTOP( );
       
       // Cycle Stealing happens here...
       prosystem_cycles += ((maria_cycles+3) >> 2) << 2; // Always a multiple of 4
       if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
     }
+    else
+    {    
+        sally_Execute(CYCLES_BEFORE_DMA);
+    }
     
-    sally_Execute(CYCLES_PER_SCANLINE); // Return value is the cycle deficit from this scanline
+    sally_Execute(CYCLES_PER_SCANLINE);
       
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
@@ -127,33 +130,34 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
     } else tia_Process(); // If all we have to deal with is the TIA, we can do so at 31KHz
   }   
     
-  // -------------------------------------------------------------
-  // Now handle the Main display area... All the way to the final 
-  // scanline which is 263 (often reported incorrectly as 262).
-  // -------------------------------------------------------------
-  for (; maria_scanline <= 263; maria_scanline++) 
+  // ------------------------------------------------------------
+  // Now handle the Main display area...
+  // ------------------------------------------------------------
+  for (; maria_scanline < 263; maria_scanline++) 
   {
     prosystem_cycles = 0;
       
-    if (maria_scanline > 30) // Anything at or above line 31 we can start to render..
+    if (maria_scanline >= 30) 
     {
-       // -------------------------------------------------------------------------
+       // ------------------------------------------------------------------------
        // We can start to render the scanlines if we are not skipping this frame.
-       // For the DSi, we generally don't skip any frames (the mask will be 0xFF).
-       // -------------------------------------------------------------------------
-       if (maria_scanline > 246) bRenderFrame = 0; // Above 246 or so... we can stop... DS can't display this anyway
-       else bRenderFrame = gTotalAtariFrames & frameSkipMask;
+       // ------------------------------------------------------------------------
+       bRenderFrame = gTotalAtariFrames & frameSkipMask;
     } 
-     
+    else if (maria_scanline == 251)
+    {
+       bRenderFrame = 0;    // We can stop rendering frames... DS can't show it anyway.
+    }
+      
     sally_Execute(CYCLES_BEFORE_DMA);
 
-    maria_RenderScanline();
+    maria_RenderScanline( );
     
     // Cycle Stealing happens here...
     prosystem_cycles += ((maria_cycles+3) >> 2) << 2; // Always a multiple of 4
     if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
  
-    sally_Execute(CYCLES_PER_SCANLINE); // Return value is the cycle deficit from this scanline
+    sally_Execute(CYCLES_PER_SCANLINE);
       
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
