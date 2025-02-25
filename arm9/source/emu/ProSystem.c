@@ -34,7 +34,7 @@ uint32 bg32           __attribute__((section(".dtcm"))) = 0;
 uint bRenderFrame     __attribute__((section(".dtcm"))) = 0;
 
 
-#define HBLANK_BEFORE_DMA   134     // 134 Cycles in the HBLANK before DMA starts (really 33.5 CPU cycles)
+#define CYCLES_BEFORE_DMA    34     // Number of cycles into HBLANK before the DMA occurs
 #define CYCLES_PER_SCANLINE 454     // 454 Cycles per Scanline in an NTSC system (really 113.5 CPU cycles)
 
 
@@ -104,7 +104,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles = 0;
 
-    sally_Execute(HBLANK_BEFORE_DMA);
+    sally_Execute(CYCLES_BEFORE_DMA);
     
     if (maria_scanline == 22) // Maria can start to do her thing... At this point we've had 21 lines of VBLANK
     {
@@ -145,7 +145,7 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
        else bRenderFrame = gTotalAtariFrames & frameSkipMask;
     } 
      
-    sally_Execute(HBLANK_BEFORE_DMA);
+    sally_Execute(CYCLES_BEFORE_DMA);
 
     maria_RenderScanline();
     
