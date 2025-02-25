@@ -103,25 +103,22 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   for (maria_scanline = 1; maria_scanline <= 22; maria_scanline++) 
   {
     prosystem_cycles = 0;
-      
+
+    sally_Execute(HBLANK_BEFORE_DMA);
+    
     if (maria_scanline == 22) // Maria can start to do her thing... 
     {
       memory_ram[MSTAT] = 0;  // Out of the Vertical Blank
       framePtr = (word*)(maria_surface);
-      sally_Execute(HBLANK_BEFORE_DMA);
         
       maria_RenderScanlineTOP();
       
       // Cycle Stealing happens here...
-      prosystem_cycles += maria_cycles;
+      prosystem_cycles += ((maria_cycles+3) >> 2) << 2; // Always a multiple of 4
       if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
     }
-    else // Still in the vertical blank - just execute CPU
-    {    
-        sally_Execute(HBLANK_BEFORE_DMA);
-    }
     
-    sally_Execute(CYCLES_PER_SCANLINE);
+    sally_Execute(CYCLES_PER_SCANLINE); // Return value is the cycle deficit from this scanline
       
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {
@@ -138,28 +135,25 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte* input)
   {
     prosystem_cycles = 0;
       
-    if (maria_scanline == 31)
+    if (maria_scanline & 0xFFE0) // Anything at or above line 32 we can start to render..
     {
        // -------------------------------------------------------------------------
        // We can start to render the scanlines if we are not skipping this frame.
-       // For the DSi, we generally don't skip any rames (the mask will be 0xFF).
+       // For the DSi, we generally don't skip any frames (the mask will be 0xFF).
        // -------------------------------------------------------------------------
-       bRenderFrame = gTotalAtariFrames & frameSkipMask;
+       if (maria_scanline & 0x100) bRenderFrame = 0; // Above 256 we can stop... DS can't display this anyway
+       else bRenderFrame = gTotalAtariFrames & frameSkipMask;
     } 
-    else if (maria_scanline == 253)
-    {
-       bRenderFrame = 0;    // We can stop rendering scanlines - the poor DS can't display this far down anyway even with scaling
-    }
-      
+     
     sally_Execute(HBLANK_BEFORE_DMA);
 
     maria_RenderScanline();
     
     // Cycle Stealing happens here...
-    prosystem_cycles += maria_cycles;
+    prosystem_cycles += ((maria_cycles+3) >> 2) << 2; // Always a multiple of 4
     if(riot_and_wsync&2) riot_UpdateTimer( maria_cycles >> 2 );
  
-    sally_Execute(CYCLES_PER_SCANLINE);
+    sally_Execute(CYCLES_PER_SCANLINE); // Return value is the cycle deficit from this scanline
       
     if(myCartInfo.pokeyType) // If pokey enabled, we process 1 pokey sample and 1 TIA sample. Good enough.
     {

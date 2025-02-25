@@ -29,283 +29,6 @@
 Database_Entry myCartInfo __attribute__((section(".dtcm")));
 extern uint cartridge_size;
 
-#if 0
-7800 XMAS - Santa vs The Nightmares (20201219u1) (1A114E52).a78
-63f9217bbd3ba91c1fc09fda18de9275  -
-Aerial (20240715) (1E4593DB).a78
-7f207c119a8898d3c2df919bac506ba2  -
-Ah Zombies (v03) (20221118) (D0DD190B).a78
-909f8879f9b8c47f3b487e402c70227c  -
-Alpha Race (20150920) (DC81DDD0).a78
-10ff87ebfeec99858cc80293b0c1686e  -
-Alpine Avenger (v0_75) (20240711) (E6C07ABB).a78
-a03f3afae182a4639e41554df8e37c34  -
-Antiair (20240713) (BFCE8DEE).a78
-b1c5010c81aa7e3925f49040df066ca0  -
-Apple Snaffle (v1_30F) (20100803) (3DD0C2B7).a78
-510ea66b6375a848a21db019b36078dd  -
-Ascend (20240714) (D581EF7B).a78
-15f37e0640c4f255fe33d2d45d3cbdf2  -
-Atarimas (20240815) (4A41D546).a78
-21bd75947ef58b236d1c3021e2790921  -
-Atlas (20111023) (045FE06D).a78
-a6c02ae92d6937cb885f6909c0a8a2e1  -
-Baseball Dice (v0_1) (20240314) (B16769C5).a78
-8d4d60928563093a8ede34095b473f7c  -
-Battlot (20240712) (A4199A30).a78
-813e5f0b367eeaff15730bfe1c31950e  -
-Binary Land (20210208) (AD20DEAA).a78
-a541b16e95619afa4960487c23a9a9ff  -
-Black Forest (20241219) (7041918B).a78
-a0d1816bcf2db91ac2cdf3c3a486d565  -
-BlocDrop (20130310) (9882A876).a78
-fb805af5b8ee40203df122e21dd94018  -
-Block'Em Sock'Em (Demo) (20231129) (FD0F929A).a78
-13fd76aa7a041a8f489e39b2c30517e1  -
-Blowsub (20240815) (92D9769F).a78
-0d161c5ce8d121a0b575aaf65248ab14  -
-Bomber (20241024) (A422697C).a78
-cba39f2b3656dc9c7cfa5b95c77c15ae  -
-Bomber Hero (20241114) (5B32AEFF).a78
-adead4210dfde21b3738924823ae477e  -
-Bootskell (20240712) (7B3DFD62).a78
-c2bfbca2a6858a4bfebdfec3df8d411a  -
-Breakout (v08) (20230315) (55D20479).a78
-c0b354044148bf9c5b3427e9c3c2702b  -
-Bubble Bobble (v75a) (20240110) (D4DCBFAD).a78
-2050d5c1176570e27886db202f06a123  -
-Bullet Festival (20150831) (ED33EDA6).a78
-9f5bbb4b42b4042f6f465953710788b6  -
-Cacorm (20240711) (7419E768).a78
-b7f1e5a2c6e1bbc6109c8f6a790de106  -
-Captain Comic (20200926) (F26C9CDD).a78
-51d2a23152ad23d734d7ef1e36fa367d  -
-Cavit (20240714) (885C29AF).a78
-d2c86a1023bb92db52f082f9910e04ca  -
-Chase (Fabrizio Caruso) (20241024) (69F0CC17).a78
-7ead9fbdf35b8c5d54e368a17e26895d  -
-Chase (Lillapojkenpaon) (20201231) (C2C34433).a78
-a4b5d742860beb25c29def4530194c1e  -
-Chicago Basement (20160914) (709852DB).a78
-993d034677b88612835bc8e566c578be  -
-Clean Sweep (20160208) (4BD3D55D).a78
-3f87a884858870efa98731834ba42c0e  -
-Conversion - batari Basic Demo (20210409) (32867785).a78
-5eda75d54e9aa92992513d9e691d5a5c  -
-Cosmic Cabbie (20201229) (BAA151F9).a78
-60144e642ed0ace13e50e9b19e6ae723  -
-Court Pooper (Demo) (20220617) (FD9FEDB3).a78
-26b55d71ba1d62fb2c71efd86c83f030  -
-Cracky (20240710) (59677A47).a78
-c2165dd428b98fcf2538280082d936a5  -
-Crazy Tank (20180310) (54089FF2).a78
-156be6e5854b2681a773ffb52e42b079  -
-Cubicle Chaos (20141205) (9D0B4951).a78
-bfb5ac5f3de019e7aff8146bcc1a3142  -
-Cyb Ur (RC1) (20190526) (88846A7E).a78
-40bd21c9698c6b8e71b703f860c11359  -
-Defender (20220128) (03522A22).a78
-c19454c55a15d5676a960a0615b4aa6b  -
-Destroyer 7800 (v1_3) (20230331) (82A8141D).a78
-1b1a9d0676af86bc92dd0c5cef1e1877  -
-Donald T's Breakout (20230310) (6BED09E2).a78
-581bc87ef23250acf045d83957126a04  -
-
-Drelbs (4000) (20230724) (EE4CCE69).a78
-e36725e9e8f3963a17e521a89dea1a85  -
-Drone Patrol (Final Rev C) (800) (20240709) (72B02356).a78
-8b827c3c29bb727c58248a61bff7df7c  -
-DrunkWitch (20221231) (F745683C).a78
-c73d04c367d2bed7f1e57bddd0662f67  -
-Ducks Away (Joystick) (20231231) (EFD39322).a78
-5490ac362a27ddca30051d669bf90fc3  -
-Ducks Away (Lightgun) (20231231) (EFD39322).a78
-5490ac362a27ddca30051d669bf90fc3  -
-Easter Klondike Solitaire (20241222) (ADF17E2F).a78
-40fd267fc954985c0b96c640d304cdd8  -
-ET Book Cart (Demo) (20150524) (32CE5325).a78
-253cd7325a1f454b68eede5136805f30  -
-Fat Axl (20160613) (9D14DC33).a78
-0338fffc3391f74d30e6ab391d1b4c25  -
-Flappy Bird (Beta) (20141221) (E6E1C828).a78
-bac78b53f4f6b3f68c0f8073f0073179  -
-Frantic Fisher (20240128) (80D54A6D).a78
-f495b68611463773276072fa18337d2b  -
-Freeway (v0_88) (20221010) (7D03A3B2).a78
-c8efc272ca334fa8196ab0542882d78e  -
-Get Lost! (20210407) (06F069D1).a78
-5483748fcf63464250277cae99348221  -
-Ghosts'n Goblins (20211205u1) (EBAA96BB).a78
-ffc704d30566a2c24d6e9d845e4c9f11  -
-Gorf (20091213) (AD5ACC79).a78
-3d12489c553cb1a90c8ebd6534383fa1  -
-Guntus (20240714) (45CCA116).a78
-eaf5fb9325708d18c8a91ecbdc9cad8a  -
-Harpy's Curse (Beta G) (20230920) (F788BD6B).a78
-c8405f2f776587117dcfcc2d3993a698  -
-Harry's Hen House (1_07F) (20100117) (983BE828).a78
-3f14e9b07f9809867facd592ddcda41f  -
-Heartlight (v0_98c) (20221108) (BC6A8F89).a78
-8362cfc1a62d8172c7adb9d867094b5d  -
-Hearty Manslapper (20161129) (349136F9).a78
-25ce1f5dfc909bcb46086e414d6a0f30  -
-High Card Draw (20220303) (A498EB69).a78
-fbf0154e8d8be2a618e61676ba7d8add  -
-Hollywood Brawler (20160811) (7ACF469F).a78
-26578cedccc6c61984d5a55048a42d7d  -
-Home Run Baseball (v0_2) (20240315) (74564BE7).a78
-6c3f1e91053f6f3c77b888648f741009  -
-Hopman (20240713) (2A0D1E6B).a78
-7f52723e84ccd8d22c73cf1f2c2bec8c  -
-I C B M (20230507) (C3521748).a78
-e5bde14cbfa45d791587cbbef309c98b  -
-Impetus (20240717) (A0A0DA0C).a78
-6a12c7c8c8851598e1e012313e976e0c  -
-I Ran (Demo 01) (20230429) (66A752DF).a78
-d85564ef05d607df034ba0231989f5c1  -
-Iron Grip - Destroyer Of Worlds (20210518) (BCA56BC5).a78
-571875af24243cfea7b13796096884c1  -
-Jacks or Better (v1_37) (20221210) (3495BADA).a78
-64717953882a4aebe463f453ca00b9be  -
-Krull (v06) (20220319) (5168B651).a78
-cf521d4eb0d74e87f24e65a32ba15038  -
-LadyLady (20200810) (DA306095).a78
-02da71dc8beac00dd556d7b33b1edfb6  -
-Last Stand Halloween - Holiday Nightmare (Beta 1_1) (20231112) (571A8F8F).a78
-37ce9113b420d8aa22f28ddaca2b794c  -
-Lemmings Squidginator (20200330) (954062A5).a78
-8dda6b319c28cf4e005c9d33de1b04be  -
-Lift (20240711) (D34FD674).a78
-6765d3723f4256d680d374327f9aa42c  -
-Lola Lines (RC2) (20240503) (0CEA2B1B).a78
-beb7c20cb567904232040f0c2b3d0f17  -
-Mazy (20240715) (47BE8090).a78
-2f79bedb51300de9625ad8781dce07c2  -
-Monster Maze (20220306) (4AFE78EA).a78
-1c860298a8966cc8e176ab8453b172c3  -
-Morf (20220314) (BC2124C6).a78
-d1b56eae7227c12d0122bb84925c89c0  -
-Ms Pac-Man Twin (20160208) (768817BE).a78
-a69347c8a681b8e94f79d8d848998007  -
-Neuras (20240712) (993046ED).a78
-88b0d5f3ec5ada94585f999e9944f182  -
-Number Crusher (20210523u1) (33090508).a78
-da4b11103175dbf72dd631d6faf78946  -
-Orion Assault (Beta 01) (20231112) (POKEY 450) (625B896E).a78
-89678ebc7d4605e86cffd2a1ec7cc7b9  -
-Osotos (20240827) (B223E461).a78
-2c4a302b860fe6cc35ed8e149c4b4049  -
-Panda Racer (20151224) (7D702BC6).a78
-b5c9f0bf5b5763a923b7f370376b1849  -
-PentaGo (Demo) (20230422) (1C2CF2C5).a78
-6ac5a7f8b6a3198ed08abb9866753763  -
-PentaGo (Tall) (Demo) (20230422) (AAA1069E).a78
-badb455b8087b39d66890fe4dd11fe9b  -
-Pineapple (20220619) (70991C78).a78
-5e92f7926a0d4a8603b1a966cb79e8b6  -
-Pirate Cove (20220415) (6A6678BA).a78
-a6b91a759b34f6c61462195fc783b6db  -
-Plink (20201213) (F945CBD9).a78
-851f901cbc78824f6754f362c00ae648  -
-Poetiru (20150901) (65804DD9).a78
-f0abd58c1de2ba3e577f90c3d52dd7fc  -
-Pong (v0_7) (20221210) (8FD41239).a78
-514b0e645b4771ba43cd00f679315224  -
-Rainbow (20231227) (E8A2E4E3).a78
-0484e954908be9d597a7c204321006a8  -
-RatTrap (Demo) (20230307) (4492F203).a78
-d9dce76429009ac8facf1af9f3ef33a5  -
-Realm Of No, The (Book Cart) (20161224) (4C327C8C).a78
-4d00e5bbcf1e39e4fb94e6e5cf127f93  -
-ReZolve (20141207) (F7D8F766).a78
-f2047b149e72be8f97e9671314748ec4  -
-Rider of the Night (20190711) (5A2A2DCE).a78
-e1b01dd7e842d2b682ef48f689d5a4eb  -
-Robbo (20160513) (CFE2179A).a78
-b6561537290e6e25e1249394366c3c63  -
-Robot Finds Kitten (20050619) (FCB76ABE).a78
-9646d482a8ad187ae52cd21c0de365fb  -
-Robot Finds Kitten (224 Lines) (20220331) (A7D9EFB4).a78
-8994a0560ab6d452cfe59e33de145a3d  -
-Robot Zed (20231025) (EA470FC3).a78
-f9789bbdae0ddf64f8da3e8073ad3ae2  -
-Roof Pooper (20161006) (2ADAB9A3).a78
-45c33c3799539545e8bf37719eb6f88c  -
-Ruptus (20240715) (056C6D48).a78
-9de83d2455c7f8f43b8163ed4de704bd  -
-Santa Simon (Valid Signature) (20170511) (5D8CFDB7).a78
-2582f89d53a899db0b70160ad5762cb7  -
-Shoot (20241024) (7729AF84).a78
-fa94f3e9db1c3f3ebb80811e77aa5710  -
-Shoot the UFO 2015 (20150328) (15EEAD4B).a78
-19586366f625db75b145f62c1d668f8e  -
-Shotgun (20241208) (4708730E).a78
-5f0eb14a30b9dd4c2e5998660a56a8a9  -
-Shuriken (20241024) (26571C05).a78
-142537fac731f9ad3a1ab0821e2c2315  -
-Side Bounce (20241022) (EBBFC600).a78
-19c6381b84d3e5fe7024e2f72b44f6d7  -
-Sky Scraper 2115 (6f) (20171019) (66574A8B).a78
-1c8139c584e1cf5c6afdd2f3455a2446  -
-Smasteroids (20140712) (8ABCA713).a78
-4cabc9042ec5097a3136cb680710ec52  -
-Snake (20241024) (FE9C85D9).a78
-feac5299663d4d30f9127ed8abfcd677  -
-Soccer 2 (20140614) (ECF6AA7E).a78
-5fb5d1452de1c3fb2d74f8982cf8955d  -
-Space Chess (Demo) (20230127) (224F3D84).a78
-42ff0f1c55ba940910143c2d50e1406d  -
-Space Junk (1b) (20170927) (9F4B7138).a78
-cd358a8502bd65702da040f78575fad0  -
-Space Peril (NTSC) (v9) (20240831) (4F7BE53A).a78
-9bc3907f57f13ad4cb89e7c630f51b2f  -
-Space Race (v0_96) (20220925) (E59C249D).a78
-9a11430d4eaeb3f7375bc2b92353c5db  -
-Spacewar! (20070321) (38DB0756).a78
-f7f53ef9cfb32318e8bc11a9f33390c4  -
-Stinger (20241024) (865692A5).a78
-2c6c7bf46237c7c5a50a9bc1f843c99c  -
-StoneAge (20241203) (6A92022E).a78
-d2f1736309d8bf4336397f586552e1dd  -
-Super Pro Racers (20240819) (A8CD6EDC).a78
-685c405036c05453b81a06a18c69de1f  -
-Tempest (BBC X-Port 1) (v1_00F) (20100324) (00719763).a78
-9cb3848416e39ebf642357dbee3e5970  -
-The Big Burrito (20170823) (DA6980F4).a78
-a8b71da3375f73c801a5315c6c883dca  -
-Time Machine, The (Book Cart) (V1_02) (20230401) (B0FE53BE).a78
-43d738e5989ffff9a40e2e62f121b2fc  -
-Trex (20241024) (634E51A7).a78
-1dd1f3faeaefd236f005b7611568107f  -
-Tubes (20050809) (D2A154B0).a78
-c5208b29102215b872c6c5ee0313fca6  -
-Turret Turmoil - Dreadnought Assault (r0_2) (20240923) (4129663A).a78
-4a0eeb1294044a458820d2274b9f8fd5  -
-UFO! (20091213) (314E2891).a78
-b1ec7bd809ab3deb746c5a5eb2efaecb  -
-uSokoban (20220818) (A6127658).a78
-d23c8b7b7339fd62dd6aba8723549abe  -
-V Blank - Chapter 1 - Into The Void (20210326u1) (9EC1B708).a78
-af96ce75837c72148d8e4413313ed1d3  -
-Verbix (20241024) (328B3DB9).a78
-487e6234c3ab9a5aaad5a886e5ee022c  -
-Vong (20091015) (F9F00D58).a78
-84d5120717c8dbaf0e3bf99be5106848  -
-WarBirds (20091213) (5C527238).a78
-c62632545c91823f72f6f14b19766804  -
-Wasp! (Standard Edition) (20090923) (CCDC2DBF).a78
-412cc5bfa08bd03244b9c4e8d46cd0a0  -
-Wilf (Preview 1) (20231230) (C8BB0D25).a78
-dbd068a800955089a30e46bea872794f  -
-WORDLE (20220308) (02C9EA66).a78
-71ce8910b0efd5d0014a9695cce3b7ad  -
-Worm! (v1_16F) (20100307) (39296DA2).a78
-6813ffff510f930c867b3f0aba78ac85  -
-Yewdow (20240713) (AD176C55).a78
-9230d0780c43d9ab14154545f7b45bd2  -
-
-#endif
-
 // To get the md5sum of an .a78 file with header in Linux:  dd bs=1 skip=128 if=somefile.a78 | md5sum
 
 Database_Entry game_list[] = {
@@ -315,15 +38,15 @@ Database_Entry game_list[] = {
   {"877dcc97a775ed55081864b2dbf5f1e2",  "Alien Brigade",                    CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  7,  22, 264,  230, 0}, // title=Alien Brigade
   {"07342c78619ba6ffcc61c10e907e3b50",  "Asteroids",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  17, 256,  230, 0}, // title=Asteroids
   {"8fc3a695eaea3984912d98ed4a543376",  "Ballblazer",                       CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   240,  6,  12, 262,  220, 0}, // title=Ballblazer
-  {"42682415906c21c6af80e4198403ffda",  "Barnyard Blaster",                 CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Barnyard Blaster
+  {"42682415906c21c6af80e4198403ffda",  "Barnyard Blaster",                 CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   150,  0,  12, 256,  220, 0}, // title=Barnyard Blaster
   {"f5f6b69c5eb4b55fc163158d1a6b423e",  "Basketbrawl",                      CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Basketbrawl
-  {"5a09946e57dbe30408a8f253a28d07db",  "Centipede",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  24, 16, 300,  230, 0}, // title=Centipede
-  {"93e4387864b014c155d7c17877990d1e",  "Choplifter",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   190,  0,  12, 256,  220, 0}, // title=Choplifter
+  {"5a09946e57dbe30408a8f253a28d07db",  "Centipede",                        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  155,  24, 16, 300,  230, 0}, // title=Centipede
+  {"93e4387864b014c155d7c17877990d1e",  "Choplifter",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   200,  0,  12, 256,  220, 0}, // title=Choplifter
   {"2e8e28f6ad8b9b9267d518d880c73ebb",  "Commando",                         CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  218, 0}, // title=Commando
-  {"db691469128d9a4217ec7e315930b646",  "Crack'ed",                         CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   170,  0,  18, 256,  229, 0}, // title=Crack'ed
-  {"a94e4560b6ad053a1c24e096f1262ebf",  "Crossbow",                         CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  9,  17, 272,  234, 0}, // title=Crossbow
-  {"179b76ff729d4849b8f66a502398acae",  "Dark Chambers",                    CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  0,  13, 256,  219, 0}, // title=Dark Chambers
-  {"95ac811c7d27af0032ba090f28c107bd",  "Desert Falcon",                    CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   220,  6,  19, 261,  234, 0}, // title=Desert Falcon
+  {"db691469128d9a4217ec7e315930b646",  "Crack'ed",                         CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   155,  0,  18, 256,  229, 0}, // title=Crack'ed
+  {"a94e4560b6ad053a1c24e096f1262ebf",  "Crossbow",                         CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   150,  9,  17, 272,  234, 0}, // title=Crossbow
+  {"179b76ff729d4849b8f66a502398acae",  "Dark Chambers",                    CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  0,  13, 256,  219, 0}, // title=Dark Chambers
+  {"95ac811c7d27af0032ba090f28c107bd",  "Desert Falcon",                    CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   235,  6,  19, 261,  234, 0}, // title=Desert Falcon
   {"731879ea82fc0ca245e39e036fe293e6",  "Dig Dug",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  12, 256,  220, 0}, // title=Dig Dug
   {"5e332fbfc1e0fc74223d2e73271ce650",  "Donkey Kong Jr",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  14, 256,  220, 0}, // title=Donkey Kong Jr
   {"743c47f500d095f2b683437abea2f793",  "Donkey Kong Jr",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  14, 256,  220, 0}, // title=Donkey Kong Jr (alt) 
@@ -340,35 +63,35 @@ Database_Entry game_list[] = {
   {"045fd12050b7f2b842d5970f2414e912",  "Jinks",                            CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   165,  3,  12, 261,  234, 1}, // title=Jinks
   {"f18b3b897a25ab3885b43b4bd141b396",  "Joust",                            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  0,  17, 256,  234, 0}, // title=Joust                           
   {"c3a5a8692a423d43d9d28dd5b7d109d9",  "Karateka",                         CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   250,  0,  12, 256,  220, 0}, // title=Karateka                        
-  {"f57d0af323d4e173fb49ed447f0563d7",  "Kung Fu Master",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  22, 17, 276,  225, 0}, // title=Kung Fu Master
+  {"f57d0af323d4e173fb49ed447f0563d7",  "Kung Fu Master",                   CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  22, 17, 276,  225, 0}, // title=Kung Fu Master
   {"f2f5e5841e4dda89a2faf8933dc33ea6",  "Mean 18 Ultimate Golf",            CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Mean 18 Ultimate Golf
-  {"bc1e905db1008493a9632aa83ab4682b",  "Midnight Mutants",                 CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  0,  13, 256,  226, 0}, // title=Midnight Mutants
-  {"431ca060201ee1f9eb49d44962874049",  "Mario Bros",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   145,  0,  14, 256,  220, 0}, // title=Mario Bros.
-  {"37b5692e33a98115e574185fa8398c22",  "Mat Mania Challenge",              CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  0,  12, 256,  220, 0}, // title=Mat Mania Challenge
-  {"bedc30ec43587e0c98fc38c39c1ef9d0",  "Meltdown",                         CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Meltdown
+  {"bc1e905db1008493a9632aa83ab4682b",  "Midnight Mutants",                 CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   115,  0,  13, 256,  226, 0}, // title=Midnight Mutants
+  {"431ca060201ee1f9eb49d44962874049",  "Mario Bros",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  14, 256,  220, 0}, // title=Mario Bros.
+  {"37b5692e33a98115e574185fa8398c22",  "Mat Mania Challenge",              CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   125,  0,  12, 256,  220, 0}, // title=Mat Mania Challenge
+  {"bedc30ec43587e0c98fc38c39c1ef9d0",  "Meltdown",                         CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   165,  0,  12, 256,  220, 0}, // title=Meltdown
   {"3bc8f554cf86f8132a623cc2201a564b",  "Motor Psycho",                     CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Motor Psycho
-  {"fc0ea52a9fac557251b65ee680d951e5",  "Ms. Pac-Man",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  17, 256,  224, 0}, // title=Ms. Pac-Man   
+  {"fc0ea52a9fac557251b65ee680d951e5",  "Ms. Pac-Man",                      CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  170,  0,  17, 256,  224, 0}, // title=Ms. Pac-Man   
   {"220121f771fc4b98cef97dc040e8d378",  "Ninja Golf",                       CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  10, 20, 270,  234, 0}, // title=Ninja Golf
-  {"74569571a208f8b0b1ccfb22d7c914e1",  "One On One",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   260,  0,  12, 256,  224, 0}, // title=One On One
-  {"1a5207870dec6fae9111cb747e20d8e3",  "Pete Rose Baseball",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Pete Rose Baseball
-  {"33aea1e2b6634a1dec8c7006d9afda22",  "Planet Smashers",                  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   180,  0,  15, 256,  226, 0}, // title=Planet Smashers
-  {"584582bb09ee8122e7fc09dc7d1ed813",  "Pole Position II",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   210,  35, 12, 320,  230, 0}, // title=Pole Position II                
-  {"ac03806cef2558fc795a7d5d8dba7bc0",  "Rampage",                          CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  0,  12, 256,  220, 0}, // title=Rampage
+  {"74569571a208f8b0b1ccfb22d7c914e1",  "One On One",                       CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   245,  0,  12, 256,  224, 0}, // title=One On One
+  {"1a5207870dec6fae9111cb747e20d8e3",  "Pete Rose Baseball",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   110,  0,  12, 256,  220, 0}, // title=Pete Rose Baseball
+  {"33aea1e2b6634a1dec8c7006d9afda22",  "Planet Smashers",                  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   175,  0,  15, 256,  226, 0}, // title=Planet Smashers
+  {"584582bb09ee8122e7fc09dc7d1ed813",  "Pole Position II",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   210,  39, 15, 320,  230, 0}, // title=Pole Position II                
+  {"ac03806cef2558fc795a7d5d8dba7bc0",  "Rampage",                          CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  1,  16, 259,  234, 0}, // title=Rampage
   {"383ed9bd1efb9b6cb3388a777678c928",  "Realsports Baseball",              CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 1}, // title=Realsports Baseball
-  {"66ecaafe1b82ae68ffc96267aaf7a4d7",  "Robotron",                         CT_NORMAL,    POKEY_NONE, TWIN,TWIN, DIFF_A,  DIFF_A, NTSC,  HSC_YES,  195,  5,  13, 270,  234, 0}, // title=Robotron     
+  {"66ecaafe1b82ae68ffc96267aaf7a4d7",  "Robotron",                         CT_NORMAL,    POKEY_NONE, TWIN,TWIN, DIFF_A,  DIFF_A, NTSC,  HSC_YES,  200,  5,  13, 270,  234, 0}, // title=Robotron     
   {"980c35ae9625773a450aa7ef51751c04",  "Scrapyard Dog",                    CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  8,  18, 265,  234, 0}, // title=Scrapyard Dog
-  {"cbb0746192540a13b4c7775c7ce2021f",  "Summer Games",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  13, 256,  220, 0}, // title=Summer Games
-  {"cc18e3b37a507c4217eb6cb1de8c8538",  "Super Huey UH-IX",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   110,  0,  12, 256,  220, 0}, // title=Super Huey UH-IX
-  {"59b5793bece1c80f77b55d60fb39cb94",  "Super Skatebordin'",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   135,  0,  12, 256,  220, 0}, // title=Super Skatebordin'
-  {"5c4f752371a523f15e9980fea73b874d",  "Tank Command",                     CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Tank Command
-  {"1af475ff6429a160752b592f0f92b287",  "Title Match Pro Wrestling",        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Title Match Pro Wrestling
-  {"c3903ab01a51222a52197dbfe6538ecf",  "Tomcat F-14 Simulator",            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  0,  12, 256,  220, 0}, // title=Tomcat F-14 Simulator
+  {"cbb0746192540a13b4c7775c7ce2021f",  "Summer Games",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   165,  0,  13, 256,  220, 0}, // title=Summer Games
+  {"cc18e3b37a507c4217eb6cb1de8c8538",  "Super Huey UH-IX",                 CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   125,  0,  12, 256,  220, 0}, // title=Super Huey UH-IX
+  {"59b5793bece1c80f77b55d60fb39cb94",  "Super Skatebordin'",               CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_B,  DIFF_B, NTSC,  HSC_NO,   130,  0,  12, 256,  220, 0}, // title=Super Skatebordin'
+  {"5c4f752371a523f15e9980fea73b874d",  "Tank Command",                     CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   150,  0,  12, 256,  220, 0}, // title=Tank Command
+  {"1af475ff6429a160752b592f0f92b287",  "Title Match Pro Wrestling",        CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   125,  0,  12, 256,  220, 0}, // title=Title Match Pro Wrestling
+  {"c3903ab01a51222a52197dbfe6538ecf",  "Tomcat F-14 Simulator",            CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   115,  0,  12, 256,  220, 0}, // title=Tomcat F-14 Simulator
   {"208ef955fa90a29815eb097bce89bace",  "Touchdown Football",               CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Touchdown Football
   {"8d64763db3100aadc552db5e6868506a",  "Tower Toppler",                    CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,   8, 320,  234, 1}, // title=Tower Toppler
   {"427cb05d0a1abb068998e2760d77f4fb",  "Water Ski",                        CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   150,  0,   3, 256,  197, 0}, // title=Water Ski
   {"3799d72f78dda2ee87b0ef8bf7b91186",  "Winter Games",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   170,  0,  13, 256,  220, 0}, // title=Winter Games
   {"90fa275f9f2a65b341796e11b2f551af",  "Winter Games",                     CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   170,  0,  13, 256,  220, 0}, // title=Winter Games (alt)  
-  {"05fb699db9eef564e2fe45c568746dbc",  "Xenophobe",                        CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  15, 13, 284,  234, 0}, // title=Xenophobe
+  {"05fb699db9eef564e2fe45c568746dbc",  "Xenophobe",                        CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   125,  15, 13, 284,  234, 0}, // title=Xenophobe
   {"d7dc17379aa25e5ae3c14b9e780c6f6d",  "Xevious",                          CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  205,  0,  16, 256,  220, 0}, // title=Xevious
 
   // Prototypes and Hacks                                                                                                                          
@@ -493,7 +216,7 @@ Database_Entry game_list[] = {
   {"1c860298a8966cc8e176ab8453b172c3",  "Monster Maze",                     CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  0,  14, 256,  220, 0}, // title=Monster Maze (20220306)
   {"d1b56eae7227c12d0122bb84925c89c0",  "Morf",                             CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  0,  17, 256,  224, 0}, // title=Morf (20220314)
   {"ac5c99ac01c96ad92832c0544889a702",  "Ninjish Guy - Perilous Island",    CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  0,  16, 256,  234, 0}, // title=Ninjish Guy - Perilous Island (20211107)
-  {"3d9c52142f9e53f516d3408daad376f3",  "Oozy The Goo - Gaiden",            CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   100,  0,  17, 256,  234, 0}, // title=Oozy The Goo - Gaiden (20231001)
+  {"3d9c52142f9e53f516d3408daad376f3",  "Oozy The Goo - Gaiden",            CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  17, 256,  234, 0}, // title=Oozy The Goo - Gaiden (20231001)
   {"6ac5a7f8b6a3198ed08abb9866753763",  "PentaGo",                          CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  125,  2,  17, 260,  234, 0}, // title=PentaGo (Demo) (20230422)
   {"a662862f20362fc5eb5c651065cbd51c",  "Petscii Robots",                   CT_BANKSHALT,POKEY_AT_800,SNES,JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  10, 256,  214, 0}, // title=Attack of the Petscii Robots (Demo) (POKEY 800)
   {"0254afa887fcfc8c4b1a63b41b9ba613",  "Plumb Luck DX",                    CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  16, 17, 289,  220, 0}, // title=Plumb Luck DX (RC2) (20230410)
