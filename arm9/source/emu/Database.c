@@ -41,14 +41,14 @@ Database_Entry game_list[] = {
   {"07342c78619ba6ff",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  17, 256,  230, 0}, // title=Asteroids
   {"8fc3a695eaea3984",  CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   240,  6,  12, 262,  220, 0}, // title=Ballblazer
   {"42682415906c21c6",  CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   155,  0,  12, 256,  220, 0}, // title=Barnyard Blaster
-  {"f5f6b69c5eb4b55f",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Basketbrawl
+  {"f5f6b69c5eb4b55f",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  2,  15, 262,  226, 0}, // title=Basketbrawl
   {"5a09946e57dbe304",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  24, 16, 300,  230, 0}, // title=Centipede
-  {"93e4387864b014c1",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   210,  0,  12, 256,  220, 0}, // title=Choplifter
+  {"93e4387864b014c1",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   210,  0,  15, 256,  226, 0}, // title=Choplifter
   {"2e8e28f6ad8b9b92",  CT_SUPCAR, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  218, 0}, // title=Commando
-  {"db691469128d9a42",  CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  18, 256,  229, 0}, // title=Crack'ed
+  {"db691469128d9a42",  CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   165,  0,  18, 256,  229, 0}, // title=Crack'ed
   {"a94e4560b6ad053a",  CT_SUPLRG,    POKEY_NONE, LGN, LGN,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   150,  9,  17, 272,  234, 0}, // title=Crossbow
   {"179b76ff729d4849",  CT_SUPCAR,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   125,  0,  13, 256,  219, 0}, // title=Dark Chambers
-  {"95ac811c7d27af00",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   235,  6,  19, 261,  234, 0}, // title=Desert Falcon
+  {"95ac811c7d27af00",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   240,  6,  19, 261,  234, 0}, // title=Desert Falcon
   {"731879ea82fc0ca2",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  12, 256,  220, 0}, // title=Dig Dug
   {"5e332fbfc1e0fc74",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  14, 256,  220, 0}, // title=Donkey Kong Jr
   {"743c47f500d095f2",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  14, 256,  220, 0}, // title=Donkey Kong Jr (alt) 
@@ -56,7 +56,7 @@ Database_Entry game_list[] = {
   {"543484c00ba23373",  CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  0,  12, 256,  220, 0}, // title=Double Dragon
   {"2251a6a0f3aec84c",  CT_ABSOLU,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  12, 256,  220, 0}, // title=F-18 Hornet
   {"d25d5d19188e9f14",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   155,  0,  12, 256,  220, 0}, // title=Fatal Run
-  {"07dbbfe612a0a28e",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Fight Night
+  {"07dbbfe612a0a28e",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160, 12,  14, 282,  226, 0}, // title=Fight Night
   {"cf76b00244105b8e",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  0,  17, 255,  227, 0}, // title=Food Fight
   {"fb8d803b328b2e44",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  0,  12, 256,  229, 0}, // title=Galaga
   {"fd9e78e201b6baaf",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   250,  0,  17, 256,  227, 0}, // title=Hat Trick
@@ -65,7 +65,7 @@ Database_Entry game_list[] = {
   {"045fd12050b7f2b8",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   165,  3,  12, 261,  234, 1}, // title=Jinks
   {"f18b3b897a25ab38",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  0,  17, 256,  234, 0}, // title=Joust                           
   {"c3a5a8692a423d43",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   250,  0,  12, 256,  220, 0}, // title=Karateka                        
-  {"f57d0af323d4e173",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  22, 17, 276,  225, 0}, // title=Kung Fu Master
+  {"f57d0af323d4e173",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   125,  22, 17, 276,  225, 0}, // title=Kung Fu Master
   {"f2f5e5841e4dda89",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  12, 256,  220, 0}, // title=Mean 18 Ultimate Golf
   {"bc1e905db1008493",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  0,  13, 256,  226, 0}, // title=Midnight Mutants
   {"431ca060201ee1f9",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  14, 256,  220, 0}, // title=Mario Bros.
@@ -75,7 +75,7 @@ Database_Entry game_list[] = {
   {"fc0ea52a9fac5572",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  170,  0,  17, 256,  224, 0}, // title=Ms. Pac-Man   
   {"220121f771fc4b98",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  10, 20, 270,  234, 0}, // title=Ninja Golf
   {"74569571a208f8b0",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   245,  0,  12, 256,  224, 0}, // title=One On One
-  {"1a5207870dec6fae",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   115,  0,  12, 256,  220, 0}, // title=Pete Rose Baseball
+  {"1a5207870dec6fae",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  0,  12, 256,  220, 0}, // title=Pete Rose Baseball
   {"33aea1e2b6634a1d",  CT_SUPROM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   175,  0,  15, 256,  226, 0}, // title=Planet Smashers
   {"584582bb09ee8122",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   210,  39, 15, 320,  230, 0}, // title=Pole Position II                
   {"ac03806cef2558fc",  CT_ACTVIS,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  1,  16, 259,  234, 0}, // title=Rampage
@@ -128,8 +128,8 @@ Database_Entry game_list[] = {
   {"6287727ab36391a6",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  250,  0,  14, 257,  220, 0}, // title=FailSafe (NTSC) (20100227)
   {"e7d89669a7f92ec2",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  255,  30,  6, 320,  206, 0}, // title=Frenzy (with Berzerk) (homebrew)
   {"26031dea7251fb86",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  255,  30,  6, 320,  206, 0}, // title=Frenzy (with Berzerk) (20211025)
-  {"2f4ae1015a345652",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  14,  5, 282,  211, 0}, // title=Galaxian
-  {"686a4e4dde0eca5c",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  14,  5, 282,  211, 0}, // title=Galaxian (v1.1)
+  {"2f4ae1015a345652",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  14, 17, 283,  227, 0}, // title=Galaxian
+  {"686a4e4dde0eca5c",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  14, 17, 283,  227, 0}, // title=Galaxian (v1.1)
   {"e54edc299e72d22d",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  205,  4,  14, 268,  234, 0}, // title=Jr Pac-Man  
   {"bde3abe40d302d8c",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  205,  4,  14, 268,  234, 0}, // title=Jr Pac-Man  (20230627)
   {"6b8600aabd11f834",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  3,  12, 256,  225, 0}, // title=KC Munchkin
@@ -137,8 +137,8 @@ Database_Entry game_list[] = {
   {"927edf157f88b8f5",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  3,  12, 256,  225, 0}, // title=KC Munchkin (Alt Movement) (20170409)
   {"c3f6201d6a9388e8",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  13, 256,  220, 0}, // title=Meteor Shower
   {"a44241d782ee14b5",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  13, 256,  220, 0}, // title=Meteor Shower (v1.1)
-  {"9ff38ea62004201d",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  30,  5, 320,  210, 0}, // title=Moon Cresta
-  {"a56f26e6d21b2ae4",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  30,  5, 320,  210, 0}, // title=Moon Cresta (v1.1)
+  {"9ff38ea62004201d",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  30, 20, 320,  234, 0}, // title=Moon Cresta
+  {"a56f26e6d21b2ae4",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  30, 20, 320,  234, 0}, // title=Moon Cresta (v1.1)
   {"cf007563fe94cacf",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  215,  0,   9, 256,  217, 0}, // title=Ms. Pac-Man (Bob's Enhancements)    
   {"2a17dc5a61be342d",  CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  5,  16, 265,  230, 0}, // title=Ms Pac-Man 320
   {"60982f430b762343",  CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  220,  6,  17, 264,  233, 0}, // title=Pac-Man 320
@@ -164,8 +164,8 @@ Database_Entry game_list[] = {
   {"6a898d52ef050cdb",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  165,  30,  8, 320,  210, 0}, // title=Space Invaders (v1.1)
   {"7ab539bb0e99e1e5",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  205,  0,   5, 256,  225, 0}, // title=Super Pac-Man
   {"88b9de0eba37ba51",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  205,  0,   5, 256,  225, 0}, // title=Super Pac-Man (20230627)
-  {"79df20ee86a989e6",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  9,   5, 282,  202, 0}, // title=UniWarS
-  {"0db69825c81171e6",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  9,   5, 282,  202, 0}, // title=UniWarS (v1.1)
+  {"79df20ee86a989e6",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  9,  18, 282,  230, 0}, // title=UniWarS
+  {"0db69825c81171e6",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  9,  18, 282,  230, 0}, // title=UniWarS (v1.1)
   {"f41f651417c23410",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  240, 26,  12, 320,  225, 0}, // title=Super Cobra
                         
   {"fd9353d42cca5f81",  CT_SUPRAMX2,POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  190,  0,   6, 256,  203, 1}, // title=1942 (Standard Banking RAM)
@@ -184,16 +184,16 @@ Database_Entry game_list[] = {
   {"b11b1a2bae8a1d0c",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  125,  3,  13, 264,  227, 0}, // title=Bernie and the Cubic Conundrum (Alpha 10)
   {"a34cd425d0c087d0",  CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  125,  6,  16, 264,  233, 0}, // title=Bernie and the Tower of Doom (RC1) (Demo)
   {"000b5888d2489f7e",  CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   125,  0,  12, 256,  223, 0}, // title=Cannon in D for Defense (demo 03)
-  {"825c03c049306c16",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  120,  0,  16, 260,  234, 0}, // title=Cartesian Chaos (v11) (20221218)
+  {"825c03c049306c16",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  125,  0,  16, 260,  234, 0}, // title=Cartesian Chaos (v11) (20221218)
   {"a4b5d742860beb25",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  8,  19, 269,  233, 0}, // title=Chase (20201231)
   {"0c2f248a1ae9bfd1",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  14, 256,  234, 0}, // title=Danger Zone (RC-4C) (NTSC Demo) (20201231)
   {"fab7b59dd580dce0",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  2,  17, 260,  229, 0}, // title=Death Merchant (v1_30)
   {"dd1cfc933d2bfacc",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  185,  0,  12, 256,  210, 0}, // title=Donkey Kong PK-XM (NTSC) (Demo) (v1.2)
   {"c3107d3e3e17d67e",  CT_SUPLRG, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  185,  0,  20, 256,  223, 0}, // title=Donkey Kong XM DEMO
   {"312363c7691fa51e",  CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  180,  0,  17, 256,  216, 0}, // title=Donkey Kong Remix DEMO
-  {"77164df89ae49b4d",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  120,  0,  16, 256,  234, 0}, // title=Dragon's Descent (20210731)
-  {"8c2798f929a43317",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  6,  15, 256,  232, 0}, // title=Dragon's Havoc (Demo Dec 2022)
-  {"7b7825ca2c79148f",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  120,  6,  15, 256,  232, 0}, // title=Dragon's Cache (20210207)
+  {"77164df89ae49b4d",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  125,  0,  16, 256,  234, 0}, // title=Dragon's Descent (20210731)
+  {"8c2798f929a43317",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   125,  6,  15, 256,  232, 0}, // title=Dragon's Havoc (Demo Dec 2022)
+  {"7b7825ca2c79148f",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  125,  6,  15, 256,  232, 0}, // title=Dragon's Cache (20210207)
   {"a9f29004412621f2",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,  16, 256,  230, 0}, // title=Draker Quest II
   {"fab1290f9a4c4f2b",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  120,  0,  17, 256,  230, 0}, // title=Draker Quest (Beta 4)
   {"b3143adbbb7d7d18",  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,   9, 256,  231, 0}, // title=Dungeon Stalker (20151022)
@@ -222,13 +222,13 @@ Database_Entry game_list[] = {
   {"6ac5a7f8b6a3198e",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  125,  2,  17, 260,  234, 0}, // title=PentaGo (Demo) (20230422)
   {"a662862f20362fc5",  CT_BANKSHALT,POKEY_AT_800,SNES,JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  10, 256,  214, 0}, // title=Attack of the Petscii Robots (Demo) (POKEY 800)
   {"0254afa887fcfc8c",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  16, 17, 289,  220, 0}, // title=Plumb Luck DX (RC2) (20230410)
-  {"61e6a16889b62216",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  180,  0,  17, 256,  220, 0}, // title=Popeye 2.40 Demo
-  {"fab49206f4b041fa",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  180,  0,  17, 256,  220, 0}, // title=Popeye 2.40 j7800 Demo
+  {"61e6a16889b62216",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  0,  17, 256,  220, 0}, // title=Popeye 2.40 Demo
+  {"fab49206f4b041fa",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  0,  17, 256,  220, 0}, // title=Popeye 2.40 j7800 Demo
   {"b6561537290e6e25",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  12, 256,  220, 0}, // title=Robbo (20160513)
   {"fc525819ec2bdc4a",  CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  11, 256,  217, 0}, // title=Robots Rumble (20220217)
   {"9bd70c06d3386f76",  CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,  12, 256,  220, 0}, // title=Serpentine (20161029)
   {"96f69b85e0b43bbe",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  120,  0,  12, 256,  233, 0}, // title=Sick Pickles (20171202)
-  {"40567f50c569a60c",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  120,  0,  16, 256,  230, 0}, // title=Slide Boy in Maze Land (RC1) (20210515)
+  {"40567f50c569a60c",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,  16, 256,  230, 0}, // title=Slide Boy in Maze Land (RC1) (20210515)
   {"91f4cb1f642ff1de",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  110,  0,  16, 256,  230, 0}, // title=Space Peril (NTSC) (v8) (20210907)
   {"19844117863cd38d",  CT_SUPLRG,    POKEY_NONE, SOTA,SOTA, DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  31, 17, 320,  230, 0}, // title=Spire of the Ancients (NTSC) (20201223)
   {"81cee326b99d6831",  CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  200,  0,  13, 256,  220, 0}, // title=Super Circus Atari Age (NTSC) (Joystick) (POKEY 4000)
@@ -237,7 +237,7 @@ Database_Entry game_list[] = {
   {"ff825fcbed9bf699",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  0,  17, 256,  220, 0}, // title=Touchdown Challenge (v2_21) (20230225)
   {"0d7e2674d802b412",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  0,  13, 256,  233, 0}, // title=Tunnels of Hyperion
   {"f5150c0fc1948832",  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  12, 256,  240, 0}, // title=7800 Utility Cart
-  {"846751861993b907",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,  18, 256,  224, 0}, // title=Wizards Dungeon (20211111)
+  {"846751861993b907",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,  16, 256,  231, 0}, // title=Wizards Dungeon (20211111)
 
   {"",CT_NORMAL,0,0,0,0,0,0,0,0,0,0,0},
 };
@@ -250,6 +250,7 @@ NameMap_t NameMap[] =
     {"EXO",         "EXO",          "a44e8b7b7881beb0"},
     {"KOPPERS",     "KOPPERS",      "d41d8cd98f00b204"},
     {"TIME",        "SALVO",        "a60e4b608505d1fb"},
+    {"CHRISTMAS",   "SALVO",        "a60e4b608505d1fb"},
     {"MERLAIN",     "MERLAIN",      "181a9978d9da7a7e"},
     {"TOUCHDOWN",   "CHALLENGE",    "ff825fcbed9bf699"},
     {"OOZY",        "GAIDEN",       "3d9c52142f9e53f5"},
@@ -374,7 +375,7 @@ bool database_Load(byte * digest)
     // No matter what... override for Tower Toppler to make it playable...
     if(strcmp((char *) digest, (char *) "8d64763db3100aadc552db5e6868506a") == 0) // Tower Toppler
     {
-        use_composite_filtering = 70;
+        use_composite_filtering = 76;
         myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE; // It's the only way we stand a chance.
         myCartInfo.cardctrl1 = SOTA;
         myCartInfo.xOffset = 32;

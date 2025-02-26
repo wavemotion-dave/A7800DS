@@ -144,10 +144,10 @@ ITCM_CODE void prosystem_ExecuteFrame(const byte * input)
             // We can start to render the scanlines if we are not skipping this frame.
             // The DS/DSi only has 192 vertical pixels and we can perform some hardware
             // scaling but there is a point at which we really can't show any more lines.
-            // To that end, we'll render ~220 lines which is good enough for most games.
+            // To that end, we'll render ~223 lines which is good enough for most games.
             // If a game uses more overscan area - those scanlines won't show on screen.
             // ---------------------------------------------------------------------------
-            if(maria_scanline >= 250)
+            if(maria_scanline >= 253)
             {
                 bRenderFrame = 0; // We can stop rendering frames... DS can't show it anyway with limited vertical resolution.
             }

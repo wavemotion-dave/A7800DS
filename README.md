@@ -84,6 +84,10 @@ Place .NDS on your SD card and launch with Twilight Menu++ or Unlaunch.
 If you want to run on a flash cart place it as you would any homebrew pretty
 much anywhere on your flashcart SD card.
 
+If you want to use a real Atari 7800 BIOS, find yourself the 4K version and place
+this file named exactly 7800.rom in the /roms/bios directory (alternate locations
+are /data/bios or you can place it in the same directory as the emulator).
+
 When the emulator starts, click on the cartridge slot to choose a file. Use Up/Down 
 to select a file, then use A to load it.
 
@@ -195,6 +199,13 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
+V5.1 : 27-Feb-2025 by wavemotion-dave
+  * 7800 BIOS is now supported. Place bios exactly named '7800.rom' in /roms/bios, /data/bios or same directory as the emulator itself.
+  * New internal database with many cleanups and corrections. Now compliant with Trebor Pro-Pack v8_16 from early 2025.
+  * New configuration option to allow mapping both both X and Y buttons.
+  * Maria and CPU cycle counting are much closer to real hardware - all of the DMA Cycle adjustments/hacks have been removed. 
+  * This fixes a number of small problems such as Pole Position II joystick selection of track when game loads.
+
 V5.0 : 21-Feb-2025 by wavemotion-dave
   * Kangaroo mode fixed and fully implemented. Cleans up some small graphical glitches on a number of games.
   * Composite Artifacting implemented for Tower Toppler and Jinks.
