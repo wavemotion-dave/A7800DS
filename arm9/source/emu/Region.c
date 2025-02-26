@@ -231,11 +231,6 @@ const byte REGION_PALETTE_NTSC_CRT_HOT[ ] = {
 };
 
 
-// ----------------------------------------------------------------------------
-// Reset
-// ----------------------------------------------------------------------------
-extern uint video_height;
-
 // ---------------------------------
 // We only support NTSC for A7800DS
 // ---------------------------------
@@ -244,5 +239,4 @@ void region_Reset( )
     if(myCartInfo.palette == 0) palette_Load(REGION_PALETTE_NTSC_CRT_COOL);
     if(myCartInfo.palette == 1) palette_Load(REGION_PALETTE_NTSC_CRT_WARM);
     if(myCartInfo.palette == 2) palette_Load(REGION_PALETTE_NTSC_CRT_HOT);
-    video_height = 234;
 }

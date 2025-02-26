@@ -8,6 +8,5 @@ typedef unsigned short word;
 typedef unsigned int uint;
 
 extern unsigned short *bufVideo;   // Video buffer
-extern uint video_height;
 
 #endif

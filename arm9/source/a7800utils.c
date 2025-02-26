@@ -85,7 +85,6 @@ int bg0s, bg1s;      // sub BG pointers
 int debug[MAX_DEBUG]={0};
 u8 DEBUG_DUMP = 0;
 
-uint video_height;                       // Actual video height
 u16 *bufVideo;                           // Video flipping buffer
 gamecfg GameConf;                        // Game Config svg
 
@@ -240,7 +239,7 @@ ITCM_CODE void vblankIntr()
     cxBG = (myCartInfo.xOffset << 8);
     cyBG = (myCartInfo.yOffset + temp_shift) << 8;
     xdxBG = ((320 / myCartInfo.xScale) << 8) | (320 % myCartInfo.xScale) ;
-    ydyBG = ((video_height / myCartInfo.yScale) << 8) | (video_height % myCartInfo.yScale);
+    ydyBG = ((234 / myCartInfo.yScale) << 8) | (234 % myCartInfo.yScale);
 
     REG_BG2X = cxBG;
     REG_BG2Y = cyBG;
@@ -322,7 +321,7 @@ void dsShowScreenEmu(void)
     cxBG = (myCartInfo.xOffset << 8);
     cyBG = (myCartInfo.yOffset << 8);
     xdxBG = ((320 / myCartInfo.xScale) << 8) | (320 % myCartInfo.xScale) ;
-    ydyBG = ((video_height / myCartInfo.yScale) << 8) | (video_height % myCartInfo.yScale);
+    ydyBG = ((234 / myCartInfo.yScale) << 8) | (234 % myCartInfo.yScale);
 
     REG_BG2PB = 0;
     REG_BG2PC = 0;

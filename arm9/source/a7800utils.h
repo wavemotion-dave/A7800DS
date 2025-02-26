@@ -57,14 +57,10 @@ typedef struct {
 
 extern gamecfg GameConf;
 
-extern uint video_height;          // Actual video height
 extern unsigned short *bufVideo;   // Video buffer
 
-
 extern void FadeToColor(unsigned char ucSens, unsigned short ucBG, unsigned char ucScr, unsigned char valEnd, unsigned char uWait);
-
 extern void vblankIntr();
-
 extern void dsInitScreenMain(void);
 extern void dsInitTimer(void);
 extern void dsShowScreenEmu(void);

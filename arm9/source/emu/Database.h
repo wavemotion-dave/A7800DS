@@ -56,6 +56,12 @@ typedef struct {
 } Database_Entry;
 
 
+typedef struct {
+  char *name1;
+  char *name2;
+  char *half_digest;
+} NameMap_t;
+
 extern Database_Entry myCartInfo;
 
 #define KEY_MAP_DEFAULT     0

@@ -22,6 +22,8 @@
 // ----------------------------------------------------------------------------
 // Database.cpp
 // ----------------------------------------------------------------------------
+#include <ctype.h>
+
 #include "Database.h"
 #include "ProSystem.h"
 #include "../config.h"
@@ -196,7 +198,7 @@ Database_Entry game_list[] = {
   {"fab1290f9a4c4f2b",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  120,  0,  17, 256,  230, 0}, // title=Draker Quest (Beta 4)
   {"b3143adbbb7d7d18",  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,   9, 256,  231, 0}, // title=Dungeon Stalker (20151022)
   {"a44e8b7b7881beb0",  CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  135,  0,  16, 256,  234, 0}, // title=E.X.O. (RC Demo A)
-  {"6053233cb59c0b4c",  CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  34,  8, 320,  205, 0}, // title=Froggie (NTSC) (Final Release)
+  {"6053233cb59c0b4c",  CT_NORMAL, POKEY_AT_4000, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  210,  34,  4, 320,  216, 0}, // title=Froggie (NTSC) (Final Release)
   {"9daaac9b25783a7e",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,  16, 256,  224, 0}, // title=Frogus (20221020)
   {"c2e131a091ceed2e",  CT_SUPLRG,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   160,  0,  15, 256,  234, 0}, // title=Game of the Bear - Polar Opposites (RC1) (20230211)
   {"e443f7fb5be3283d",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   130,  13, 12, 280,  234, 0}, // title=GoSub
@@ -220,7 +222,8 @@ Database_Entry game_list[] = {
   {"6ac5a7f8b6a3198e",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  125,  2,  17, 260,  234, 0}, // title=PentaGo (Demo) (20230422)
   {"a662862f20362fc5",  CT_BANKSHALT,POKEY_AT_800,SNES,JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  10, 256,  214, 0}, // title=Attack of the Petscii Robots (Demo) (POKEY 800)
   {"0254afa887fcfc8c",  CT_SUPRAM,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  16, 17, 289,  220, 0}, // title=Plumb Luck DX (RC2) (20230410)
-  {"61e6a16889b62216",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  140,  0,  10, 256,  210, 0}, // title=Popeye 2.40 Demo
+  {"61e6a16889b62216",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  180,  0,  17, 256,  220, 0}, // title=Popeye 2.40 Demo
+  {"fab49206f4b041fa",  CT_SUPLRG,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  180,  0,  17, 256,  220, 0}, // title=Popeye 2.40 j7800 Demo
   {"b6561537290e6e25",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  12, 256,  220, 0}, // title=Robbo (20160513)
   {"fc525819ec2bdc4a",  CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   140,  0,  11, 256,  217, 0}, // title=Robots Rumble (20220217)
   {"9bd70c06d3386f76",  CT_SUPRAM,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,  12, 256,  220, 0}, // title=Serpentine (20161029)
@@ -233,12 +236,55 @@ Database_Entry game_list[] = {
   {"a60e4b608505d1fb",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,  16, 256,  230, 0}, // title=Time Salvo
   {"ff825fcbed9bf699",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  0,  17, 256,  220, 0}, // title=Touchdown Challenge (v2_21) (20230225)
   {"0d7e2674d802b412",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_NO,   120,  0,  13, 256,  233, 0}, // title=Tunnels of Hyperion
-  {"f5150c0fc1948832",  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  12, 256,  220, 0}, // title=7800 Utility Cart
+  {"f5150c0fc1948832",  CT_NORMAL,  POKEY_AT_450, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  160,  0,  12, 256,  240, 0}, // title=7800 Utility Cart
   {"846751861993b907",  CT_NORMAL,    POKEY_NONE, JOY, JOY,  DIFF_A,  DIFF_A, NTSC,  HSC_YES,  130,  0,  18, 256,  224, 0}, // title=Wizards Dungeon (20211111)
 
   {"",CT_NORMAL,0,0,0,0,0,0,0,0,0,0,0},
 };
 
+
+
+NameMap_t NameMap[] =
+{
+    {"POPEYE",      "POPEYE",       "61e6a16889b62216"},
+    {"EXO",         "EXO",          "a44e8b7b7881beb0"},
+    {"KOPPERS",     "KOPPERS",      "d41d8cd98f00b204"},
+    {"TIME",        "SALVO",        "a60e4b608505d1fb"},
+    {"MERLAIN",     "MERLAIN",      "181a9978d9da7a7e"},
+    {"TOUCHDOWN",   "CHALLENGE",    "ff825fcbed9bf699"},
+    {"OOZY",        "GAIDEN",       "3d9c52142f9e53f5"},
+    {"MILLIE",      "MOLLY",        "3f80432f156088bf"},
+    {"SILVERPEAK",  "SILVERPEAK",   "271864e0978278a3"},
+    {"LUNAR",       "PATROL",       "7abd9e0a6321e813"},
+    {"ATTACK",      "PETSCII",      "a662862f20362fc5"},
+    {"KNIGHT",      "BOARD",        "0916973898e3b6b8"},
+    {"KNIGHT",      "WORLD",        "33dbb58f9ee73e9f"},
+    {"KNIGHT",      "SOMETHING",    "3ec728e116017be8"},
+    {"KNIGHT",      "ANOTHER",      "7abd9e0a6321e813"},
+    {"DRAGON",      "DESCENT",      "77164df89ae49b4d"},
+    {"DRAGON",      "HAVOC",        "8c2798f929a43317"},
+    {"DRAGON",      "CACHE",        "7b7825ca2c79148f"},
+    {"ARKANOID",    "ARKANOID",     "d99bff88cd3cce19"},
+    {"ARTI",        "ATRI",         "0d05659a7d0eef02"},
+    {"CANNON",      "DEFENSE",      "000b5888d2489f7e"},
+    {"1942",        "1942",         "fd9353d42cca5f81"},   
+    {"WIZARD",      "DUNGEON",      "846751861993b907"},   
+    {"UTILITY",     "CART",         "f5150c0fc1948832"},
+    {"BONQ",        "BONQ",         "9fa7743a016c9b70"},
+    {"BEEF",        "DROP",         "78b1061d651ef806"},
+    {"BERNIE",      "CUBIC",        "b11b1a2bae8a1d0c"},
+    {"BERNIE",      "TOWER",        "a34cd425d0c087d0"},
+    {"DEATH",       "MERCHANT",     "fab7b59dd580dce0"},
+    {"TUNNELS",     "HYPERION",     "0d7e2674d802b412"},   
+    {"SLIDE",       "MAZE",         "40567f50c569a60c"},
+    {"CARTESIAN",   "CHAOS",        "825c03c049306c16"},
+    {"DANGER",      "ZONE",         "0c2f248a1ae9bfd1"},
+    {"SCRAMBLE",    "SCRAMBLE",     "a3a85e507d6f7189"},
+    {"KLAX",        "KLAX",         "17b3b764d33eae9b"},
+    {"PENTAGO",     "PENTAGO",      "6ac5a7f8b6a3198e"},    
+    
+    {"","",""}
+};
 
 // -------------------------------------------------------------------------
 // This happens AFTER The rom is loaded and the header info (if any) has
@@ -246,195 +292,199 @@ Database_Entry game_list[] = {
 // is mainly used for headerless roms and a few special cases were we want 
 // to correct the Y-offsets to make the game well centered/scaled on screen.
 // -------------------------------------------------------------------------
-bool database_Load(byte *digest) 
+bool database_Load(byte * digest)
 {
     extern u8 bNoDatabase;
     bool bFound = false;
     uint16 i;
-    
+
+    // Uppercase the filename... to make searching easier.
+    for(int j = 0; j < strlen(cartridge_filename); j++) cartridge_filename[j] = toupper(cartridge_filename[j]);
+
     // See if we've been asked to skip the internal database
-    if (!bNoDatabase)
+    if(!bNoDatabase)
     {
         // --------------------------------------------------------------------------------------
         // First see if we've got a match in our external A7800DS.DAT configuration database...
         // --------------------------------------------------------------------------------------
-        for (i=0; i<MAX_CONFIGS; i++)
+        for(i = 0; i < MAX_CONFIGS; i++)
         {
-          if (!strncmp(allConfigs.cart[i].half_digest,(char *) digest, 16))
-          {
-              memcpy(&myCartInfo, &allConfigs.cart[i], sizeof(myCartInfo));
-              bFound = true;
-              break;
-          }
+            if(!strncmp(allConfigs.cart[i].half_digest, (char *) digest, 16))
+            {
+                memcpy( & myCartInfo, & allConfigs.cart[i], sizeof(myCartInfo));
+                bFound = true;
+                break;
+            }
         }
 
-        
         // ---------------------------------------------------------------------------------------------
         // If we didn't find it in the config database, we can look in the internal database table...
         // ---------------------------------------------------------------------------------------------
-        if (!bFound)
+        if(!bFound)
         {
             /* Look up mapper in game list by md5sum */
             for(i = 0; strlen(game_list[i].half_digest); i++)
             {
-              if (!strncmp(game_list[i].half_digest,(char *) digest, 16))
-              {
-                memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
-                if (!isDSiMode()) myCartInfo.frameSkip = ((cartridge_size <= (48*1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE); // Older DS-Lite/Phat needs help
-                myCartInfo.palette = 1; // Force this if not specifically found by md5
-                myCartInfo.xJiggle = 64;
-                myCartInfo.yJiggle = 16;
-                bFound = true;          
-                break;
-              }
+                if(!strncmp(game_list[i].half_digest, (char *) digest, 16))
+                {
+                    memcpy( & myCartInfo, & game_list[i], sizeof(myCartInfo));
+                    if(!isDSiMode()) myCartInfo.frameSkip = ((cartridge_size <= (48 * 1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE); // Older DS-Lite/Phat needs help
+                    myCartInfo.palette = 1; // Force this if not specifically found by md5
+                    myCartInfo.xJiggle = 64;
+                    myCartInfo.yJiggle = 16;
+                    bFound = true;
+                    break;
+                }
             }
         }
-        
-       
-        // -----------------------------------------------------------------------------------------------
-        // If we didn't find a definitive md5 match above, look up game by cart title in the .A78 header 
-        // or even by the name of the ROM filename as it will give us a clue as to the game identity.
-        // -----------------------------------------------------------------------------------------------
-        if (!bFound)
-        {
-#if 0            
-          for(i = 0; strlen(game_list[i].header_name); i++)
-          {
-            if (myCartInfo.region == NTSC)
-            {
-              if ( (!strcmp(game_list[i].header_name,(char *) cartridge_title)) ||
-                   (strstr((char *) cartridge_filename, game_list[i].header_name) != NULL) ) 
-              {
-                memcpy(&myCartInfo, &game_list[i], sizeof(myCartInfo));
-                strncpy(myCartInfo.half_digest, (char *)digest, 16); myCartInfo.half_digest[16] = 0;
-                if (!isDSiMode()) myCartInfo.frameSkip = ((cartridge_size <= (48*1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE); // Older DS-Lite/Phat needs help
-                myCartInfo.palette = 1; // Force this if not specifically found by md5
-                myCartInfo.xJiggle = 64;
-                myCartInfo.yJiggle = 16;
-                bFound = true;
-                
-                // --------------------------------------------------------------------------------------
-                // As a sanity check... if the card type ended up as 'NORMAL' but the ROM is larger 
-                // than NORMAL would support - we adjust it here. This prevents soft matches in 
-                // the database from causing problems (I'm looking at you various flavors of Donkey Kong)
-                // --------------------------------------------------------------------------------------
-                if (myCartInfo.cardtype == CT_NORMAL)
-                {
-                    if (cartridge_size == (144*1024)) myCartInfo.cardtype = CT_SUPLRG;
-                    else myCartInfo.cardtype = (cartridge_size <= (52*1024)) ? CT_NORMAL:CT_SUPROM;
-                }
 
-                break;
-              }
+
+        // -----------------------------------------------------------------------------------------------
+        // If we didn't find a definitive md5 match above, look up game by name in our name mapping table.
+        // -----------------------------------------------------------------------------------------------
+        if(!bFound)
+        {
+            for(int k = 0; strlen(NameMap[k].name1); k++)
+            {
+                if(myCartInfo.region == NTSC)
+                {
+                    if((strstr(cartridge_filename, NameMap[k].name1)) && (strstr(cartridge_filename, NameMap[k].name2))) // If both names are found in the filename...
+                    {
+                        /* Look up mapper in game list by md5sum from the Name Mapper table */
+                        for(i = 0; strlen(game_list[i].half_digest); i++)
+                        {
+                            if(!strncmp(game_list[i].half_digest, (char *) NameMap[k].half_digest, 16))
+                            {
+                                memcpy( & myCartInfo, & game_list[i], sizeof(myCartInfo));
+                                if(!isDSiMode()) myCartInfo.frameSkip = ((cartridge_size <= (48 * 1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE); // Older DS-Lite/Phat needs help
+                                myCartInfo.palette = 1; // Force this if not specifically found by md5
+                                myCartInfo.xJiggle = 64;
+                                myCartInfo.yJiggle = 16;
+                                bFound = true;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
             }
-          }
-#endif          
         }
     }
-    
+
     // No matter what... override for Tower Toppler to make it playable...
-    if (strcmp((char *) digest, (char *) "8d64763db3100aadc552db5e6868506a") == 0) // Tower Toppler
+    if(strcmp((char *) digest, (char *) "8d64763db3100aadc552db5e6868506a") == 0) // Tower Toppler
     {
         use_composite_filtering = 70;
         myCartInfo.frameSkip = FRAMESKIP_AGGRESSIVE; // It's the only way we stand a chance.
         myCartInfo.cardctrl1 = SOTA;
         myCartInfo.xOffset = 32;
         myCartInfo.yOffset = 8;
-        myCartInfo.xScale  = 320;
-        myCartInfo.yScale  = 234;
+        myCartInfo.xScale = 320;
+        myCartInfo.yScale = 234;
         bFound = 1;
     }
-    else if (strcmp((char *) digest, (char *) "f5150c0fc1948832211e57852abb0c6e") == 0) // 7800 Utility Cart
+    else if(strcmp((char *) digest, (char *) "f5150c0fc1948832211e57852abb0c6e") == 0) // 7800 Utility Cart
     {
         use_composite_filtering = 1;
         bFound = 1;
     }
     // Override for Jinks to enable composite filtering
-    else if (strcmp((char *) digest, (char *) "045fd12050b7f2b842d5970f2414e912") == 0) // Jinks
+    else if(strcmp((char *) digest, (char *) "045fd12050b7f2b842d5970f2414e912") == 0) // Jinks
     {
         use_composite_filtering = 1;
         bFound = 1;
-    } else use_composite_filtering = 0;
-    
-    // And there is one game currently that won't play nice with our BIOS handling...
-    if (strcmp((char *) digest, (char *) "a94e4560b6ad053a1c24e096f1262ebf") == 0) // Crossbow
-    {
-        //bSkipBIOS = 1;
     }
-    
-        
+    else use_composite_filtering = 0;
+
+
     // --------------------------------------------------------------------------
     // Default scaling options below if not found... these are close enough... 
     // We can make some educated guesses on cart and frameskip...
     // --------------------------------------------------------------------------
-    if (!bFound) 
+    if(!bFound)
     {
-        strncpy(myCartInfo.half_digest, (char *)digest, 16);  myCartInfo.half_digest[16] = 0;
-        myCartInfo.xOffset       = 0;
-        myCartInfo.yOffset       = 13;
-        myCartInfo.xScale        = 256;
-        myCartInfo.yScale        = 220;
-        myCartInfo.diff1         = DIFF_A;
-        myCartInfo.diff2         = DIFF_A;
-        myCartInfo.xButton       = KEY_MAP_DEFAULT;
-        myCartInfo.yButton       = KEY_MAP_DEFAULT;
-        myCartInfo.spare2        = 0;
-        myCartInfo.spare3        = 0;
-        myCartInfo.spare4        = 1;
-        myCartInfo.spare5        = 0;
-        myCartInfo.palette       = 1;
-        myCartInfo.xJiggle       = 64;
-        myCartInfo.yJiggle       = 16;
-        
+        strncpy(myCartInfo.half_digest, (char *) digest, 16);
+        myCartInfo.half_digest[16] = 0;
+        myCartInfo.xOffset = 0;
+        myCartInfo.yOffset = 13;
+        myCartInfo.xScale = 256;
+        myCartInfo.yScale = 220;
+        myCartInfo.diff1 = DIFF_A;
+        myCartInfo.diff2 = DIFF_A;
+        myCartInfo.xButton = KEY_MAP_DEFAULT;
+        myCartInfo.yButton = KEY_MAP_DEFAULT;
+        myCartInfo.spare2 = 0;
+        myCartInfo.spare3 = 0;
+        myCartInfo.spare4 = 1;
+        myCartInfo.spare5 = 0;
+        myCartInfo.palette = 1;
+        myCartInfo.xJiggle = 64;
+        myCartInfo.yJiggle = 16;
+
         // -------------------------------------------------------------------
         // If the game has no .a78 header, do our best to guess these...
         // -------------------------------------------------------------------
-        if (myCartInfo.hasHeader == false)
+        if(myCartInfo.hasHeader == false)
         {
-            myCartInfo.region        = NTSC;
-            if (cartridge_size == (144*1024)) myCartInfo.cardtype = CT_SUPLRG;
-            else myCartInfo.cardtype = (cartridge_size <= (52*1024)) ? CT_NORMAL:CT_SUPROM;
-            myCartInfo.pokeyType     = POKEY_NONE;
-            myCartInfo.cardctrl1     = JOY;
-            myCartInfo.cardctrl2     = JOY;
-            myCartInfo.hsc           = false;
+            myCartInfo.region = NTSC;
+            if(cartridge_size == (144 * 1024)) myCartInfo.cardtype = CT_SUPLRG;
+            else myCartInfo.cardtype = (cartridge_size <= (52 * 1024)) ? CT_NORMAL : CT_SUPROM;
+            myCartInfo.pokeyType = POKEY_NONE;
+            myCartInfo.cardctrl1 = JOY;
+            myCartInfo.cardctrl2 = JOY;
+            myCartInfo.hsc = false;
         }
-        
+
         // --------------------------------------------------------
         // Do our best guess as to whether we should frameskip...
         // --------------------------------------------------------
-        if (isDSiMode())    // DSi can handle most games in full framerate... default to disable frameskip for the DSi
+        if(isDSiMode()) // DSi can handle most games in full framerate... default to disable frameskip for the DSi
         {
             myCartInfo.frameSkip = FRAMESKIP_DISABLE;
         }
-        else    // DS-Lite defaults to some level of frame skipping
+        else // DS-Lite defaults to some level of frame skipping
         {
-            myCartInfo.frameSkip = ((cartridge_size <= (48*1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE); // Non-banked carts get light frameskip... otherwise agressive
+            myCartInfo.frameSkip = ((cartridge_size <= (48 * 1024)) ? FRAMESKIP_MEDIUM : FRAMESKIP_AGGRESSIVE); // Non-banked carts get light frameskip... otherwise agressive
         }
     }
-    
+
     // Lastly - use the internal database to always try and find a BIOS timeout value... we don't let the user override this one...
     myCartInfo.biosTimeout = 160;
-    for(i = 0; strlen(game_list[i].half_digest); i++)    // Search through entire internal database...
+    bFound = 0;
+    for(i = 0; strlen(game_list[i].half_digest); i++) // Search through entire internal database...
     {
-      if (!strncmp(game_list[i].half_digest,(char *) digest, 16)) // Search by md5sum
-      {
-          myCartInfo.biosTimeout = game_list[i].biosTimeout;
-          break;
-      }
-      
-#if 0
-      if (myCartInfo.region == NTSC) // Search by name...
-      {
-          if ( (!strcmp(game_list[i].header_name,(char *) cartridge_title)) || (strstr((char *) cartridge_filename, game_list[i].header_name) != NULL) )
-          {
-              myCartInfo.biosTimeout = game_list[i].biosTimeout;
-              // No break here... md5sum will override above
-          }
-      }
-#endif      
+        if(!strncmp(game_list[i].half_digest, (char *) digest, 16)) // Search by md5sum
+        {
+            myCartInfo.biosTimeout = game_list[i].biosTimeout;
+            bFound = 1;
+            break;
+        }
     }
-    
+
+    if(!bFound) // And if not found - search by name to find a reasonable bios timeout value
+    {
+        for(int k = 0; strlen(NameMap[k].name1); k++)
+        {
+            if(myCartInfo.region == NTSC)
+            {
+                if((strstr(cartridge_filename, NameMap[k].name1)) && (strstr(cartridge_filename, NameMap[k].name2))) // If both names are found in the filename...
+                {
+                    /* Look up bios timeout in game list by md5sum from the Name Mapper table */
+                    for(i = 0; strlen(game_list[i].half_digest); i++)
+                    {
+                        if(!strncmp(game_list[i].half_digest, (char *) NameMap[k].half_digest, 16))
+                        {
+                            myCartInfo.biosTimeout = game_list[i].biosTimeout;
+                            bFound = true;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
     return true;
 }
 
