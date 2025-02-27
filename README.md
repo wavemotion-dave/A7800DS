@@ -23,13 +23,16 @@ Features :
  All popular bank-switching schemes are supported including an extra 16K of RAM at 4000h.
  Pokey support at 4000h, 800h and 450h - change this in Configuration if it's not auto-detected.
  
- The new Banksets scheme is fully supported - this new banking/memory handling is designed
+ The Banksets scheme is fully supported - this new banking/memory handling is designed
  for homebrew authors to provide increased ROM density and improved packing and access of
  graphics data vs code.  This allows for games that would have been difficult or impossible 
  without the scheme. See http://7800.8bitdev.org/index.php/Bankset_Bankswitching for more details.
   
  Add highscore.rom for 7800 High Score saving. This can be in /roms/bios, /data/bios
  or in the same directory as the emulator.  It's worth the effort to track down the highscore.rom file!
+ 
+ If you want to use a real Atari 7800 BIOS, find yourself the 4K version and place it 
+ into the same directory as mentioned in the paragraph above.
  
 Copyright :
 ----------
@@ -172,7 +175,8 @@ this while you are playing - usually when you lose a life you can tap the X butt
 more useable scanlines for actual gameplay. Think of this like you're at the arcade and you have to glance up to see your 
 score when focused on the field of play. It takes a little getting used to but this mechanism really helps map the more complicated
 game graphics onto the small sceren. Of course youc an always scale the screen down to it's totally visible - but there will be
-some loss of scanline information. Experiment and determine what works best for you.
+some loss of scanline information. Experiment and determine what works best for you. Many of the popular games already have 
+the screen set to perfectly pan up/down to bring in the score/status while leaving the playfield as close to 1:1 as possible.
 
 And remember - once you get your screen settings the way you want, be sure to go into the GEAR icon and hit START to save out
 your current configuration (which includes your screen offset/scaling tweaks on a per-game basis).
