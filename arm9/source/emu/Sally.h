@@ -46,7 +46,6 @@ extern void sally_Reset( );
 extern uint sally_ExecuteInstruction( );
 extern uint sally_ExecuteRES( );
 extern uint sally_ExecuteNMI( );
-extern uint sally_ExecuteIRQ( );
 extern byte sally_a;
 extern byte sally_x;
 extern byte sally_y;
@@ -55,6 +54,5 @@ extern uint sally_s;
 extern bool wsync_happened;
 
 extern void sally_Execute(unsigned int cycles );
-extern void sally_Execute_Fast(unsigned int cycles );
 
 #endif

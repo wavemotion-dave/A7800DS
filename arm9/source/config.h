@@ -34,9 +34,9 @@
 // ---------------------------
 // Config handling...
 // ---------------------------
-#define CONFIG_VER  0x000A
+#define CONFIG_VER  0x000B
 
-#define MAX_CONFIGS 700
+#define MAX_CONFIGS 640
 
 struct AllConfig_t
 {

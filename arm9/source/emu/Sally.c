@@ -978,22 +978,6 @@ uint sally_ExecuteNMI( ) {
   return 7;
 }
 
-// ----------------------------------------------------------------------------
-// Execute IRQ
-// ----------------------------------------------------------------------------
-uint sally_ExecuteIRQ( ) {
-  if(!(sally_p & _fI)) {
-    sally_Push(sally_pc.b.h);
-    sally_Push(sally_pc.b.l);
-    sally_p &= ~_fB;
-    sally_Push(sally_p);
-    sally_p |= _fI;
-    sally_pc.b.l = memory_ram[SALLY_IRQ.L];
-    sally_pc.b.h = memory_ram[SALLY_IRQ.H];
-  }
-  return 7;
-}
-
 extern uint prosystem_cycles;
 
 ITCM_CODE void sally_Execute(unsigned int cycles )  

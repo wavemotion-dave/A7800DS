@@ -43,6 +43,8 @@ typedef struct {
   s16   xScale;
   s16   yScale;
   u8    frameSkip;
+  u8    spare0;
+  u8    spare1;
   u8    hasHeader;
   u8    palette;
   u8    xJiggle;
@@ -53,6 +55,8 @@ typedef struct {
   u8    spare3;
   u8    spare4;
   u8    spare5;
+  u8    spare6;
+  u8    spare7;
 } Database_Entry;
 
 
