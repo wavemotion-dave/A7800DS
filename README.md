@@ -138,8 +138,6 @@ The following schemes are supported:
 Frame Skipping can be OFF (show all frames), Moderate (Show 3/4 frames) or Agressive (only show 1/2 frames).  The latter is
 only really needed for the DS-Lite/Phat where the faster DSi CPU isn't available.
 
-Don't touch the DMA Cycle Adjustment unless you understand it... and most people don't - sometimes including the developer :)
-
 Press START to save off your configuration - if you made changes you should re-load the game to ensure all settings are applied.
 
 Of Mice, Men and Screen Resolutions :
