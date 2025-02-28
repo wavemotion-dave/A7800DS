@@ -111,11 +111,10 @@ Controls :
  that utilize it. This allows all of the DS buttons to map into the game - exactly
  as labeled (D-Pad plus ABXY, Left Shoulder, Right Shoulder and Start, Select).
  
- High Score Saving works if you have highscore.rom (exact name and case) in your
- roms directory where you load your games... also, you MUST press the HSC button
- if you want to snap the Saved Scores out to the flash card. It's not something 
- I want to do as the game runs... so you must do it... the high scores will also
- auto-save if you quit the emulator or select a new game.
+ High Score Saving works if you have highscore.rom (exact name) in your
+ roms directory where you load your games... The .hsc backing file will be written 
+ automatically as the game runs. Only games programmed to use the highscore cart
+ will save scores. 
   
 Configuration :
 ----------
