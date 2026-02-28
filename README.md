@@ -36,7 +36,7 @@ Features :
  
 Copyright :
 ----------
-A7800DS is Copyright 2021-2025 by Dave Bernazzani (wavemotion-dave).
+A7800DS is Copyright 2021-2026 by Dave Bernazzani (wavemotion-dave).
 
 This emulator is based heavily upon ProSystem and that emulator was released
 in 2005 by Greg Stanton under the GNU General Public License and, as such,
@@ -200,20 +200,27 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 --------------------------------------------------------------------------------
 History :
 --------------------------------------------------------------------------------
-V5.1 : 27-Feb-2025 by wavemotion-dave
+
+V5.2 : 28-Feb-2026 by wavemotion-dave
+  * Fix for Supercart RAM at $4000 games - glitches on 1942EX now gone.
+  * Added NTSC True Sync at 60Hz to reduce screen tearing.
+  * Improved options / file selection graphic
+  * Improved Zoom Icon handling
+
+V5.1 : 27-Feb-2026 by wavemotion-dave
   * 7800 BIOS is now supported. Place bios exactly named '7800.rom' in /roms/bios, /data/bios or same directory as the emulator itself.
-  * New internal database with many cleanups and corrections. Now compliant with Trebor Pro-Pack v8_16 from early 2025.
+  * New internal database with many cleanups and corrections. Now compliant with Trebor Pro-Pack v8_16 from early 2026.
   * New configuration option to allow mapping both both X and Y buttons.
   * Maria and CPU cycle counting are much closer to real hardware - all of the DMA Cycle adjustments/hacks have been removed. 
   * This fixes a number of small problems such as Pole Position II joystick selection of track when game loads.
 
-V5.0 : 21-Feb-2025 by wavemotion-dave
+V5.0 : 21-Feb-2026 by wavemotion-dave
   * Kangaroo mode fixed and fully implemented. Cleans up some small graphical glitches on a number of games.
   * Composite Artifacting implemented for Tower Toppler and Jinks.
   * Sound handler fixed so that drop-outs of sounds are eliminated (or at least greatly minimized).
   * The X button on the NDS is now configurable to a range of joystick/console buttons.
 
-V4.9 : 17-Feb-2025 by wavemotion-dave
+V4.9 : 17-Feb-2026 by wavemotion-dave
   * High Score (HSC) auto-save improvements - no longer write the backing .hsc file if the write didn't actually change HSC data.
   * Improved Sally emulation accuracy and optimization pass to render the games 3-4% faster.
   * Improved Pokey emulation - missing sounds on games like Ballblazer are now much better.
@@ -221,19 +228,19 @@ V4.9 : 17-Feb-2025 by wavemotion-dave
   * Improved memory caching to help with the really big games (those 512K or larger).
   * All but two games on the DSi are now rendered without any form of frameskip. Older DS-Lite/Phat reduces frameskip due to new optimizations.
 
-V4.8 : 15-Feb-2025 by wavemotion-dave
+V4.8 : 15-Feb-2026 by wavemotion-dave
   * High Score (HSC) now auto-saves the .hsc file after it is written by the game. The HSC button is gone.
   * Smoother console button operation so that a press is registered more consistently and with better debounce.
   * Improved magnifying glass icon debounce so that it registers more consistently and with better debounce.
   * New game icon to align with the other emulators in the Atari lineup on the DS.
 
-V4.7 : 11-May-2024 by wavemotion-dave
+V4.7 : 11-May-2026 by wavemotion-dave
   * X and Y buttons now shift the screen down/up by 16 pixels so you can position the score off-screen and use these to pan up/down to see it.
   * Fix for Supercarts so that they start in bank 0 (Legend of Silverpeak should now load)
   * Internal database tweaks for the latest homebrews and ports.
   * Other minor tweaks and improvements as time permitted.
 
-V4.6 : 06-May-2024 by wavemotion-dave
+V4.6 : 06-May-2026 by wavemotion-dave
   * Each game that utilizes a High Score Cart (HSC) gets its own 2K .hsc file 
   * Improved High Score Cart (HSC) emulation - improved initialization of the SRAM contents.
   * Sanity checks added so that carts marked as 'NORMAL' (or selected as such) but are larger than 48K will not corrupt memory.

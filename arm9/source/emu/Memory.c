@@ -140,10 +140,10 @@ ITCM_CODE void memory_Write(word address, byte data)
         extern u16 banksets_mask;
         if(!(address & banksets_mask)) banksets_memory[address] = data;
 
-        if((address & 0x5000)) // This will catch RAM at 0x4000 and HSC at 0x1000
+        if((address & 0xF800)) // This will catch RAM at 0x1800, Banking RAM at 0x4000 and HSC at 0x1000
         {
             // For banking RAM we need to keep the shadow up to date.
-            if((address & 0x5000) == 0x4000)
+            if((address & 0xC000) == 0x4000)
             {
                 extern u8 * shadow_ram;
                 shadow_ram[address] = data;
@@ -169,7 +169,8 @@ ITCM_CODE void memory_Write(word address, byte data)
                 return;
             }
         }
-        else if((address & 0xFFE0) == 0x460) return; // XM/Yamaha is mapped into 460 - 47F... do not respond to it as we are not XM capable (yet)
+        
+        if((address & 0xFFE0) == 0x460) return; // XM/Yamaha is mapped into 460 - 47F... do not respond to it as we are not XM capable (yet)
 
         // ---------------------------------------------------------------------
         // Until we are 'locked' into a mode, address range 0x00 to 0x1f

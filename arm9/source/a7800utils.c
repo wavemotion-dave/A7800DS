@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2022-2025 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2022-2026 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, it's source code and associated
 // readme files, with or without modification, are permitted in any medium without
@@ -60,6 +60,7 @@ u8  fpsDisplay                          __attribute__((section(".dtcm"))) = 0;
 u8  bEmulatorRun                        __attribute__((section(".dtcm"))) = 1;
 u8  bNoDatabase                         __attribute__((section(".dtcm"))) = 0;
 u8  bSkipBIOS                           __attribute__((section(".dtcm"))) = 0;
+u8  bZoomDisplay                        __attribute__((section(".dtcm"))) = 0;
 u32 snes_adaptor                        __attribute__((section(".dtcm"))) = 0x0000FFFF;
 
 extern u32 tiaBufIdx;
@@ -95,6 +96,12 @@ short ydyBG  __attribute__((section(".dtcm")));
 
 u32 myTiaBufIdx  __attribute__((section(".dtcm"))) = 0;
 u8 soundEmuPause = 1;
+
+volatile u16 ds_vblank_count __attribute__((section(".dtcm"))) = 0;
+void irqVCount(void)
+{
+    ds_vblank_count++; // This is our key to DS 'True Sync' at 60Hz.
+}
 
 #define WAITVBL swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank(); swiWaitForVBlank();
 
@@ -236,10 +243,20 @@ ITCM_CODE void vblankIntr()
   }
   else if (bRefreshXY || temp_shift)
   {
-    cxBG = (myCartInfo.xOffset << 8);
-    cyBG = (myCartInfo.yOffset + temp_shift) << 8;
-    xdxBG = ((320 / myCartInfo.xScale) << 8) | (320 % myCartInfo.xScale) ;
-    ydyBG = ((234 / myCartInfo.yScale) << 8) | (234 % myCartInfo.yScale);
+    if (bZoomDisplay)
+    {
+        cxBG = (32 << 8);
+        cyBG = (21 + temp_shift) << 8;
+        xdxBG = 0x0100;
+        ydyBG = 0x0100;
+    }
+    else
+    {
+        cxBG = (myCartInfo.xOffset << 8);
+        cyBG = (myCartInfo.yOffset + temp_shift) << 8;
+        xdxBG = ((320 / myCartInfo.xScale) << 8) | (320 % myCartInfo.xScale) ;
+        ydyBG = ((234 / myCartInfo.yScale) << 8) | (234 % myCartInfo.yScale);
+    }
 
     REG_BG2X = cxBG;
     REG_BG2Y = cyBG;
@@ -275,7 +292,10 @@ ITCM_CODE void vblankIntr()
 
 void dsInitScreenMain(void)
 {
-    SetYtrigger(190); //trigger 2 lines before vsync
+    SetYtrigger(128); //trigger 64 lines before vsync
+    irqSet(IRQ_VCOUNT, irqVCount);
+    irqEnable(IRQ_VCOUNT);  
+    
     irqSet(IRQ_VBLANK, vblankIntr);
     irqEnable(IRQ_VBLANK);
 
@@ -408,6 +428,8 @@ void dsLoadGame(char *filename)
     lastSample = 0;
     bJustSavedHSC = 0;
     spamHSC = 0;
+    
+    ds_vblank_count = 0;
 
     if (DEBUG_DUMP)
     {
@@ -949,33 +971,10 @@ __attribute__ ((noinline))  void handle_LR_keys(unsigned int keys_pressed)
   }
 }
 
-// Toggle full 320x256
-static s16 last_xScale = 0;
-static s16 last_yScale = 0;
-static s16 last_xOffset = 0;
-static s16 last_yOffset = 0;
+// Toggle full 320x256 display
 __attribute__ ((noinline)) void toggle_zoom(void)
 {
-  if (last_xScale == 0)
-  {
-      last_xScale  = myCartInfo.xScale;
-      last_yScale  = myCartInfo.yScale;
-      last_xOffset = myCartInfo.xOffset;
-      last_yOffset = myCartInfo.yOffset;
-      myCartInfo.xScale  = 320;
-      myCartInfo.yScale  = 234;
-      myCartInfo.xOffset = 32;
-      myCartInfo.yOffset = 21;
-  }
-  else
-  {
-      myCartInfo.xScale = last_xScale;
-      myCartInfo.yScale = last_yScale;
-      myCartInfo.xOffset = last_xOffset;
-      myCartInfo.yOffset = last_yOffset;
-      last_xScale = last_yScale = 0;
-      last_xOffset = last_yOffset = 0;
-  }
+  bZoomDisplay = !bZoomDisplay;
   bRefreshXY = true;
 }
 
@@ -1074,30 +1073,22 @@ void dsMainLoop(void)
       case A7800_PLAYINIT:
         dsShowScreenEmu();
         emu_state = A7800_PLAYGAME;
-        last_xScale = 0;
+        bZoomDisplay = 0;
         break;
 
       case A7800_PLAYGAME:
-        // 32,728.5 ticks = 1 second
-        // 1 frame = 1/50 or 1/60 (0.02 or 0.016)
-        // 655 -> 50 fps and 546 -> 60 fps
         if (!full_speed)
         {
-            while(TIMER0_DATA < (546*atari_frames)) // We are only supporting NTSC timing
-                ;
+            while(ds_vblank_count < (atari_frames+1)) // We are only supporting NTSC timing
+            {
+                asm("nop");
+            }
         }
 
         if (bEmulatorRun)
         {
             // Execute one frame
             prosystem_ExecuteFrame(keyboard_data);
-            if (++atari_frames == 60)
-            {
-                TIMER0_CR=0;
-                TIMER0_DATA=0;
-                TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
-                atari_frames=0;
-            }
 
             // Read keys
             if (special_hsc_entry > 0)
@@ -1113,6 +1104,15 @@ void dsMainLoop(void)
             memset(keyboard_data, 0x00, 15); // Not the difficulty switches which are the two bytes after this...
         }
 
+        if (++atari_frames == 60)
+        {
+            TIMER0_CR=0;
+            TIMER0_DATA=0;
+            TIMER0_CR=TIMER_ENABLE|TIMER_DIV_1024;
+            atari_frames=0;
+            ds_vblank_count = 0;
+        }
+        
         // If we have recently pressed any of the console keys... keep it pressed for a minimum duration
         if (tchepres_delay)
         {

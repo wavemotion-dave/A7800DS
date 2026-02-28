@@ -1,5 +1,5 @@
 // =====================================================================================
-// Copyright (c) 2022-2024 Dave Bernazzani (wavemotion-dave)
+// Copyright (c) 2022-2026 Dave Bernazzani (wavemotion-dave)
 //
 // Copying and distribution of this emulator, it's source code and associated 
 // readme files, with or without modification, are permitted in any medium without 
@@ -78,5 +78,6 @@ extern void dsInstallSoundEmuFIFO(void);
 extern void dsMainLoop(void);
 extern int a78Filescmp (const void *c1, const void *c2);
 extern void proFindFiles(void);
+extern void irqVCount(void);
 
 #endif
