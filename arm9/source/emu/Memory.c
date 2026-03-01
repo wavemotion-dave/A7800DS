@@ -286,7 +286,7 @@ ITCM_CODE void memory_Write(word address, byte data)
                 break;
             default:
                 memory_ram[address] = data;
-                #ifdef RAM_MIRRORS_ENABLED
+#ifdef RAM_MIRRORS_ENABLED
                 // ------------------------------------------------------
                 // Handle the RAM mirrors that the 7800 presents...
                 //
@@ -319,7 +319,7 @@ ITCM_CODE void memory_Write(word address, byte data)
                         memory_ram[address | 0x2000] = data;
                     }
                 }
-                #endif
+#endif
                 break;
         }
     }
@@ -334,8 +334,8 @@ ITCM_CODE void memory_Write(word address, byte data)
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_WriteROM(word address, u32 size, const byte * data)
 {
-    memcpy( & memory_ram[address], data, size);
-    memset( & is_memory_writable[address >> 8], 0x00, size >> 8);
+    memcpy(&memory_ram[address], data, size);
+    memset(&is_memory_writable[address >> 8], 0x00, size >> 8);
 }
 
 // ----------------------------------------------------------------------------

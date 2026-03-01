@@ -428,7 +428,7 @@ static bool _cartridge_Load(uint size)
   memset(ex_ram_buffer, 0x00, sizeof(ex_ram_buffer));   // Clear the EX RAM memory
     
   memset(banksets_memory, 0xFF, sizeof(banksets_memory));   // Clear the banksets ROM memory area
-  memset(banksets_memory+0x4000, 0x00, 0x4000);             // Clear banksets RAM memory area
+  memset(banksets_memory, 0x00, 0x4000);                    // Clear banksets RAM memory area
   
   for(index = 0; index < 128; index++) 
   {
@@ -627,15 +627,13 @@ void cartridge_Store( )
     case CARTRIDGE_TYPE_BANKSETS:
       if ((cartridge_size/2) <= (52 * 1024))
       {
-          offset = 0;
-          memory_WriteROM(65536 - (cartridge_size/2), (cartridge_size/2), cartridge_buffer + offset);
+          memory_WriteROM(65536 - (cartridge_size/2), (cartridge_size/2), cartridge_buffer);
           memcpy(&banksets_memory[65536 - (cartridge_size/2)], cartridge_buffer + (cartridge_size/2), (cartridge_size/2));
           if ((cartridge_size/2) >= (48*1024)) write_only_pokey_at_4000 = true;
       }
-      else
+      else // Supercart Banking - fixed block at 0xC000, banking at 0x8000
       {
-          offset = (cartridge_size/2) - 0x4000;
-          memory_WriteROM(0xC000, 0x4000, cartridge_buffer + offset);
+          memory_WriteROM(0xC000, 0x4000, cartridge_buffer + (cartridge_size/2) - 0x4000);
           memcpy(&banksets_memory[0xC000], &cartridge_buffer[cartridge_size - 0x4000], 0x4000);
       }
       break;
@@ -648,11 +646,12 @@ void cartridge_Store( )
           memcpy(&banksets_memory[65536 - (cartridge_size/2)], cartridge_buffer + (cartridge_size/2), (cartridge_size/2));
           if ((cartridge_size/2) >= (48*1024)) write_only_pokey_at_4000 = true;
       }
-      else
+      else // Supercart Banking - fixed block at 0xC000, banking at 0x8000
       {
           memory_WriteROM(0xC000, 0x4000, cartridge_buffer + (cartridge_size/2) - 0x4000);
           memcpy(&banksets_memory[0xC000], cartridge_buffer + (cartridge_size) - 0x4000, 0x4000);
       }
+      // Setup the 16K RAM area...
       memory_ClearROM(0x4000, 0x4000);
       memset(&banksets_memory[0x4000], 0x00, 0x4000);
       break;
