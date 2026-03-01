@@ -206,6 +206,7 @@ V5.2 : 28-Feb-2026 by wavemotion-dave
   * Added NTSC True Sync at 60Hz to reduce screen tearing.
   * Improved options / file selection graphic
   * Improved Zoom Icon handling
+  * v5.2a with hotfix for BANKSET handling to render Stoneage properly.
 
 V5.1 : 27-Feb-2026 by wavemotion-dave
   * 7800 BIOS is now supported. Place bios exactly named '7800.rom' in /roms/bios, /data/bios or same directory as the emulator itself.
