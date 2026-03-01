@@ -899,9 +899,9 @@ static void mariaBANK_StoreLineRAM()
         write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;
     }
 
-    maria_pp.b.l = memory_ram[maria_dp.w++];
-    uint mode = memory_ram[maria_dp.w++];
-    maria_pp.b.h = memory_ram[maria_dp.w++];
+    maria_pp.b.l = bankset_memory_read(maria_dp.w++);
+    uint mode = bankset_memory_read(maria_dp.w++);
+    maria_pp.b.h = bankset_memory_read(maria_dp.w++);
 
     while((mode & 0x5f) && (maria_cycles < MARIA_CYCLE_LIMIT)) // Never chew up more cycles than the limit (return control to 6502)
     {
@@ -912,16 +912,16 @@ static void mariaBANK_StoreLineRAM()
         {
             maria_cycles += MARIA_CYCLES_4_BYTE_HEADER; // Maria cycles (Header 4 byte)
             maria_palette = (mode & 0xE0) >> 3;
-            maria_horizontal = memory_ram[maria_dp.w++];
+            maria_horizontal = bankset_memory_read(maria_dp.w++);
             width = (~mode & 31) + 1;
         }
         else
         {
             maria_cycles += MARIA_CYCLES_5_BYTE_HEADER; // Maria cycles (Header 5 byte)
-            maria_palette = (memory_ram[maria_dp.w] & 0xE0) >> 3;
-            width = memory_ram[maria_dp.w++] & 31;
+            maria_palette = (bankset_memory_read(maria_dp.w) & 0xE0) >> 3;
+            width = bankset_memory_read(maria_dp.w++) & 31;
             width = (width == 0) ? 32 : ((~width) & 31) + 1;
-            maria_horizontal = memory_ram[maria_dp.w++];
+            maria_horizontal = bankset_memory_read(maria_dp.w++);
             if(mode & 32) direct = 0;
             maria_wmode = mode & 128;
         }
@@ -950,7 +950,7 @@ static void mariaBANK_StoreLineRAM()
             u16 charbase_plus_offset = ((maria_charbase + maria_offset) << 8);
             for(index = 0; index < width; index++)
             {
-                maria_pp.w = charbase_plus_offset | memory_ram[basePP.w++];
+                maria_pp.w = charbase_plus_offset | bankset_memory_read(basePP.w++);
                 if(maria_IsHoleyDMA()) // Adjust for HoleyDMA
                 {
                     dma_holes++;
@@ -979,9 +979,9 @@ static void mariaBANK_StoreLineRAM()
 
         maria_dp.w &= 0xFFFF; // Super Pac-Man requires that we wrap this...
 
-        maria_pp.b.l = memory_ram[maria_dp.w++];
-        mode = memory_ram[maria_dp.w++];
-        maria_pp.b.h = memory_ram[maria_dp.w++];
+        maria_pp.b.l = bankset_memory_read(maria_dp.w++);
+        mode = bankset_memory_read(maria_dp.w++);
+        maria_pp.b.h = bankset_memory_read(maria_dp.w++);
     }
 }
 
