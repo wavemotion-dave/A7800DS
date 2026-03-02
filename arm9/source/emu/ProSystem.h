@@ -43,8 +43,6 @@
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 
-#define RAM_MIRRORS_ENABLED     1   // Uncomment if you want to have RAM mirrors handled (slower but a few games want this for accuracy)
-
 extern int debug[];
 extern u8 isDS_LITE;
 extern u8 bSkipBIOS;

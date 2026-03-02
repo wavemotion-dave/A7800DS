@@ -64,6 +64,8 @@ int main(int argc, char **argv)
     
   LoadConfig();
   
+  LoadFavorites();
+  
   bios_check_and_load();
   
     //load rom file via args if a rom path is supplied
