@@ -201,6 +201,11 @@ Updates by wavemotion-dave:  https://github.com/wavemotion-dave/A7800DS
 History :
 --------------------------------------------------------------------------------
 
+V5.2b : 02-Mar-2026 by wavemotion-dave
+  * v5.2a with hotfix for BANKSET handling to render Stoneage properly.
+  * v5.2b with new Favorites System implemented (SELECT for Like vs Love when picking a game).
+  * Minor optimization for Maria graphics rendering to provide another frame of performance.
+
 V5.2 : 28-Feb-2026 by wavemotion-dave
   * Fix for Supercart RAM at $4000 games - glitches on 1942EX now gone.
   * Added NTSC True Sync at 60Hz to reduce screen tearing.

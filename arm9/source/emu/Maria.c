@@ -140,10 +140,10 @@ static inline __attribute__((always_inline))  void maria_StoreCells4(byte data)
     if((maria_horizontal) < MARIA_LINERAM_SIZE) 
     {
         byte *ptr = &(maria_lineRAM[maria_horizontal]);
-        if (data & 0xC0) *ptr++ = maria_palette | ((data       ) >> 6); else ptr++;
-        if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else ptr++;
-        if (data & 0x0C) *ptr++ = maria_palette | ((data & 0x0C) >> 2); else ptr++;
-        if (data & 0x03) *ptr   = maria_palette | (data & 0x03); 
+        if (data & 0xC0) ptr[0] = maria_palette | ((data       ) >> 6);
+        if (data & 0x30) ptr[1] = maria_palette | ((data & 0x30) >> 4);
+        if (data & 0x0C) ptr[2] = maria_palette | ((data & 0x0C) >> 2);
+        if (data & 0x03) ptr[3] = maria_palette |  (data & 0x03); 
     }
 }
 
@@ -154,17 +154,17 @@ static inline __attribute__((always_inline))  void mariaROO_StoreCells4(byte dat
         byte *ptr = &(maria_lineRAM[maria_horizontal]);
         if (memory_ram[CTRL] & 4)
         {
-            *ptr++ = maria_palette | ((data       ) >> 6);
-            *ptr++ = maria_palette | ((data & 0x30) >> 4);
-            *ptr++ = maria_palette | ((data & 0x0C) >> 2);
-            *ptr   = maria_palette | (data & 0x03);       
+            ptr[0] = maria_palette | ((data       ) >> 6);
+            ptr[1] = maria_palette | ((data & 0x30) >> 4);
+            ptr[2] = maria_palette | ((data & 0x0C) >> 2);
+            ptr[3] = maria_palette |  (data & 0x03);       
         }
         else
         {
-            if (data & 0xC0) *ptr++ = maria_palette | ((data       ) >> 6); else ptr++;
-            if (data & 0x30) *ptr++ = maria_palette | ((data & 0x30) >> 4); else ptr++;
-            if (data & 0x0C) *ptr++ = maria_palette | ((data & 0x0C) >> 2); else ptr++;
-            if (data & 0x03) *ptr   = maria_palette | (data & 0x03); 
+            if (data & 0xC0) ptr[0] = maria_palette | ((data       ) >> 6);
+            if (data & 0x30) ptr[1] = maria_palette | ((data & 0x30) >> 4);
+            if (data & 0x0C) ptr[2] = maria_palette | ((data & 0x0C) >> 2);
+            if (data & 0x03) ptr[3] = maria_palette |  (data & 0x03); 
         }
     }
 }
@@ -330,7 +330,7 @@ static ITCM_CODE void maria_WriteLineRAM(word * buffer)
     {
         for(uint index = 0; index < MARIA_LINERAM_SIZE / 4; index++)
         {
-            colors.color32 = * ptr++;
+            colors.color32 = *ptr++;
 
             if(colors.color32 == 0)
             {
@@ -363,7 +363,7 @@ static ITCM_CODE void maria_WriteLineRAM(word * buffer)
     {
         for(uint index = 0; index < MARIA_LINERAM_SIZE / 4; index++)
         {
-            colors.color32 = * ptr++;
+            colors.color32 = *ptr++;
             if(colors.color32 == 0)
             {
                 * pix++ = bg32;
@@ -401,7 +401,7 @@ static ITCM_CODE void maria_WriteLineRAM(word * buffer)
     {
         for(uint index = 0; index < MARIA_LINERAM_SIZE / 4; index++)
         {
-            colors.color32 = * ptr++;
+            colors.color32 = *ptr++;
 
             if(colors.color32 == 0)
             {
@@ -517,16 +517,16 @@ ITCM_CODE static void maria_StoreLineRAM()
     if(bRenderFrame) // If we are rendering frames...
     {
         u32 * ptr = (u32 * ) maria_lineRAM;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;* ptr = 0;
 
         write_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
         write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;
@@ -628,16 +628,16 @@ ITCM_CODE static void mariaROO_StoreLineRAM()
     if(bRenderFrame) // If we are rendering frames...
     {
         u32 * ptr = (u32 * ) maria_lineRAM;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;* ptr = 0;
 
         write_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
         write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;
@@ -884,16 +884,16 @@ static void mariaBANK_StoreLineRAM()
     if(bRenderFrame) // If we are rendering frames...
     {
         u32 * ptr = (u32 * ) maria_lineRAM;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;
-        * ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr++ = 0;* ptr = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
+        *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;* ptr = 0;
 
         write_mask_low = ((memory_ram[CTRL] & 3)) ? 0x0F : 0x03;
         write_mask_high = ((memory_ram[CTRL] & 3)) ? 0xF0 : 0x30;

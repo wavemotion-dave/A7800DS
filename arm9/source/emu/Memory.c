@@ -140,10 +140,10 @@ ITCM_CODE void memory_Write(word address, byte data)
         extern u16 banksets_mask;
         if(!(address & banksets_mask)) banksets_memory[address] = data;
 
-        if((address & 0xF800)) // This will catch RAM at 0x1800, Banking RAM at 0x4000 and HSC at 0x1000
+        if (address & 0xF000) // This will catch anything above 0x1000 (HSC, main RAM and Banking RAM)
         {
             // For banking RAM we need to keep the shadow up to date.
-            if((address & 0xC000) == 0x4000)
+            if ((address & 0xC000) == 0x4000)
             {
                 extern u8 * shadow_ram;
                 shadow_ram[address] = data;
@@ -156,9 +156,9 @@ ITCM_CODE void memory_Write(word address, byte data)
                 memory_ram[address] = data;
                 return;
             }
-            else if((address & 0xF800) == 0x1000) // HSC RAM - set the dirty bit so we persist the .hsc file in the main loop
+            else if (address < 0x1800) // HSC RAM - set the dirty bit so we persist the .hsc file in the main loop
             {
-                if(memory_ram[address] != data)
+                if (memory_ram[address] != data) // Only if the data is actually changed...
                 {
                     memory_ram[address] = data;
                     if(address != 0x1007 && (address < 0x17FA)) // Don't count the 'function' address nor the temp score...
@@ -169,21 +169,23 @@ ITCM_CODE void memory_Write(word address, byte data)
                 return;
             }
         }
-        
-        if((address & 0xFFE0) == 0x460) return; // XM/Yamaha is mapped into 460 - 47F... do not respond to it as we are not XM capable (yet)
-
-        // ---------------------------------------------------------------------
-        // Until we are 'locked' into a mode, address range 0x00 to 0x1f
-        // (overlapping the TIA) will respond as write-only register INPTCTRL
-        // ---------------------------------------------------------------------
-        if((address & 0xFCFF) <= 0x1f)
+        else // Below 0x1000
         {
-            if(!bINPTCTRL_locked)
+            if((address & 0xFFE0) == 0x460) return; // XM/Yamaha is mapped into 460 - 47F... do not respond to it as we are not XM capable (yet)
+            
+            // ---------------------------------------------------------------------
+            // Until we are 'locked' into a mode, address range 0x00 to 0x1f
+            // (overlapping the TIA) will respond as write-only register INPTCTRL
+            // ---------------------------------------------------------------------
+            if((address & 0xFCFF) <= 0x1f)
             {
-                if(data & 0x04) cartridge_Store();
-                else bios_Store();
+                if(!bINPTCTRL_locked)
+                {
+                    if(data & 0x04) cartridge_Store();
+                    else bios_Store();
+                }
+                if(data & 0x01) bINPTCTRL_locked = 1;
             }
-            if(data & 0x01) bINPTCTRL_locked = 1;
         }
 
         switch(address)
@@ -286,40 +288,30 @@ ITCM_CODE void memory_Write(word address, byte data)
                 break;
             default:
                 memory_ram[address] = data;
-#ifdef RAM_MIRRORS_ENABLED
-                // ------------------------------------------------------
+
+                // --------------------------------------------------------
                 // Handle the RAM mirrors that the 7800 presents...
                 //
-                // 0x2040 - 0x20FF  RAM block 0 (mirror of 0x0040-00FF)
-                // 0x2140 - 0x21FF  RAM block 1 (mirror of 0x0140-01FF)
-                // ------------------------------------------------------
-                if(address >= 0x2040)
+                // 0x2040 - 0x20FF  RAM block 0 is a mirror of 0x0040-00FF
+                // 0x2140 - 0x21FF  RAM block 1 is a mirror of 0x0140-01FF
+                // --------------------------------------------------------
+                if (!(address & 0xFE00)) // Below 0x200
                 {
-                    // 0x2040 -> 0x20ff    (0x2000)
-                    if(address <= 0x20FF)
+                    if ((address & 0xFF) >= 0x40)
                     {
-                        memory_ram[address & 0x00FF] = data;
-                    }
-                    // 0x2140 -> 0x21ff    (0x2100)
-                    else if(address >= 0x2140 && address <= 0x21FF)
-                    {
-                        memory_ram[address & 0x01FF] = data;
+                        memory_ram[address | 0x2000] = data; // Mirror UP
                     }
                 }
-                else if(address < 0x200)
+                else if (address & 0x2000) // Above 0x2000
                 {
-                    // 0x40 -> 0xff    (0x2000)
-                    if(address >= 0x40 && address <= 0xFF)
+                    if (address < 0x2200) // at or below 0x21FF
                     {
-                        memory_ram[address | 0x2000] = data;
-                    }
-                    // 0x140 -> 0x1ff    (0x2100)
-                    else if(address >= 0x140 && address <= 0x1FF)
-                    {
-                        memory_ram[address | 0x2000] = data;
+                        if ((address & 0xFF) >= 0x40)
+                        {
+                            memory_ram[address & 0x01FF] = data; // Mirror DOWN
+                        }
                     }
                 }
-#endif
                 break;
         }
     }
