@@ -664,7 +664,7 @@ void cartridge_Store( )
 // ----------------------------------------------------------------------------
 // Cart Write - this may cause a bankswitch
 // ----------------------------------------------------------------------------
-ITCM_CODE void cartridge_Write(word address, byte data) 
+void cartridge_Write(word address, byte data) 
 {
   switch(myCartInfo.cardtype) 
   {

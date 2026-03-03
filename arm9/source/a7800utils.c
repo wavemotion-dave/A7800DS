@@ -1011,7 +1011,7 @@ void dsPrintValue(int x, int y, unsigned int isSelect, char *pchStr)
 // --------------------------------------------------------------------------------------------
 // MAXMOD streaming setup and handling...
 // --------------------------------------------------------------------------------------------
-#define sample_rate  31500      // To rough match the TIA driver for the Atari 7800 - we purposely undershoot slightly (263 x 60 x 2 = 31560)
+#define sample_rate  31300      // To rough match the TIA driver for the Atari 7800 - we purposely undershoot slightly (263 x 60 x 2 = 31560)
 #define buffer_size  (256)      // Enough buffer that we don't have to fill it too often but not so big as to create lag
 
 mm_ds_system sys  __attribute__((section(".dtcm")));
@@ -1026,10 +1026,10 @@ ITCM_CODE mm_word OurSoundMixer(mm_word len, mm_addr dest, mm_stream_formats for
 {
     if (soundEmuPause)  // If paused, just send same value - no amplitude... no sound
     {
-      s32 *p = (s32*)dest;
-      for (int i=0; i<len/4; i++)
+      s16 *p = (s16*)dest;
+      for (int i=0; i < (len>>1); i++)
       {
-        *p++ = 0x0000;
+        *p++ = tia_buffer[myTiaBufIdx];
       }
     }
     else
