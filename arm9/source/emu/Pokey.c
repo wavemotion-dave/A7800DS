@@ -471,10 +471,9 @@ ITCM_CODE void pokey_Process(void)
           }
 
           extern int TIA_Sample(void);
-          currentValue = (currentValue << 2) + 8;
-          currentValue += TIA_Sample();        
-          //currentValue = (currentValue >> 1);
-          if (currentValue > 127) {currentValue = 127;}   // Clip
+          currentValue *= 3;                            // Scale up Pokey to boost volume
+          currentValue += TIA_Sample();                 // Add in TIA Sample
+          if (currentValue > 127) {currentValue = 127;} // Clip to 8-bit MONO
 
           // We have filled the buffer... let the buffer drain a bit
           if (((tiaBufIdx+1) & (SNDLENGTH-1)) == myTiaBufIdx)
@@ -557,10 +556,9 @@ u16 pokey_ProcessNow(void)
           }
 
           extern int TIA_Sample(void);
-          currentValue = (currentValue << 2) + 8;
-          currentValue += TIA_Sample();        
-          //currentValue = (currentValue >> 1);
-          if (currentValue > 127) {currentValue = 127;}   // Clip
+          currentValue *= 3;                            // Scale up Pokey to boost volume
+          currentValue += TIA_Sample();                 // Add in TIA Sample
+          if (currentValue > 127) {currentValue = 127;} // Clip to 8-bit MONO
 
           return (u16)((currentValue << 8) | currentValue);
         }
