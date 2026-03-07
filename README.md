@@ -207,6 +207,7 @@ V5.2c : 03-Mar-2026 by wavemotion-dave
   * v5.2b with new Favorites System implemented (SELECT for Like vs Love when picking a game).
   * v5.2b Minor optimization for Maria graphics rendering to provide another frame of performance.
   * v5.2c Tweaks to sound driver for better balance between Pokey and TIA and to help reduce pops when switching into menus.
+  * v5.2d Cache Maria color information to provide an additional 3-8% performance improvement.
 
 V5.2 : 28-Feb-2026 by wavemotion-dave
   * Fix for Supercart RAM at $4000 games - glitches on 1942EX now gone.

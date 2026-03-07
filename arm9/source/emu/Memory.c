@@ -29,6 +29,7 @@
 #include "Database.h"
 
 byte  memory_ram[MEMORY_SIZE] ALIGN(32) = {0};
+byte  maria_cache[32]  __attribute__((section(".dtcm"))) = {0};
 u8    is_memory_writable[256] __attribute__((section(".dtcm")));
 u32   snes_bit_pos = 0;
 u8    bHSC_dirty = 0;
@@ -50,6 +51,8 @@ void memory_Reset()
         memory_ram[index] = 0x00;
         is_memory_writable[index >> 8] = 1;
     }
+    
+    memset(maria_cache, 0x00, sizeof(maria_cache));
 
     bHSC_dirty = 0;
     snes_bit_pos = 0;
@@ -314,6 +317,15 @@ ITCM_CODE void memory_Write(word address, byte data)
                 }
                 break;
         }
+        
+        if ((address & 0xFFC0) == 0) // Below 64 bytes?
+        {
+            if (address & 0x20) // But above 32
+            {
+                if (address & 3) maria_cache[address & 0x1F] = data;
+                else maria_cache[address & 0x1F] = bg8;
+            }
+        }
     }
     else
     {
@@ -336,18 +348,14 @@ ITCM_CODE void memory_WriteROM(word address, u32 size, const byte * data)
 // ----------------------------------------------------------------------------
 ITCM_CODE void memory_WriteROMFast(word address, u32 size, const u32 * data)
 {
-    u32 * ramPtr = (u32 * ) & memory_ram[address];
-    u32 * dataPtr = (u32 * ) data;
+    uint64_t *ramPtr = (uint64_t *) & memory_ram[address];
+    uint64_t *dataPtr = (uint64_t *) data;
     u32 size2 = size;
     do {
-        * ramPtr++ = * dataPtr++;
-        * ramPtr++ = * dataPtr++;
-        * ramPtr++ = * dataPtr++;
-        * ramPtr++ = * dataPtr++;
-        * ramPtr++ = * dataPtr++;
-        * ramPtr++ = * dataPtr++;
-        * ramPtr++ = * dataPtr++;
-        * ramPtr++ = * dataPtr++;
+        *ramPtr++ = *dataPtr++;
+        *ramPtr++ = *dataPtr++;
+        *ramPtr++ = *dataPtr++;
+        *ramPtr++ = *dataPtr++;
     }
     while(--size2);
 }

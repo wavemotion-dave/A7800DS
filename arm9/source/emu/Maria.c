@@ -137,7 +137,7 @@ void maria_Clear( )
 // ----------------------------------------------------------------------------
 static inline __attribute__((always_inline))  void maria_StoreCells4(byte data) 
 {
-    if((maria_horizontal) < MARIA_LINERAM_SIZE) 
+    if ((maria_horizontal) < MARIA_LINERAM_SIZE) 
     {
         byte *ptr = &(maria_lineRAM[maria_horizontal]);
         if (data & 0xC0) ptr[0] = maria_palette | ((data       ) >> 6);
@@ -149,7 +149,7 @@ static inline __attribute__((always_inline))  void maria_StoreCells4(byte data)
 
 static inline __attribute__((always_inline))  void mariaROO_StoreCells4(byte data) 
 {
-    if((maria_horizontal) < MARIA_LINERAM_SIZE) 
+    if ((maria_horizontal) < MARIA_LINERAM_SIZE) 
     {
         byte *ptr = &(maria_lineRAM[maria_horizontal]);
         if (memory_ram[CTRL] & 4)
@@ -237,12 +237,13 @@ static inline __attribute__((always_inline)) bool maria_IsHoleyDMA()
 }
 
 // ----------------------------------------------------------------------------
-// GetColor
+// GetColor - normally this would have to check the data byte to see if we are
+// accessing one of the non-color MARIA registers and substitute the background
+// color... but since we write color data far less frequently than we consume
+// it, we instead have a maria_cache[] array which has already done this.
 // ----------------------------------------------------------------------------
-static inline __attribute__((always_inline)) byte maria_GetColor(byte data) 
-{
-    return (data & 3) ? memory_ram[BACKGRND | data] : bg8;
-}
+extern byte maria_cache[];
+#define maria_GetColor(data) maria_cache[(data)]
 
 
 static u8 write_mode_lookup[256] __attribute__((section(".dtcm"))) =
@@ -317,101 +318,102 @@ static ITCM_CODE void maria_WriteLineRAM(word * buffer)
 {
     u8 buffer_local[MARIA_LINERAM_SIZE * 2];
     union ColorUnion colors;
-    uint32 * pix = (uint32 * ) buffer;
+    uint32 *pix = (uint32 * ) buffer;
     uint32 * ptr = (uint32 * ) & maria_lineRAM[0];
     byte rmode = memory_ram[CTRL] & 3;
 
-    if(use_composite_filtering)
+    if (use_composite_filtering)
     {
         pix = (uint32 * ) buffer_local;
     }
 
-    if(rmode == 0) // 160A/B
+    if (rmode == 0) // 160A/B
     {
         for(uint index = 0; index < MARIA_LINERAM_SIZE / 4; index++)
         {
             colors.color32 = *ptr++;
 
-            if(colors.color32 == 0)
+            if (colors.color32 == 0)
             {
-                * pix++ = bg32;
-                * pix++ = bg32;
+                *pix++ = bg32;
+                *pix++ = bg32;
             }
             else
             {
-                if((colors.wo.color0 == 0))
+                if (colors.wo.color0 == 0)
                 {
-                    * pix++ = bg32;
+                    *pix++ = bg32;
                 }
                 else
                 {
-                    * pix++ = color_lookup_160AB[maria_GetColor(colors.by.color0)][maria_GetColor(colors.by.color1)];
+                    *pix++ = color_lookup_160AB[maria_GetColor(colors.by.color0)][maria_GetColor(colors.by.color1)];
                 }
 
-                if((colors.wo.color1 == 0))
+                if (colors.wo.color1 == 0)
                 {
-                    * pix++ = bg32;
+                    *pix++ = bg32;
                 }
                 else
                 {
-                    * pix++ = color_lookup_160AB[maria_GetColor(colors.by.color2)][maria_GetColor(colors.by.color3)];
+                    *pix++ = color_lookup_160AB[maria_GetColor(colors.by.color2)][maria_GetColor(colors.by.color3)];
                 }
             }
         }
     }
-    else if(rmode == 2) // 320B/D
+    else if (rmode == 2) // 320B/D
     {
         for(uint index = 0; index < MARIA_LINERAM_SIZE / 4; index++)
         {
             colors.color32 = *ptr++;
-            if(colors.color32 == 0)
+            
+            if (colors.color32 == 0)
             {
-                * pix++ = bg32;
-                * pix++ = bg32;
+                *pix++ = bg32;
+                *pix++ = bg32;
             }
             else
             {
-                if((colors.wo.color0 == 0))
+                if (colors.wo.color0 == 0)
                 {
-                    * pix++ = bg32;
+                    *pix++ = bg32;
                 }
                 else
                 {
-                    * pix++ = maria_GetColor(write_mode_lookup_mode2A[colors.by.color0]) |
-                        maria_GetColor(write_mode_lookup_mode2B[colors.by.color0]) << 8 |
-                        maria_GetColor(write_mode_lookup_mode2A[colors.by.color1]) << 16 |
-                        maria_GetColor(write_mode_lookup_mode2B[colors.by.color1]) << 24;
+                    *pix++ =  maria_GetColor(write_mode_lookup_mode2A[colors.by.color0])       |
+                              maria_GetColor(write_mode_lookup_mode2B[colors.by.color0]) << 8  |
+                              maria_GetColor(write_mode_lookup_mode2A[colors.by.color1]) << 16 |
+                              maria_GetColor(write_mode_lookup_mode2B[colors.by.color1]) << 24;
                 }
 
-                if((colors.wo.color1 == 0))
+                if (colors.wo.color1 == 0)
                 {
-                    * pix++ = bg32;
+                    *pix++ = bg32;
                 }
                 else
                 {
-                    * pix++ = maria_GetColor(write_mode_lookup_mode2A[colors.by.color2]) |
-                        maria_GetColor(write_mode_lookup_mode2B[colors.by.color2]) << 8 |
-                        maria_GetColor(write_mode_lookup_mode2A[colors.by.color3]) << 16 |
-                        maria_GetColor(write_mode_lookup_mode2B[colors.by.color3]) << 24;
+                    *pix++ =  maria_GetColor(write_mode_lookup_mode2A[colors.by.color2])       |
+                              maria_GetColor(write_mode_lookup_mode2B[colors.by.color2]) << 8  |
+                              maria_GetColor(write_mode_lookup_mode2A[colors.by.color3]) << 16 |
+                              maria_GetColor(write_mode_lookup_mode2B[colors.by.color3]) << 24;
                 }
             }
         }
     }
-    else if(rmode == 3) // 320A/C
+    else if (rmode == 3) // 320A/C
     {
         for(uint index = 0; index < MARIA_LINERAM_SIZE / 4; index++)
         {
             colors.color32 = *ptr++;
 
-            if(colors.color32 == 0)
+            if (colors.color32 == 0)
             {
-                * pix++ = bg32;
-                * pix++ = bg32;
+                *pix++ = bg32;
+                *pix++ = bg32;
             }
             else
             {
-                * pix++ = maria_GetColor((colors.by.color0 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color0]) << 8) | (maria_GetColor((colors.by.color1 & 30)) << 16) | (maria_GetColor(color_lookup_320AC[colors.by.color1]) << 24);
-                * pix++ = maria_GetColor((colors.by.color2 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color2]) << 8) | (maria_GetColor((colors.by.color3 & 30)) << 16) | (maria_GetColor(color_lookup_320AC[colors.by.color3]) << 24);
+                *pix++ = maria_GetColor((colors.by.color0 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color0]) << 8) | (maria_GetColor((colors.by.color1 & 30)) << 16) | (maria_GetColor(color_lookup_320AC[colors.by.color1]) << 24);
+                *pix++ = maria_GetColor((colors.by.color2 & 30)) | (maria_GetColor(color_lookup_320AC[colors.by.color2]) << 8) | (maria_GetColor((colors.by.color3 & 30)) << 16) | (maria_GetColor(color_lookup_320AC[colors.by.color3]) << 24);
             }
         }
     }
@@ -419,9 +421,9 @@ static ITCM_CODE void maria_WriteLineRAM(word * buffer)
     // -------------------------------------------------------
     // Composite Artifact handling - mainly for Tower Toppler
     // -------------------------------------------------------
-    if(use_composite_filtering && ((rmode == 2) || (rmode == 3)))
+    if (use_composite_filtering && ((rmode == 2) || (rmode == 3)))
     {
-        if(maria_scanline > use_composite_filtering) // The scanline check here is a hack - don't like the blurred look of artifacting on the upper screen on Tower Toppler... and this gives us some speed!
+        if (maria_scanline > use_composite_filtering) // The scanline check here is a hack - don't like the blurred look of artifacting on the upper screen on Tower Toppler... and this gives us some speed!
         {
             u8 lum1 = 0x00;
             u8 lum2 = buffer_local[0] & 0x0f;
@@ -432,11 +434,11 @@ static ITCM_CODE void maria_WriteLineRAM(word * buffer)
                 lum2 = lum3;
                 lum3 = buffer_local[pixel] & 0x0f;
 
-                if((lum1 | lum3) == 0) // First order artifacting... DULL-BRIGHT-DULL
+                if ((lum1 | lum3) == 0) // First order artifacting... DULL-BRIGHT-DULL
                 {
-                    if(lum2 & 0xFC) // Some reasonably bright intensity... 4 and up
+                    if (lum2 & 0xFC) // Some reasonably bright intensity... 4 and up
                     {
-                        if(pixel & 1) // Ledges (slightly brighter)
+                        if (pixel & 1) // Ledges (slightly brighter)
                         {
                             // Although it appears we're looking at an 'odd' pixel, we are really hinging on lum2 which would be an 'even' pixel here - hence the brighter processing
                             buffer_local[pixel - 1] = ((buffer_local[pixel - 1] & 0xF0) | artifacting_lookup_bright[lum2]);
@@ -452,11 +454,11 @@ static ITCM_CODE void maria_WriteLineRAM(word * buffer)
                         }
                     }
                 }
-                else if(lum1 == 0)
+                else if (lum1 == 0)
                 {
-                    if((lum2 & 0xF8) && (lum3 & 0xF8)) // Second order artifacting... DULL-DULL-BRIGHT-BRIGHT-DULL - look for bright intensity here (8 and up)
+                    if ((lum2 & 0xF8) && (lum3 & 0xF8)) // Second order artifacting... DULL-DULL-BRIGHT-BRIGHT-DULL - look for bright intensity here (8 and up)
                     {
-                        if(((buffer_local[pixel + 1] & 0x0F) == 0) && ((buffer_local[pixel - 3] & 0x0F) == 0))
+                        if (((buffer_local[pixel + 1] & 0x0F) == 0) && ((buffer_local[pixel - 3] & 0x0F) == 0))
                         {
                             buffer_local[pixel - 2] = ((buffer_local[pixel - 1] & 0xF0) | artifacting_lookup_bright[lum2]);
                         }
@@ -465,7 +467,7 @@ static ITCM_CODE void maria_WriteLineRAM(word * buffer)
             }
         }
     }
-    if(use_composite_filtering) memcpy(buffer, buffer_local, MARIA_LINERAM_SIZE * 2);
+    if (use_composite_filtering) memcpy(buffer, buffer_local, MARIA_LINERAM_SIZE * 2);
 }
 
 
@@ -481,13 +483,13 @@ static ITCM_CODE void maria_WriteLineRAM(word * buffer)
 static inline __attribute__((always_inline)) void maria_StoreGraphic()
 {
     byte data = memory_ram[maria_pp.w];
-    if(maria_wmode)
+    if (maria_wmode)
     {
-        if(data) maria_StoreCellWriteMode(write_mode_lookup[data]);
+        if (data) maria_StoreCellWriteMode(write_mode_lookup[data]);
     }
     else
     {
-        if(data) maria_StoreCells4(data);
+        if (data) maria_StoreCells4(data);
     }
 }
 
@@ -497,13 +499,13 @@ static inline __attribute__((always_inline)) void maria_StoreGraphic()
 static inline __attribute__((always_inline)) void mariaROO_StoreGraphic()
 {
     byte data = memory_ram[maria_pp.w];
-    if(maria_wmode)
+    if (maria_wmode)
     {
-        if(data) mariaROO_StoreCellWriteMode(write_mode_lookup[data]);
+        if (data) mariaROO_StoreCellWriteMode(write_mode_lookup[data]);
     }
     else
     {
-        if(data) mariaROO_StoreCells4(data);
+        if (data) mariaROO_StoreCells4(data);
     }
 }
 
@@ -514,7 +516,7 @@ ITCM_CODE static void maria_StoreLineRAM()
 {
     u16 index;
 
-    if(bRenderFrame) // If we are rendering frames...
+    if (bRenderFrame) // If we are rendering frames...
     {
         u32 * ptr = (u32 * ) maria_lineRAM;
         *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
@@ -541,7 +543,7 @@ ITCM_CODE static void maria_StoreLineRAM()
         u8 width;
         u8 direct = 1;
 
-        if(mode & 31)
+        if (mode & 31)
         {
             maria_cycles += MARIA_CYCLES_4_BYTE_HEADER; // Maria cycles (Header 4 byte)
             maria_palette = (mode & 0xE0) >> 3;
@@ -555,26 +557,26 @@ ITCM_CODE static void maria_StoreLineRAM()
             width = memory_ram[maria_dp.w++] & 31;
             width = (width == 0) ? 32 : ((~width) & 31) + 1;
             maria_horizontal = memory_ram[maria_dp.w++];
-            if(mode & 32) direct = 0;
+            if (mode & 32) direct = 0;
             maria_wmode = mode & 128;
         }
 
         // Note: the DMA timing here is not perfect - but it's closer than it has been in the past. Good enough for handheld use.
         u32 dma_holes = 0;
 
-        if(direct) // Are we DIRECT mode?
+        if (direct) // Are we DIRECT mode?
         {
             maria_pp.b.h += maria_offset;
             for(index = 0; index < width; index++)
             {
-                if(maria_IsHoleyDMA()) dma_holes++; // Adjust for HoleyDMA
-                else if(bRenderFrame) maria_StoreGraphic(); // Render the graphic if not HoleyDMA
+                if (maria_IsHoleyDMA()) dma_holes++; // Adjust for HoleyDMA
+                else if (bRenderFrame) maria_StoreGraphic(); // Render the graphic if not HoleyDMA
                 maria_horizontal += (maria_wmode ? 2 : 4); // Adjust the horizontal
                 maria_pp.w++; // And move to the next entry
             }
             maria_pp.w &= 0xFFFF; // Pole Position II and Failsafe both require that we wrap this...      
             maria_cycles += (3 * (width - dma_holes)); // Maria cycles (Direct graphic read) - compensate for each holey DMA access
-            if(dma_holes) maria_cycles += 3; // And if there were any holey DMA accesses, we add 3 back for the DMA access
+            if (dma_holes) maria_cycles += 3; // And if there were any holey DMA accesses, we add 3 back for the DMA access
         }
         else // Indirect...
         {
@@ -584,15 +586,15 @@ ITCM_CODE static void maria_StoreLineRAM()
             for(index = 0; index < width; index++)
             {
                 maria_pp.w = charbase_plus_offset | memory_ram[basePP.w++];
-                if(maria_IsHoleyDMA()) // Adjust for HoleyDMA
+                if (maria_IsHoleyDMA()) // Adjust for HoleyDMA
                 {
                     dma_holes++;
-                    if(cwidth) maria_horizontal += (maria_wmode ? 2 : 4);
+                    if (cwidth) maria_horizontal += (maria_wmode ? 2 : 4);
                 }
-                else if(bRenderFrame)
+                else if (bRenderFrame)
                 {
                     maria_StoreGraphic(); // Maria cycles (Indirect, 1 byte)
-                    if(cwidth)
+                    if (cwidth)
                     {
                         maria_pp.w++;
                         maria_horizontal += (maria_wmode ? 2 : 4);
@@ -604,7 +606,7 @@ ITCM_CODE static void maria_StoreLineRAM()
             }
             maria_pp.w &= 0xFFFF; // Pole Position II and Failsafe both require that we wrap this...      
             maria_cycles += ((cwidth ? 9 : 6) * width); // Maria cycles for Indirect 1 byte (6 cycles) or 2 bytes (9 cycles)
-            if(dma_holes)
+            if (dma_holes)
             {
                 maria_cycles -= (((cwidth ? 9 : 6) * (dma_holes)) - 3);
             }
@@ -625,7 +627,7 @@ ITCM_CODE static void mariaROO_StoreLineRAM()
 {
     u16 index;
 
-    if(bRenderFrame) // If we are rendering frames...
+    if (bRenderFrame) // If we are rendering frames...
     {
         u32 * ptr = (u32 * ) maria_lineRAM;
         *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
@@ -652,7 +654,7 @@ ITCM_CODE static void mariaROO_StoreLineRAM()
         u8 width;
         u8 direct = 1;
 
-        if(mode & 31)
+        if (mode & 31)
         {
             maria_cycles += MARIA_CYCLES_4_BYTE_HEADER; // Maria cycles (Header 4 byte)
             maria_palette = (mode & 0xE0) >> 3;
@@ -666,26 +668,26 @@ ITCM_CODE static void mariaROO_StoreLineRAM()
             width = memory_ram[maria_dp.w++] & 31;
             width = (width == 0) ? 32 : ((~width) & 31) + 1;
             maria_horizontal = memory_ram[maria_dp.w++];
-            if(mode & 32) direct = 0;
+            if (mode & 32) direct = 0;
             maria_wmode = mode & 128;
         }
 
         // Note: the DMA timing here is not perfect - but it's closer than it has been in the past. Good enough for handheld use.
         u32 dma_holes = 0;
 
-        if(direct) // Are we DIRECT mode?
+        if (direct) // Are we DIRECT mode?
         {
             maria_pp.b.h += maria_offset;
             for(index = 0; index < width; index++)
             {
-                if(maria_IsHoleyDMA()) dma_holes++; // Adjust for HoleyDMA
-                else if(bRenderFrame) mariaROO_StoreGraphic(); // Render the graphic if not HoleyDMA
+                if (maria_IsHoleyDMA()) dma_holes++; // Adjust for HoleyDMA
+                else if (bRenderFrame) mariaROO_StoreGraphic(); // Render the graphic if not HoleyDMA
                 maria_horizontal += (maria_wmode ? 2 : 4); // Adjust the horizontal
                 maria_pp.w++; // And move to the next entry
             }
             maria_pp.w &= 0xFFFF; // Pole Position II and Failsafe both require that we wrap this...      
             maria_cycles += (3 * (width - dma_holes)); // Maria cycles (Direct graphic read) - compensate for each holey DMA access
-            if(dma_holes) maria_cycles += 3; // And if there were any holey DMA accesses, we add 3 back for the DMA access
+            if (dma_holes) maria_cycles += 3; // And if there were any holey DMA accesses, we add 3 back for the DMA access
         }
         else // Indirect...
         {
@@ -695,15 +697,15 @@ ITCM_CODE static void mariaROO_StoreLineRAM()
             for(index = 0; index < width; index++)
             {
                 maria_pp.w = charbase_plus_offset | memory_ram[basePP.w++];
-                if(maria_IsHoleyDMA()) // Adjust for HoleyDMA
+                if (maria_IsHoleyDMA()) // Adjust for HoleyDMA
                 {
                     dma_holes++;
-                    if(cwidth) maria_horizontal += (maria_wmode ? 2 : 4);
+                    if (cwidth) maria_horizontal += (maria_wmode ? 2 : 4);
                 }
-                else if(bRenderFrame)
+                else if (bRenderFrame)
                 {
                     mariaROO_StoreGraphic(); // Maria cycles (Indirect, 1 byte)
-                    if(cwidth)
+                    if (cwidth)
                     {
                         maria_pp.w++;
                         maria_horizontal += (maria_wmode ? 2 : 4);
@@ -715,7 +717,7 @@ ITCM_CODE static void mariaROO_StoreLineRAM()
             }
             maria_pp.w &= 0xFFFF; // Pole Position II and Failsafe both require that we wrap this...      
             maria_cycles += ((cwidth ? 9 : 6) * width); // Maria cycles for Indirect 1 byte (6 cycles) or 2 bytes (9 cycles)
-            if(dma_holes)
+            if (dma_holes)
             {
                 maria_cycles -= (((cwidth ? 9 : 6) * (dma_holes)) - 3);
             }
@@ -739,7 +741,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
     //
     // Displays the background color when Maria is disabled (if applicable)
     //
-    if((memory_ram[CTRL] & 96) != 64)
+    if ((memory_ram[CTRL] & 96) != 64)
     {
         u32 * bgstart = (u32 * ) framePtr;
         for(uint index = 0; index < MARIA_LINERAM_SIZE / 4; index++)
@@ -750,7 +752,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
     }
     else
     {
-        if(banksets_mask) return mariaBANK_RenderScanlineTOP();
+        if (banksets_mask) return mariaBANK_RenderScanlineTOP();
 
         maria_dpp.b.l = memory_ram[DPPL];
         maria_dpp.b.h = memory_ram[DPPH];
@@ -761,7 +763,7 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
 
         maria_dp.b.h = memory_ram[maria_dpp.w];
         maria_dp.b.l = memory_ram[maria_dpp.w + 1];
-        if(dl_mode & 128)
+        if (dl_mode & 128)
         {
             sally_ExecuteNMI();
             maria_cycles += MARIA_CYCLES_NMI_COST;
@@ -769,17 +771,17 @@ ITCM_CODE void maria_RenderScanlineTOP(void)
             maria_dp.b.l = memory_ram[maria_dpp.w + 1];
         }
 
-        if(memory_ram[CTRL] & 4) mariaROO_StoreLineRAM();
+        if (memory_ram[CTRL] & 4) mariaROO_StoreLineRAM();
         else maria_StoreLineRAM();
 
-        if(!maria_offset) // End of line?
+        if (!maria_offset) // End of line?
         {
             maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
             maria_dpp.w += 2;
             u8 dl_mode = memory_ram[maria_dpp.w++];
             maria_h8_h16 = ((uint) dl_mode << 6) & 0x1800;
             maria_offset = dl_mode & 15;
-            if(dl_mode & 128)
+            if (dl_mode & 128)
             {
                 sally_ExecuteNMI();
                 maria_cycles += MARIA_CYCLES_NMI_COST;
@@ -800,7 +802,7 @@ ITCM_CODE void maria_RenderScanline(void)
     //
     // Displays the background color when Maria is disabled (if applicable)
     //
-    if((memory_ram[CTRL] & 96) != 64)
+    if ((memory_ram[CTRL] & 96) != 64)
     {
         u32 * bgstart = (u32 * ) framePtr;
         for(uint index = 0; index < MARIA_LINERAM_SIZE / 4; index++)
@@ -810,10 +812,10 @@ ITCM_CODE void maria_RenderScanline(void)
     }
     else
     {
-        if(banksets_mask) return mariaBANK_RenderScanline();
+        if (banksets_mask) return mariaBANK_RenderScanline();
 
         // This is where we render the video memory... 
-        if(bRenderFrame) // If we are rendering frames...
+        if (bRenderFrame) // If we are rendering frames...
         {
             maria_WriteLineRAM(framePtr);
             framePtr += 256;
@@ -822,17 +824,17 @@ ITCM_CODE void maria_RenderScanline(void)
         maria_dp.b.h = memory_ram[maria_dpp.w];
         maria_dp.b.l = memory_ram[maria_dpp.w + 1];
 
-        if(memory_ram[CTRL] & 4) mariaROO_StoreLineRAM();
+        if (memory_ram[CTRL] & 4) mariaROO_StoreLineRAM();
         else maria_StoreLineRAM();
 
-        if(!maria_offset) // Last line?
+        if (!maria_offset) // Last line?
         {
             maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
             maria_dpp.w += 2;
             u8 dl_mode = memory_ram[maria_dpp.w++];
             maria_h8_h16 = ((uint) dl_mode << 6) & 0x1800;
             maria_offset = dl_mode & 15;
-            if(dl_mode & 128)
+            if (dl_mode & 128)
             {
                 sally_ExecuteNMI();
                 maria_cycles += MARIA_CYCLES_NMI_COST;
@@ -863,13 +865,13 @@ static inline __attribute__((always_inline)) void mariaBANK_StoreGraphic()
 {
     byte data = bankset_memory_read(maria_pp.w);
 
-    if(maria_wmode)
+    if (maria_wmode)
     {
-        if(data) maria_StoreCellWriteMode(write_mode_lookup[data]);
+        if (data) maria_StoreCellWriteMode(write_mode_lookup[data]);
     }
     else
     {
-        if(data) maria_StoreCells4(data);
+        if (data) maria_StoreCells4(data);
     }
 }
 
@@ -881,7 +883,7 @@ static void mariaBANK_StoreLineRAM()
 {
     u16 index;
 
-    if(bRenderFrame) // If we are rendering frames...
+    if (bRenderFrame) // If we are rendering frames...
     {
         u32 * ptr = (u32 * ) maria_lineRAM;
         *ptr++ = 0;*ptr++ = 0;*ptr++ = 0;*ptr++ = 0;
@@ -908,7 +910,7 @@ static void mariaBANK_StoreLineRAM()
         u8 width;
         u8 direct = 1;
 
-        if(mode & 31)
+        if (mode & 31)
         {
             maria_cycles += MARIA_CYCLES_4_BYTE_HEADER; // Maria cycles (Header 4 byte)
             maria_palette = (mode & 0xE0) >> 3;
@@ -922,26 +924,26 @@ static void mariaBANK_StoreLineRAM()
             width = bankset_memory_read(maria_dp.w++) & 31;
             width = (width == 0) ? 32 : ((~width) & 31) + 1;
             maria_horizontal = bankset_memory_read(maria_dp.w++);
-            if(mode & 32) direct = 0;
+            if (mode & 32) direct = 0;
             maria_wmode = mode & 128;
         }
 
         // Note: the DMA timing here is not perfect - but it's closer than it has been in the past. Good enough for handheld use.
         u32 dma_holes = 0;
 
-        if(direct) // Are we DIRECT mode?
+        if (direct) // Are we DIRECT mode?
         {
             maria_pp.b.h += maria_offset;
             for(index = 0; index < width; index++)
             {
-                if(maria_IsHoleyDMA()) dma_holes++; // Adjust for HoleyDMA
-                else if(bRenderFrame) mariaBANK_StoreGraphic(); // Render the graphic if not HoleyDMA
+                if (maria_IsHoleyDMA()) dma_holes++; // Adjust for HoleyDMA
+                else if (bRenderFrame) mariaBANK_StoreGraphic(); // Render the graphic if not HoleyDMA
                 maria_horizontal += (maria_wmode ? 2 : 4); // Adjust the horizontal
                 maria_pp.w++; // And move to the next entry
             }
             maria_pp.w &= 0xFFFF; // Pole Position II and Failsafe both require that we wrap this...      
             maria_cycles += (3 * (width - dma_holes)); // Maria cycles (Direct graphic read) - compensate for each holey DMA access
-            if(dma_holes) maria_cycles += 3; // And if there were any holey DMA accesses, we add 3 back for the DMA access
+            if (dma_holes) maria_cycles += 3; // And if there were any holey DMA accesses, we add 3 back for the DMA access
         }
         else // Indirect...
         {
@@ -951,15 +953,15 @@ static void mariaBANK_StoreLineRAM()
             for(index = 0; index < width; index++)
             {
                 maria_pp.w = charbase_plus_offset | bankset_memory_read(basePP.w++);
-                if(maria_IsHoleyDMA()) // Adjust for HoleyDMA
+                if (maria_IsHoleyDMA()) // Adjust for HoleyDMA
                 {
                     dma_holes++;
-                    if(cwidth) maria_horizontal += (maria_wmode ? 2 : 4);
+                    if (cwidth) maria_horizontal += (maria_wmode ? 2 : 4);
                 }
-                else if(bRenderFrame)
+                else if (bRenderFrame)
                 {
                     mariaBANK_StoreGraphic(); // Maria cycles (Indirect, 1 byte)
-                    if(cwidth)
+                    if (cwidth)
                     {
                         maria_pp.w++;
                         maria_horizontal += (maria_wmode ? 2 : 4);
@@ -971,7 +973,7 @@ static void mariaBANK_StoreLineRAM()
             }
             maria_pp.w &= 0xFFFF; // Pole Position II and Failsafe both require that we wrap this...      
             maria_cycles += ((cwidth ? 9 : 6) * width); // Maria cycles for Indirect 1 byte (6 cycles) or 2 bytes (9 cycles)
-            if(dma_holes)
+            if (dma_holes)
             {
                 maria_cycles -= (((cwidth ? 9 : 6) * (dma_holes)) - 3);
             }
@@ -995,7 +997,7 @@ void mariaBANK_RenderScanlineTOP(void)
     maria_offset = dl_mode & 15;
     maria_dp.b.h = bankset_memory_read(maria_dpp.w);
     maria_dp.b.l = bankset_memory_read(maria_dpp.w + 1);
-    if(bankset_memory_read(maria_dpp.w) & 128)
+    if (bankset_memory_read(maria_dpp.w) & 128)
     {
         sally_ExecuteNMI();
         maria_cycles += MARIA_CYCLES_NMI_COST;
@@ -1005,14 +1007,14 @@ void mariaBANK_RenderScanlineTOP(void)
 
     mariaBANK_StoreLineRAM();
 
-    if(!maria_offset) // Last line?
+    if (!maria_offset) // Last line?
     {
         maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
         maria_dpp.w += 2;
         u8 dl_mode = bankset_memory_read(maria_dpp.w++);
         maria_h8_h16 = ((uint) dl_mode << 6) & 0x1800;
         maria_offset = dl_mode & 15;
-        if(dl_mode & 128)
+        if (dl_mode & 128)
         {
             sally_ExecuteNMI();
             maria_cycles += MARIA_CYCLES_NMI_COST;
@@ -1028,7 +1030,7 @@ void mariaBANK_RenderScanlineTOP(void)
 void mariaBANK_RenderScanline(void)
 {
     // This is where we render the video memory... 
-    if(bRenderFrame) // If we are rendering frames...
+    if (bRenderFrame) // If we are rendering frames...
     {
         maria_WriteLineRAM(framePtr);
         framePtr += 256;
@@ -1039,14 +1041,14 @@ void mariaBANK_RenderScanline(void)
 
     mariaBANK_StoreLineRAM();
 
-    if(!maria_offset) // Last line?
+    if (!maria_offset) // Last line?
     {
         maria_cycles += MARIA_CYCLES_STARTUP_SHUTDOWN_LAST_LINE_ZONE;
         maria_dpp.w += 2;
         u8 dl_mode = bankset_memory_read(maria_dpp.w++);
         maria_h8_h16 = ((uint) dl_mode << 6) & 0x1800;
         maria_offset = dl_mode & 15;
-        if(dl_mode & 128)
+        if (dl_mode & 128)
         {
             sally_ExecuteNMI();
             maria_cycles += MARIA_CYCLES_NMI_COST;
