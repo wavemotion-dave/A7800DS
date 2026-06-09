@@ -10,6 +10,8 @@ Do not ask me about such files, I only supply the emulator. A search with Google
 help you. The emulator was developed using Trebor's "7800 ProPack" of well-curated games.
 The emulator will auto-start in /roms/a7800 or /roms/a78 if those directories exist.
 
+a7800DS is free to download and use... but if you have found anything I've done to be useful, buy me a virtual coffee here: https://ko-fi.com/wavemotiondave 
+
 Features :
 ----------
  Most things you should expect from an emulator. Speed is excellent on the DSi and
