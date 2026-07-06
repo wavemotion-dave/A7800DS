@@ -10,7 +10,11 @@ Do not ask me about such files, I only supply the emulator. A search with Google
 help you. The emulator was developed using Trebor's "7800 ProPack" of well-curated games.
 The emulator will auto-start in /roms/a7800 or /roms/a78 if those directories exist.
 
-a7800DS is free to download and use... but if you have found anything I've done to be useful, buy me a virtual coffee here: https://ko-fi.com/wavemotiondave 
+# Donations Welcome (but never required!)
+
+These hobby emulators have been a labor of love. An embarassing amount of development time has gone into it as I've strived to provide an enjoyable retro experience on the DS handheld. It's free to use and always will be, however if you feel inclined to buy me a virtual coffee for the effort, that would be beyond amazing!
+
+[<img src="https://github.com/user-attachments/assets/ab67686c-2168-46a3-b39f-77b5f5fef5d0">](https://ko-fi.com/wavemotiondave)
 
 Features :
 ----------
